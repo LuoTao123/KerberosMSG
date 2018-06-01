@@ -1,14 +1,14 @@
 package Package;
 
 public class All_Data {
-	private int control;
+	private byte control;
 	private Data_Regist register;
 	private Data_Modify modify;
 	private Data_Online online;
 	private Data_Offline offline;
 	private Data_Chat chat;
 	private Data_Land land;
-	public void setControl(int control){
+	public void setControl(byte control){
 		this.control=control;
 	}
 	public void setData_Regist(Data_Regist register){
@@ -29,7 +29,7 @@ public class All_Data {
 	public void setData_Land(Data_Land land){
 		this.land=land;
 	}
-	public int getControl(){
+	public byte getControl(){
 		return control;
 	}
 	public Data_Regist getData_Regist(){

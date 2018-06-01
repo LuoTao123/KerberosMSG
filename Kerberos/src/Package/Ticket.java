@@ -1,14 +1,16 @@
 
 package Package;
 
+import java.math.BigInteger;
+
 public class Ticket{
-	private int Key;
+	private BigInteger Key;
 	private int ID1;
 	private int AD;
 	private int ID2;
 	private String TS;
-	private String LT;
-	public void setKey(int key){
+	private int LT;
+	public void setKey(BigInteger key){
 		this.Key=key;
 	}
 	public void setID1(int id1){
@@ -23,10 +25,10 @@ public class Ticket{
 	public void setTS(String ts){
 		this.TS=ts;
 	}
-	public void setLT(String lt){
+	public void setLT(int lt){
 		this.LT=lt;
 	}
-	public int getKey(){
+	public BigInteger getKey(){
 		return Key;
 	}
 	public int getID1(){
@@ -41,7 +43,7 @@ public class Ticket{
 	public String getTS(){
 		return TS;
 	}
-	public String getLT(){
+	public int getLT(){
 		return LT;
 	}
 }

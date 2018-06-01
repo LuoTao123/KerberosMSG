@@ -1,11 +1,14 @@
 package Package;
 
+import java.math.BigInteger;
+
 public class TGS_C {
-	private int Key;
+	private BigInteger Key;
 	private int ID;
 	private String TS;
 	private Ticket ticket=new Ticket();
-	public void setKey(int key){
+	private byte[] ChangedTicket;
+	public void setKey(BigInteger key){
 		this.Key=key;
 	}
 	public void setID(int id){
@@ -14,7 +17,10 @@ public class TGS_C {
 	public void setTS(String ts){
 		this.TS=ts;
 	}
-	public int getKey(){
+	public void setChangedTicket(byte[] ChangedTicket){
+		this.ChangedTicket=ChangedTicket;
+	}
+	public BigInteger getKey(){
 		return Key;
 	}
 	public int getID(){
@@ -25,5 +31,8 @@ public class TGS_C {
 	}
 	public Ticket getTicket(){
 		return ticket;
+	}
+	public byte[] getChangedTicket(){
+		return ChangedTicket;
 	}
 }
