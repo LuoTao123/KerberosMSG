@@ -21,7 +21,7 @@ public class SocketClient {
     OutputStream outputStream = socket.getOutputStream();
     Pack pack =new Pack();
     socket.getOutputStream().write(pack.Pack_0x12_Cont());
-/*    int IDC= 1234567890;
+ /*   int IDC= 1234567890;
     Random rand = new Random();
     BigInteger PSW = new BigInteger(1024, rand);
     System.out.println(PSW);
