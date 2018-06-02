@@ -130,7 +130,7 @@ public class Pack {
 	}
 	
 	public byte[] Pack_0x13_Data(Data_Chat DC){
-		byte[] NewByte=new byte[268];
+		byte[] NewByte=new byte[276];
 		int IDc=DC.getIDc();
 		byte[] IDcByte=IntToByteArray2(IDc);
 		EK_message EKm = DC.getEKMSG();
@@ -140,7 +140,7 @@ public class Pack {
 		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
 		System.arraycopy(MSGByte, 0, NewByte, 4, MSGByte.length);
 		System.arraycopy(HMSGByte, 0, NewByte, 132, HMSGByte.length);
-		System.arraycopy(SignByte, 0, NewByte, 140, MSGByte.length);
+		System.arraycopy(SignByte, 0, NewByte, 148, MSGByte.length);
 		//DESº”√‹
 		byte[] ChangedNewByte = DESCHULI(NewByte);
 		return ChangedNewByte;

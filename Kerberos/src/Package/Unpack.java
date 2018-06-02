@@ -36,7 +36,7 @@ public class Unpack {
 				case (byte)0x00:	zhuangtaiji0(Unpack_0x00(readFixedLengthArray(bufferedInputStream,132)));break;
 				case (byte)0x01:	zhuangtaiji1(Unpack_0x01(readFixedLengthArray(bufferedInputStream,260)));break;
 				case (byte)0x10:	zhuangtaiji10(Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)));break;
-				case (byte)0x13:	zhuangtaiji13(Unpack_0x13(readFixedLengthArray(bufferedInputStream,268)));break;
+				case (byte)0x13:	zhuangtaiji13(Unpack_0x13(readFixedLengthArray(bufferedInputStream,276)));break;
 				case (byte)0x07:	zhuangtaiji7(Unpack_0x07(readFixedLengthArray(bufferedInputStream,26)));break;
 				case (byte)0x08:	zhuangtaiji8(Unpack_0x08(readFixedLengthArray(bufferedInputStream,76)));break;
 				case (byte)0x09:	zhuangtaiji9(Unpack_0x09(readFixedLengthArray(bufferedInputStream,72)));break;
@@ -447,12 +447,12 @@ public class Unpack {
 		EK_message EKm = new EK_message();
 		byte[] IDcByte = new byte[4];
 		byte[] MSGByte = new byte[128];
-		byte[] HMSGByte = new byte[8];
+		byte[] HMSGByte = new byte[16];
 		byte[] SignByte = new byte[128];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);
 		System.arraycopy(NewByte, 4, MSGByte, 0, MSGByte.length);
 		System.arraycopy(NewByte, 132, HMSGByte, 0, HMSGByte.length);
-		System.arraycopy(NewByte, 140, SignByte, 0, SignByte.length);
+		System.arraycopy(NewByte, 148, SignByte, 0, SignByte.length);
 		int IDc = ByteArrayToInt2(IDcByte);
 		BigInteger MSG = new BigInteger(MSGByte);
 		BigInteger HMSG = new BigInteger(HMSGByte);
