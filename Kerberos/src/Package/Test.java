@@ -1,8 +1,6 @@
 package Package;
 
 import java.io.UnsupportedEncodingException;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 
 public class Test {
 

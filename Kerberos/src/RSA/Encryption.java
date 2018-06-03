@@ -21,7 +21,7 @@ public class Encryption {
 	private String Manager="Manager";
 	private String OriginPK;
 	private String OriginPM;
-	private String OriginText;
+//	private String OriginText;
 //	private int Hash;
 	public boolean HasCre = false;
 	public boolean Truecre = false;
@@ -189,7 +189,7 @@ public class Encryption {
 		return Ciphertext;
 	}
 	
-	public String authenticate(BigInteger inputtext,String name){
+	public String authenticate(BigInteger inputtext,String name,String OriginText){
 		renzhen(name);
 //		String input=ReadText(filename);
 /*		byte[] input = null;

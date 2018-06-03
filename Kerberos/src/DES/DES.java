@@ -2,6 +2,8 @@ package DES;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.math.BigInteger;
+import java.util.Random;
 
 public class DES {
 	public int[][] AllsubKey;
@@ -449,5 +451,11 @@ public class DES {
 			System.out.print(Plaintext[i]);
 		}
 		System.out.println("");
+	}
+	
+	public BigInteger CreateDESKey(){
+		Random rand = new Random();
+		BigInteger bigInt=new BigInteger(64, rand);
+		return bigInt;
 	}
 }

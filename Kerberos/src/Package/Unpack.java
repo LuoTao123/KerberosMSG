@@ -227,12 +227,13 @@ public class Unpack {
 		AS_C AC = new AS_C();
 		//Ekc解密
 		byte[] NewByte = DESCHULI(ChangedNewByte);
-		byte[] KeyByte = new byte[8];
+		byte[] KeyByte = new byte[9];
 		byte[] IDtgsByte = new byte[4];
 		byte[] TS2Byte = new byte[18];
 		byte[] LTByte = new byte[4];
 		byte[] ChangedTicket = new byte[42];
-		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
+		KeyByte[0]=(byte)0x00;
+		System.arraycopy(NewByte, 0, KeyByte, 1, KeyByte.length-1);
 		System.arraycopy(NewByte, 8, IDtgsByte, 0, IDtgsByte.length);
 		System.arraycopy(NewByte, 12, TS2Byte, 0, TS2Byte.length);
 		System.arraycopy(NewByte, 30, LTByte, 0, LTByte.length);
@@ -263,20 +264,21 @@ public class Unpack {
 		byte[] ChangedTicketByte = new byte[42];
 		byte[] ChangedAuthenByte = new byte[26];
 		System.arraycopy(NewByte, 0, IDvByte, 0, IDvByte.length);
-		System.arraycopy(NewByte, 0, ChangedTicketByte, 4, ChangedTicketByte.length);
-		System.arraycopy(NewByte, 0, ChangedAuthenByte, 46, ChangedAuthenByte.length);
+		System.arraycopy(NewByte, 4, ChangedTicketByte, 0, ChangedTicketByte.length);
+		System.arraycopy(NewByte, 46, ChangedAuthenByte, 0, ChangedAuthenByte.length);
 		int IDv = ByteArrayToInt2(IDvByte);
 		//Ektgs解密
 		byte[] TicketByte = DESCHULI(ChangedTicketByte);
 		//Ekc,tgs解密
 		byte[] AuthenByte = DESCHULI(ChangedAuthenByte);
-		byte[] Key1Byte = new byte[8];
+		byte[] Key1Byte = new byte[9];
 		byte[] IDcByte = new byte[4];
 		byte[] ADByte = new byte[4];
 		byte[] IDtgs1Byte = new byte[4];
 		byte[] TS2Byte1 = new byte[18];
 		byte[] LT2Byte = new byte[4];
-		System.arraycopy(TicketByte, 0, Key1Byte, 0, Key1Byte.length);
+		Key1Byte[0]=(byte)0x00;
+		System.arraycopy(NewByte, 0, Key1Byte, 1, Key1Byte.length-1);
 		System.arraycopy(TicketByte, 8, IDcByte, 0, IDcByte.length);
 		System.arraycopy(TicketByte, 12, ADByte, 0, ADByte.length);
 		System.arraycopy(TicketByte, 16, IDtgs1Byte, 0, IDtgs1Byte.length);
@@ -328,11 +330,12 @@ public class Unpack {
 		TGS_C TC = new TGS_C();
 		//Ekc,tgs解密
 		byte[] NewByte = DESCHULI(ChangedNewByte);
-		byte[] KeyByte = new byte[8];
+		byte[] KeyByte = new byte[9];
 		byte[] IDvByte = new byte[4];
 		byte[] TS4Byte = new byte[18];
 		byte[] TicketByte = new byte[42];
-		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
+		KeyByte[0]=(byte)0x00;
+		System.arraycopy(NewByte, 0, KeyByte, 1, KeyByte.length-1);
 		System.arraycopy(NewByte, 8, IDvByte, 0, IDvByte.length);
 		System.arraycopy(NewByte, 12, TS4Byte, 0, TS4Byte.length);
 		System.arraycopy(NewByte, 30, TicketByte, 0, TicketByte.length);
@@ -362,13 +365,14 @@ public class Unpack {
 		System.arraycopy(NewByte, 42, ChangedAuthenByte, 0, ChangedAuthenByte.length);
 		//Ekv解密
 		byte[] TicketByte = DESCHULI(ChangedTicketByte);
-		byte[] KeyByte = new byte[8];
+		byte[] KeyByte = new byte[9];
 		byte[] IDcByte = new byte[4];
 		byte[] ADcByte = new byte[4];
 		byte[] IDvByte = new byte[4];
 		byte[] TS4Byte = new byte[18];
 		byte[] LT4Byte = new byte[4];
-		System.arraycopy(TicketByte, 0, KeyByte, 0, KeyByte.length);
+		KeyByte[0]=(byte)0x00;
+		System.arraycopy(NewByte, 0, KeyByte, 1, KeyByte.length-1);
 		System.arraycopy(TicketByte, 8, IDcByte, 0, IDcByte.length);
 		System.arraycopy(TicketByte, 12, ADcByte, 0, ADcByte.length);
 		System.arraycopy(TicketByte, 16, IDvByte, 0, IDvByte.length);
@@ -478,8 +482,9 @@ public class Unpack {
 		//DES解密
 		byte[] NewByte = DESCHULI(ChangedNewByte);
 		Data_Update DU = new Data_Update();
-		byte[] KeyByte = new byte[8];
-		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
+		byte[] KeyByte = new byte[9];
+		KeyByte[0]=(byte)0x00;
+		System.arraycopy(NewByte, 0, KeyByte, 1, KeyByte.length-1);
 		BigInteger Key = new BigInteger(KeyByte);
 		DU.setKey(Key);
 		return DU;

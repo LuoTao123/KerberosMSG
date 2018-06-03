@@ -7,5 +7,4 @@ public class DecryTest {
 		Decryption de=new Decryption();
 		de.decryption();
 	}
-
 }

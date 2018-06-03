@@ -93,73 +93,6 @@ public class Pack {
 		return NewByte;
 	}
 	
-	public byte[] Pack_0x10_Cont(){
-		byte[] NewByte=new byte[2];
-		NewByte[0]=(byte)0x01;						//0为控制包
-		NewByte[1]=(byte)0x10;						//控制头(位)
-		return NewByte;
-	}
-	
-	public byte[] Pack_0x10_Data(Data_Online DO){
-		byte[] NewByte=new byte[4];
-		int IDc=DO.getIDc();
-		byte[] IDcByte=IntToByteArray2(IDc);
-		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
-		return NewByte;
-	}
-	
-	public byte[] Pack_0x11_Cont(){
-		byte[] NewByte=new byte[2];
-		NewByte[0]=(byte)0x00;						//0为控制包
-		NewByte[1]=(byte)0x11;						//控制头(位)
-		return NewByte;
-	}
-	
-	public byte[] Pack_0x12_Cont(){
-		byte[] NewByte=new byte[2];
-		NewByte[0]=(byte)0x00;						//0为控制包
-		NewByte[1]=(byte)0x12;						//控制头(位)
-		return NewByte;
-	}
-	
-	public byte[] Pack_0x13_Cont(){
-		byte[] NewByte=new byte[2];
-		NewByte[0]=(byte)0x01;						//0为控制包
-		NewByte[1]=(byte)0x13;						//控制头(位)
-		return NewByte;
-	}
-	
-	public byte[] Pack_0x13_Data(Data_Chat DC){
-		byte[] NewByte=new byte[276];
-		int IDc=DC.getIDc();
-		byte[] IDcByte=IntToByteArray2(IDc);
-		EK_message EKm = DC.getEKMSG();
-		byte[] MSGByte=EKm.getMSG().toByteArray();
-		byte[] HMSGByte=EKm.getH_MSG().toByteArray();
-		byte[] SignByte=EKm.getSIGN().toByteArray();
-		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
-		System.arraycopy(MSGByte, 0, NewByte, 4, MSGByte.length);
-		System.arraycopy(HMSGByte, 0, NewByte, 132, HMSGByte.length);
-		System.arraycopy(SignByte, 0, NewByte, 148, MSGByte.length);
-		//DES加密
-		byte[] ChangedNewByte = DESCHULI(NewByte);
-		return ChangedNewByte;
-	}
-	
-	public byte[] Pack_0x14_Cont(){
-		byte[] NewByte=new byte[2];
-		NewByte[0]=(byte)0x00;						//0为控制包
-		NewByte[1]=(byte)0x14;						//控制头(位)
-		return NewByte;
-	}
-	
-	public byte[] Pack_0x15_Cont(){
-		byte[] NewByte=new byte[2];
-		NewByte[0]=(byte)0x00;						//0为控制包
-		NewByte[1]=(byte)0x15;						//控制头(位)
-		return NewByte;
-	}
-	
 	public byte[] Pack_0x07_Cont(){
 		byte[] NewByte=new byte[2];
 		NewByte[0]=(byte)0x01;						//0为控制包
@@ -219,11 +152,19 @@ public class Pack {
 			e.printStackTrace();
 		}
 		byte[] LT1Byte = IntToByteArray2(AC.getTicket().getLT());
-		System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
+		if(KeyByte.length==8){
+			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
+		}else{	
+			System.arraycopy(KeyByte, 1, NewByte, 0, KeyByte.length-1);
+		}
 		System.arraycopy(IDtgsByte, 0, NewByte, 8, IDtgsByte.length);
 		System.arraycopy(TS2Byte, 0, NewByte, 12, TS2Byte.length);
 		System.arraycopy(LTByte, 0, NewByte, 30, LTByte.length);
-		System.arraycopy(KeyctgsByte, 0, TicketByte, 0, KeyctgsByte.length);
+		if(KeyctgsByte.length==8){
+			System.arraycopy(KeyctgsByte, 0, TicketByte, 0, KeyctgsByte.length);
+		}else{	
+			System.arraycopy(KeyctgsByte, 1, TicketByte, 0, KeyctgsByte.length-1);
+		}
 		System.arraycopy(IDcByte, 0, TicketByte, 8, IDcByte.length);
 		System.arraycopy(ADcByte, 0, TicketByte, 12, ADcByte.length);
 		System.arraycopy(IDtgs1Byte, 0, TicketByte, 16, IDtgs1Byte.length);
@@ -258,11 +199,11 @@ public class Pack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//Ekc,tgs加密
-		byte[] ChangedAuthenByte = DESCHULI(AuthenticatorByte);
 		System.arraycopy(IDcByte, 0, AuthenticatorByte, 0, IDcByte.length);
 		System.arraycopy(ADcByte, 0, AuthenticatorByte, 4, ADcByte.length);
 		System.arraycopy(TSByte, 0, AuthenticatorByte, 8, TSByte.length);
+		//Ekc,tgs加密
+		byte[] ChangedAuthenByte = DESCHULI(AuthenticatorByte);
 		System.arraycopy(IDvByte, 0, NewByte, 0, IDvByte.length);
 		System.arraycopy(TicketByte, 0, NewByte, 4, TicketByte.length);
 		System.arraycopy(ChangedAuthenByte, 0, NewByte, 46, ChangedAuthenByte.length);
@@ -300,7 +241,11 @@ public class Pack {
 			e.printStackTrace();
 		}
 		byte[] LTByte = IntToByteArray2(TC.getTicket().getLT());
-		System.arraycopy(KeyByte1, 0, TicketByte, 0, KeyByte1.length);
+		if(KeyByte1.length==8){
+			System.arraycopy(KeyByte1, 0, TicketByte, 0, KeyByte1.length);
+		}else{	
+			System.arraycopy(KeyByte1, 1, TicketByte, 0, KeyByte1.length-1);
+		}
 		System.arraycopy(IDcByte, 0, TicketByte, 8, IDcByte.length);
 		System.arraycopy(ADcByte, 0, TicketByte, 12, ADcByte.length);
 		System.arraycopy(IDvByte1, 0, TicketByte, 16, IDvByte1.length);
@@ -308,7 +253,11 @@ public class Pack {
 		System.arraycopy(LTByte, 0, TicketByte, 38, LTByte.length);
 		//Ekv加密
 		byte[] ChangedTicketByte = DESCHULI(TicketByte);
-		System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
+		if(KeyByte1.length==8){
+			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
+		}else{	
+			System.arraycopy(KeyByte, 1, NewByte, 0, KeyByte.length-1);
+		}
 		System.arraycopy(IDvByte, 0, NewByte, 8, IDvByte.length);
 		System.arraycopy(TSByte, 0, NewByte, 12, TSByte.length);
 		System.arraycopy(ChangedTicketByte, 0, NewByte, 30, TicketByte.length);
@@ -390,6 +339,73 @@ public class Pack {
 		return NewByte;
 	}
 	
+	public byte[] Pack_0x10_Cont(){
+		byte[] NewByte=new byte[2];
+		NewByte[0]=(byte)0x01;						//0为控制包
+		NewByte[1]=(byte)0x10;						//控制头(位)
+		return NewByte;
+	}
+	
+	public byte[] Pack_0x10_Data(Data_Online DO){
+		byte[] NewByte=new byte[4];
+		int IDc=DO.getIDc();
+		byte[] IDcByte=IntToByteArray2(IDc);
+		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
+		return NewByte;
+	}
+	
+	public byte[] Pack_0x11_Cont(){
+		byte[] NewByte=new byte[2];
+		NewByte[0]=(byte)0x00;						//0为控制包
+		NewByte[1]=(byte)0x11;						//控制头(位)
+		return NewByte;
+	}
+	
+	public byte[] Pack_0x12_Cont(){
+		byte[] NewByte=new byte[2];
+		NewByte[0]=(byte)0x00;						//0为控制包
+		NewByte[1]=(byte)0x12;						//控制头(位)
+		return NewByte;
+	}
+	
+	public byte[] Pack_0x13_Cont(){
+		byte[] NewByte=new byte[2];
+		NewByte[0]=(byte)0x01;						//0为控制包
+		NewByte[1]=(byte)0x13;						//控制头(位)
+		return NewByte;
+	}
+	
+	public byte[] Pack_0x13_Data(Data_Chat DC){
+		byte[] NewByte=new byte[276];
+		int IDc=DC.getIDc();
+		byte[] IDcByte=IntToByteArray2(IDc);
+		EK_message EKm = DC.getEKMSG();
+		byte[] MSGByte=EKm.getMSG().toByteArray();
+		byte[] HMSGByte=EKm.getH_MSG().toByteArray();
+		byte[] SignByte=EKm.getSIGN().toByteArray();
+		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
+		System.arraycopy(MSGByte, 0, NewByte, 4, MSGByte.length);
+		System.arraycopy(HMSGByte, 0, NewByte, 132, HMSGByte.length);
+		System.arraycopy(SignByte, 0, NewByte, 148, MSGByte.length);
+		//DES加密
+		byte[] ChangedNewByte = DESCHULI(NewByte);
+		return ChangedNewByte;
+	}
+	
+	public byte[] Pack_0x14_Cont(){
+		byte[] NewByte=new byte[2];
+		NewByte[0]=(byte)0x00;						//0为控制包
+		NewByte[1]=(byte)0x14;						//控制头(位)
+		return NewByte;
+	}
+	
+	public byte[] Pack_0x15_Cont(){
+		byte[] NewByte=new byte[2];
+		NewByte[0]=(byte)0x00;						//0为控制包
+		NewByte[1]=(byte)0x15;						//控制头(位)
+		return NewByte;
+	}
+	
 	public byte[] Pack_0x16_Cont(){
 		byte[] NewByte = new byte[2];
 		NewByte[0] = (byte)0x01;						//0为控制包
@@ -428,7 +444,11 @@ public class Pack {
 	public byte[] Pack_0x19_Data(Data_Update DU){
 		byte[] NewByte = new byte[8];
 		byte[] KeyByte = DU.getKey().toByteArray();
-		System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
+		if(KeyByte.length==8){
+			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
+		}else{	
+			System.arraycopy(KeyByte, 1, NewByte, 0, KeyByte.length-1);
+		}
 		//DES加密
 		byte[] ChangedNewByte = DESCHULI(NewByte);
 		return ChangedNewByte;
@@ -466,12 +486,24 @@ public class Pack {
 	}
 	
 	public int ByteArrayToInt2(byte[] bArr) {    
-	         if(bArr.length!=4){    
-	             return -1;    
-	         }    
-	         return (int) ((((bArr[0] & 0xff) << 24)      
-	                    | ((bArr[1] & 0xff) << 16)      
-	                    | ((bArr[2] & 0xff) << 8)  
-	                    | ((bArr[3] & 0xff) << 0)));     
+		if(bArr.length!=4){    
+			return -1;    
+		}    
+		return (int) ((((bArr[0] & 0xff) << 24)      
+				| ((bArr[1] & 0xff) << 16)      
+				| ((bArr[2] & 0xff) << 8)  
+				| ((bArr[3] & 0xff) << 0)));     
+	}
+	
+	public String IPByteToString(byte[] bArr){
+		int[] bArrInt = new int[bArr.length];
+		for(int i = 0;i<bArrInt.length;i++){
+			if((int)bArr[i]<0){
+				bArrInt[i] = 256+(int)bArr[i];
+			}else{
+				bArrInt[i] = (int)bArr[i];
+			}
+		}
+		return bArrInt[0]+"."+bArrInt[1]+"."+bArrInt[2]+"."+bArrInt[3];
 	}
 }
