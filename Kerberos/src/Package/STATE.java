@@ -22,17 +22,18 @@ public class STATE extends Thread{
 	private int[] Keyctgs;
 	private int[] Keycv;
 	private Ticket tickettgs,ticketv;
+	private Socket C_Ssocket;
 	
-	public void setIDC(int idc) {
+ 	public void setIDC(int idc) {
 		this.IDC = idc;
 	}
 	
 	public void setADC(int adc) {
 		this.ADC = adc;
 	}
+	
 	public int getIDC() {
-		return ADC;
-		
+		return IDC;
 	}
 	
 	public int getADC() {
@@ -72,6 +73,7 @@ public class STATE extends Thread{
 	}
 	
 	public void Unpack_Head(byte[] NewByte,BufferedInputStream bufferedInputStream,Socket socket,String ip) throws SocketTimeoutException, IOException{
+		this.C_Ssocket = socket;
 		Unpack unpack = new Unpack();
 		if(NewByte[0]==(byte)0x00){
 			switch(NewByte[1]){
@@ -588,6 +590,11 @@ public class STATE extends Thread{
 	}
 	
 	public void send(byte[] msg) {
-		
+		try {
+			C_Ssocket.getOutputStream().write(msg);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
