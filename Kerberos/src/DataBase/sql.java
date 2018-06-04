@@ -9,7 +9,7 @@ import java.sql.Statement;
 public class sql {
 	private String url="jdbc:mysql://127.0.0.1:3306/LiaoTianShi";
 	
-	void AddNewAuthenticator(Authenticator Au)throws Exception{
+	public void AddNewAuthenticator(Authenticator Au)throws Exception{
 		int ID = Au.getID();
 		int AD = Au.getAD();
 		String TS = Au.getTS();
@@ -30,7 +30,7 @@ public class sql {
 		return;
 	}
 	
-	void AddNewTicket(Ticket ticket)throws Exception{
+	public void AddNewTicket(Ticket ticket)throws Exception{
 		int IDc = ticket.getID1();
 		int ADc = ticket.getAD();
 		int IDv = ticket.getID2();
@@ -53,7 +53,7 @@ public class sql {
 		return;
 	}
 	
-	Authenticator SelectAuthenticator(int ID) throws Exception{
+	public Authenticator SelectAuthenticator(int ID) throws Exception{
 		Authenticator Au = new Authenticator();
 		Connection connection=null;
 	 	Statement statement =null;
@@ -82,7 +82,7 @@ public class sql {
 		return Au;
 	}
 	
-	Ticket SelectTicket(int IDc) throws Exception{
+	public Ticket SelectTicket(int IDc) throws Exception{
 		Ticket ticket = new Ticket();
 		Connection connection=null;
 	 	Statement statement =null;
@@ -115,7 +115,7 @@ public class sql {
 		return ticket;
 	}
 	
-	void DeleteAuthenticator(int ID) throws Exception{
+	public void DeleteAuthenticator(int ID) throws Exception{
 		Connection connection=null;
 		Statement statement =null;	    
 		String user="root";
@@ -132,7 +132,7 @@ public class sql {
 		return;
 	}
 	
-	void DeleteTicket(int IDc) throws Exception{
+	public void DeleteTicket(int IDc) throws Exception{
 		Connection connection=null;
 		Statement statement =null;	    
 		String user="root";
@@ -149,7 +149,7 @@ public class sql {
 		return;
 	}
 	
-	void AddNewUsers(int IDc,String Hash_PASS)throws Exception{
+	public void AddNewUsers(int IDc,String Hash_PASS)throws Exception{
 		Connection connection=null;
 		Statement statement =null;	    
 		String user="root";
@@ -167,7 +167,7 @@ public class sql {
 		return;
 	}
 	
-	void Online (int IDc,String ip) throws Exception{
+	public void Online (int IDc,String ip) throws Exception{
 		Connection connection=null;
 		Statement statement =null;	    
 		String user="root";
@@ -185,7 +185,7 @@ public class sql {
 		return;
 	}
 	
-	String selectAllOnline() throws Exception{
+	public String selectAllOnline() throws Exception{
 		Connection connection=null;
 		Statement statement =null;
 		ResultSet rs=null;
@@ -210,7 +210,7 @@ public class sql {
 		return html;
 	}
 	
-	void Offline (int IDc) throws Exception{
+	public void Offline (int IDc) throws Exception{
 		Connection connection=null;
 		Statement statement =null;	    
 		String user="root";
@@ -227,7 +227,7 @@ public class sql {
 		return;
 	}
 	
-	String HasAIDc (int idc) throws Exception	//如果有该账号则返回真
+	public String HasAIDc (int idc) throws Exception	//如果有该账号则返回真
 	 {
 	 	Connection connection=null;
 	 	Statement statement =null;
@@ -252,7 +252,7 @@ public class sql {
 	 	return need;
 	 }
 	
-	void UpdatePassword(int idc,String newPassword) throws Exception{
+	public void UpdatePassword(int idc,String newPassword) throws Exception{
 		Connection connection=null;
 		Statement statement =null;
 		String user="root";

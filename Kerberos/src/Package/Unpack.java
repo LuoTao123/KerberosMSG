@@ -7,165 +7,10 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
+import DES.Keys;
+import DES.Text;
+
 public class Unpack {
-	public void Unpack_Head(byte[] NewByte,BufferedInputStream bufferedInputStream,Socket socket) throws SocketTimeoutException, IOException{
-		if(NewByte[0]==(byte)0x00){
-			switch(NewByte[1]){
-				case (byte)0x02:	zhuangtaiji2();break;
-				case (byte)0x03:	zhuangtaiji3();break;
-				case (byte)0x04:	zhuangtaiji4();break;
-				case (byte)0x05:	zhuangtaiji5();break;
-				case (byte)0x06:	zhuangtaiji6();break;
-				case (byte)0x11:	zhuangtaiji11();break;
-				case (byte)0x12:	zhuangtaiji12();break;
-				case (byte)0x14:	zhuangtaiji14();break;
-				case (byte)0x15:	zhuangtaiji15();break;
-				case (byte)0x0d:	zhuangtaiji0d();break;
-				case (byte)0x0e:	zhuangtaiji0e();break;
-				case (byte)0x0f:	zhuangtaiji0f();break;
-				case (byte)0x17:	zhuangtaiji17();break;
-				case (byte)0x18:	zhuangtaiji18();break;
-				case (byte)0x1a:	zhuangtaiji1a();break;
-				case (byte)0x1b:	zhuangtaiji1b();break;
-				default : System.out.println("非法数据包");
-			}
-		}else if(NewByte[0]==(byte)0x01){
-			Pack pack = new Pack();
-			socket.getOutputStream().write(pack.Server_Return());
-			switch(NewByte[1]){
-				case (byte)0x00:	zhuangtaiji0(Unpack_0x00(readFixedLengthArray(bufferedInputStream,132)));break;
-				case (byte)0x01:	zhuangtaiji1(Unpack_0x01(readFixedLengthArray(bufferedInputStream,260)));break;
-				case (byte)0x10:	zhuangtaiji10(Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)));break;
-				case (byte)0x13:	zhuangtaiji13(Unpack_0x13(readFixedLengthArray(bufferedInputStream,276)));break;
-				case (byte)0x07:	zhuangtaiji7(Unpack_0x07(readFixedLengthArray(bufferedInputStream,26)));break;
-				case (byte)0x08:	zhuangtaiji8(Unpack_0x08(readFixedLengthArray(bufferedInputStream,76)));break;
-				case (byte)0x09:	zhuangtaiji9(Unpack_0x09(readFixedLengthArray(bufferedInputStream,72)));break;
-				case (byte)0x0a:	zhuangtaiji0a(Unpack_0x0a(readFixedLengthArray(bufferedInputStream,72)));break;
-				case (byte)0x0b:	zhuangtaiji0b(Unpack_0x0b(readFixedLengthArray(bufferedInputStream,68)));break;
-				case (byte)0x0c:	zhuangtaiji0c(Unpack_0x0c(readFixedLengthArray(bufferedInputStream,132)));break;
-				case (byte)0x16:	zhuangtaiji0(Unpack_0x00(readFixedLengthArray(bufferedInputStream,132)));break;
-				case (byte)0x19:	zhuangtaiji0(Unpack_0x00(readFixedLengthArray(bufferedInputStream,132)));break;
-				default : System.out.println("非法数据包");
-			}
-		}else{
-			System.out.println(NewByte[0]);
-			System.out.println("该包非法！");
-			///////////////////////////////////////////////////////////////log
-		}
-	}
-	
-	public void zhuangtaiji0(Data_Regist DR){
-		System.out.println(DR.getIDc());
-		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
-	}
-	
-	public void zhuangtaiji1(Data_Modify DM){
-		System.out.println(DM.getIDc());
-		System.out.println(DM.getRSA_HASH_PASSWORD().toString());
-		System.out.println(DM.getRSA_HASH_NPASSWORD().toString());
-	}
-	
-	public void zhuangtaiji2(){
-		System.out.println("注册成功");
-	}
-	
-	public void zhuangtaiji3(){
-		System.out.println("注册失败，账号存在！");
-	}
-	
-	public void zhuangtaiji4(){
-		System.out.println("修改成功");
-	}
-	
-	public void zhuangtaiji5(){
-		System.out.println("修改失败,账号不存在");
-	}
-	
-	public void zhuangtaiji6(){
-		System.out.println("修改失败,原密码错误");
-	}
-	
-	public void zhuangtaiji7(C_AS CA){
-		System.out.println("客户端"+CA.getIDc());
-		System.out.println("请求访问"+CA.getIDtgs());
-		System.out.println("时间戳为"+CA.getTS());
-	}
-	
-	public void zhuangtaiji8(AS_C AC){
-		System.out.println("AS->C成功！");
-	}
-	
-	public void zhuangtaiji9(C_TGS CT){
-		System.out.println("发给TGS！");
-	}
-	
-	public void zhuangtaiji0a(TGS_C TC){
-		System.out.println("TGS->C");
-	}
-	
-	public void zhuangtaiji0b(C_V CV){
-		System.out.println("C->V");
-	}
-	
-	public void zhuangtaiji0c(V_C VC){
-		System.out.println("C->V");
-	}
-	
-	public void zhuangtaiji0d(){
-		System.out.println("AS->C失败");
-	}
-	
-	public void zhuangtaiji0e(){
-		System.out.println("TGS->C失败");
-	}
-	
-	public void zhuangtaiji0f(){
-		System.out.println("V->C失败");
-	}
-	
-	public void zhuangtaiji17(){
-		System.out.println("下载成功");
-	}
-	
-	public void zhuangtaiji18(){
-		System.out.println("下载失败");
-	}
-	
-	public void zhuangtaiji1a(){
-		System.out.println("更新密钥成功");
-	}
-	
-	public void zhuangtaiji1b(){
-		System.out.println("更新密钥失败");
-	}
-	
-	public void zhuangtaiji10(Data_Online DOn){
-		System.out.println(DOn.getIDc()+"上线啦！");
-	}
-	
-	public void zhuangtaiji11(){
-		System.out.println("上线成功！");
-	}
-	
-	public void zhuangtaiji12(){
-		System.out.println("上线失败！");
-	}
-	
-	public void zhuangtaiji13(Data_Chat DC){
-		EK_message EKm = DC.getEKMSG();
-		System.out.println(DC.getIDc());
-		System.out.println(EKm.getMSG().toString());
-		System.out.println(EKm.getH_MSG().toString());
-		System.out.println(EKm.getSIGN().toString());
-	}
-	
-	public void zhuangtaiji14(){
-		System.out.println("发送聊天信息成功！");
-	}
-	
-	public void zhuangtaiji15(){
-		System.out.println("发送聊天内容失败！");
-	}
 	
 	public Data_Regist Unpack_0x00(byte[] NewByte){
 		Data_Regist DR = new Data_Regist();
@@ -224,9 +69,12 @@ public class Unpack {
 	}
 	
 	public AS_C Unpack_0x08(byte[] ChangedNewByte){
+		Text text = new Text();
 		AS_C AC = new AS_C();
+		Keys kkey = new Keys();
+		int[] Keyc = kkey.ReadKeysFromFile("Keyc.txt");
 		//Ekc解密
-		byte[] NewByte = DESCHULI(ChangedNewByte);
+		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyc);
 		byte[] KeyByte = new byte[9];
 		byte[] IDtgsByte = new byte[4];
 		byte[] TS2Byte = new byte[18];
@@ -257,6 +105,9 @@ public class Unpack {
 	}
 	
 	public C_TGS Unpack_0x09(byte[] NewByte){
+		Text text = new Text();
+		Keys kkey = new Keys();
+		int[] Keytgs = kkey.ReadKeysFromFile("Keytgs.txt");
 		C_TGS CT = new C_TGS();
 		Ticket ticket = new Ticket();
 		Authenticator Au = new Authenticator();
@@ -268,9 +119,11 @@ public class Unpack {
 		System.arraycopy(NewByte, 46, ChangedAuthenByte, 0, ChangedAuthenByte.length);
 		int IDv = ByteArrayToInt2(IDvByte);
 		//Ektgs解密
-		byte[] TicketByte = DESCHULI(ChangedTicketByte);
+		byte[] TicketByte = text.DESSupreier(1, ChangedTicketByte ,Keytgs);
+		BigInteger Keyctgs=ticket.getKey();
+		int[] Keyc_tgs = kkey.StringToInts(kkey.BigIntegerToString(Keyctgs));
 		//Ekc,tgs解密
-		byte[] AuthenByte = DESCHULI(ChangedAuthenByte);
+		byte[] AuthenByte = text.DESSupreier(1, ChangedAuthenByte, Keyc_tgs);
 		byte[] Key1Byte = new byte[9];
 		byte[] IDcByte = new byte[4];
 		byte[] ADByte = new byte[4];
@@ -325,11 +178,13 @@ public class Unpack {
 		CT.setAuthenticator(Au);
 		return CT;
 	}
-	
-	public TGS_C Unpack_0x0a(byte[] ChangedNewByte){
+///////////////////////////////	
+	public TGS_C Unpack_0x0a(byte[] ChangedNewByte,int[] Keyctgs){
+		Text text = new Text();
 		TGS_C TC = new TGS_C();
 		//Ekc,tgs解密
-		byte[] NewByte = DESCHULI(ChangedNewByte);
+		
+		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyctgs);
 		byte[] KeyByte = new byte[9];
 		byte[] IDvByte = new byte[4];
 		byte[] TS4Byte = new byte[18];
@@ -355,7 +210,8 @@ public class Unpack {
 		return TC;
 	}
 	
-	public C_V Unpack_0x0b(byte[] NewByte){
+	public C_V Unpack_0x0b(byte[] NewByte,int[] Keycv){
+		Text text = new Text();
 		C_V CV = new C_V();
 		Ticket ticket = new Ticket();
 		Authenticator Authen = new Authenticator();
@@ -364,7 +220,9 @@ public class Unpack {
 		System.arraycopy(NewByte, 0, ChangedTicketByte, 0, ChangedTicketByte.length);
 		System.arraycopy(NewByte, 42, ChangedAuthenByte, 0, ChangedAuthenByte.length);
 		//Ekv解密
-		byte[] TicketByte = DESCHULI(ChangedTicketByte);
+		Keys kkey = new Keys();
+		int[] Keyv = kkey.ReadKeysFromFile("Keyv.txt"); 
+		byte[] TicketByte = text.DESSupreier(1, ChangedTicketByte, Keyv);
 		byte[] KeyByte = new byte[9];
 		byte[] IDcByte = new byte[4];
 		byte[] ADcByte = new byte[4];
@@ -397,7 +255,7 @@ public class Unpack {
 		ticket.setLT(LT4);
 		ticket.setTS(TS4);
 		//Ekc,v解密
-		byte[] AuthenByte = DESCHULI(ChangedAuthenByte);
+		byte[] AuthenByte = text.DESSupreier(1, ChangedAuthenByte, Keycv);
 		byte[] IDcByte1 = new byte[4];
 		byte[] ADcByte1 = new byte[4];
 		byte[] TS5Byte = new byte[18];
@@ -444,9 +302,12 @@ public class Unpack {
 		return DOn;
 	}
 	
-	public Data_Chat Unpack_0x13(byte[] ChangedNewByte){
+	public Data_Chat Unpack_0x1c(byte[] ChangedNewByte){
+		Text text  = new Text();
+		Keys kkey = new Keys();
+		int[] Keyc = kkey.ReadKeysFromFile("Keyc.txt");
 		//DES解密
-		byte[] NewByte = DESCHULI(ChangedNewByte);
+		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyc);
 		Data_Chat DC = new Data_Chat();
 		EK_message EKm = new EK_message();
 		byte[] IDcByte = new byte[4];
@@ -488,22 +349,6 @@ public class Unpack {
 		BigInteger Key = new BigInteger(KeyByte);
 		DU.setKey(Key);
 		return DU;
-	}
-	
-	public byte[] readFixedLengthArray(BufferedInputStream serverSocketBis,int length)
-	        throws SocketTimeoutException, IOException{  //读对应长度的byte数组
-	    byte [] result = new byte[length];  
-	    int readLen = 0;  
-	    int getLen = 0;  
-	    while(getLen<length){  
-	        readLen = serverSocketBis.read(result, getLen, length-getLen);  
-	        serverSocketBis.read(result);  
-	        if(readLen ==-1){  
-	            return null;  
-	        }  
-	        getLen = getLen + readLen;  
-	    }  
-	       return result;  
 	}
 	
 	public byte[] DESCHULI(byte[] Origin){
