@@ -8,16 +8,15 @@ import java.net.SocketTimeoutException;
 import DataBase.sql;
 import DES.*;
 import Kerberos.TimeStamp;
+import RSA.Decryption;
 import Server.Server;
 import Server.SendThread;
 
 public class STATE extends Thread{
-	private static final int[] KeycInts = null;
 	public static int IDas = 1000000000;
 	public static int IDtgs = 1000000001;
 	public static int IDv = 1000000002;
 	public static int IDis = 1000000003;
-	private BigInteger KeyV;
 	private int IDC;
 	private int ADC;
 	private int[] Keyctgs;
@@ -98,19 +97,19 @@ public class STATE extends Thread{
 			Pack pack = new Pack();
 			socket.getOutputStream().write(pack.Server_Return());
 			switch(NewByte[1]){
-				case (byte)0x00:	zhuangtaiji0(unpack.Unpack_0x00(readFixedLengthArray(bufferedInputStream,132)));break;
-				case (byte)0x01:	zhuangtaiji1(unpack.Unpack_0x01(readFixedLengthArray(bufferedInputStream,260)));break;
+				case (byte)0x00:	Server_Regist(unpack.Unpack_0x00(readFixedLengthArray(bufferedInputStream,132)));break;
+				case (byte)0x01:	Server_Modify(unpack.Unpack_0x01(readFixedLengthArray(bufferedInputStream,260)));break;
 				case (byte)0x10:	OnlineTransmit(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
-				case (byte)0x13:ChatTransmit(socket,	readFixedLengthArray(bufferedInputStream,276));break;
+				case (byte)0x13:	ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,276));break;
 				case (byte)0x07:	zhuangtaiji7(unpack.Unpack_0x07(readFixedLengthArray(bufferedInputStream,26)),ip);break;
 				case (byte)0x08:	zhuangtaiji8(unpack.Unpack_0x08(readFixedLengthArray(bufferedInputStream,76)),ip);break;
 				case (byte)0x09:	zhuangtaiji9(unpack.Unpack_0x09(readFixedLengthArray(bufferedInputStream,72)),ip);break;
 				case (byte)0x0a:	zhuangtaiji0a(unpack.Unpack_0x0a(readFixedLengthArray(bufferedInputStream,72),Keyctgs),ip);break;
-				case (byte)0x0b:	zhuangtaiji0b(unpack.Unpack_0x0b(readFixedLengthArray(bufferedInputStream,68),Keycv));break;
+				case (byte)0x0b:	zhuangtaiji0b(unpack.Unpack_0x0b(readFixedLengthArray(bufferedInputStream,68),Keycv),ip);break;
 				case (byte)0x0c:	zhuangtaiji0c(unpack.Unpack_0x0c(readFixedLengthArray(bufferedInputStream,18)));break;
 				case (byte)0x16:	OfflineTransmit(unpack.Unpack_0x16(readFixedLengthArray(bufferedInputStream,4)),socket);break;
 				case (byte)0x19:	zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,8)));break;
-				case (byte)0x1c:zhuangtaiji1c(unpack.Unpack_0x1c(readFixedLengthArray(bufferedInputStream,276)));break;
+				case (byte)0x1c:	zhuangtaiji1c(unpack.Unpack_0x1c(readFixedLengthArray(bufferedInputStream,276)));break;
 
 				default : System.out.println("非法数据包");
 			}
@@ -121,13 +120,60 @@ public class STATE extends Thread{
 		}
 	}
 	
-
-	public void zhuangtaiji0(Data_Regist DR){
+	public void Server_Regist(Data_Regist DR){
+		int IDc = DR.getIDc();
+		BigInteger RSA_HASH_PASSWORD = DR.getRSA_HASH_PASSWORD();
+		Decryption DE = new Decryption();
+		BigInteger HASH_PASSWORD = DE.decryption(RSA_HASH_PASSWORD, String.valueOf(IDis));
+		sql a = new sql();
+		Text text = new Text();
+		String String_Hash_PASSWORD = text.BigIntegerToString(HASH_PASSWORD);
+		try {
+			Pack pack = new Pack();
+			//账号不存在则加入新账号，并返回0x02,否则0x03.
+			if(a.HasAIDc(IDc)!=null){
+				a.AddNewUsers(IDc, String_Hash_PASSWORD);
+				send(pack.Pack_0x02_Cont());
+			}else{
+				send(pack.Pack_0x03_Cont());
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println(DR.getIDc());
 		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
 	}
 	
-	public void zhuangtaiji1(Data_Modify DM){
+	public void Server_Modify(Data_Modify DM){
+		int IDc = DM.getIDc();
+		BigInteger RSA_HASH_PASSWORD = DM.getRSA_HASH_PASSWORD();
+		BigInteger RSA_HASH_NPASSWORD = DM.getRSA_HASH_NPASSWORD();
+		Decryption DE = new Decryption();
+		BigInteger HASH_PASSWORD = DE.decryption(RSA_HASH_PASSWORD, String.valueOf(IDis));
+		BigInteger HASH_NPASSWORD = DE.decryption(RSA_HASH_NPASSWORD, String.valueOf(IDis));
+		sql a = new sql();
+		Text text = new Text();
+		String String_Hash_PASSWORD = text.BigIntegerToString(HASH_PASSWORD);
+		String String_Hash_NPASSWORD = text.BigIntegerToString(HASH_NPASSWORD);
+		try {
+			Pack pack = new Pack();
+			//账号不存在则加入新账号，并返回0x02,否则0x03.
+			String[] strs = a.HasAIDc(IDc).split(" ");
+			if(strs!=null){
+				if(strs[1]==String_Hash_PASSWORD){
+					a.UpdatePassword(IDc, String_Hash_NPASSWORD);
+					send(pack.Pack_0x04_Cont());
+				}else{
+					send(pack.Pack_0x06_Cont());
+				}
+			}else{
+				send(pack.Pack_0x05_Cont());
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.out.println(DM.getIDc());
 		System.out.println(DM.getRSA_HASH_PASSWORD().toString());
 		System.out.println(DM.getRSA_HASH_NPASSWORD().toString());
@@ -157,7 +203,7 @@ public class STATE extends Thread{
 		int IDc = CA.getIDc();
 		setIDC(IDc);
 		int IDt = CA.getIDtgs();
-		String TS = CA.getTS();
+//		String TS = CA.getTS();
 		String str = null;
 		Pack pack = new Pack();
 		if(IDt == IDtgs) {
@@ -435,8 +481,27 @@ public class STATE extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		//上线先给上线用户发最新的KeySession
+		Data_Update DU = new Data_Update();
+		DU.setKey(Server.Keysession);
+		Text text = new Text();
+		Keys kkey = new Keys();
+		sql a = new sql();
+		String[] strs = null;
+		try {
+			strs = a.HasAIDc(IS.IDc).split(" ");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BigInteger Keyc = text.StringToBigInteger(strs[1]);
+		int[] Keycc = kkey.StringToInts(kkey.BigIntegerToString(Keyc));
+		@SuppressWarnings("unused")
+		SendThread ST1 = new SendThread(socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));
+		//再将上线用户加入到列表中去
 		Server.SocketList.addElement(IS);
 		IPtoSocket NewIS = null;
+		//开始给所有的用户通知上线
 		for(int i=0;i<Server.SocketList.size();i++){
 			NewIS = Server.SocketList.elementAt(i);
 			@SuppressWarnings("unused")
@@ -474,7 +539,6 @@ public class STATE extends Thread{
 		//System.out.println(EKm.getSIGN().toString());
 	}
 
-	
 	public void zhuangtaiji14(){
 		System.out.println("发送聊天信息成功！");
 	}
@@ -521,12 +585,6 @@ public class STATE extends Thread{
 	        getLen = getLen + readLen;  
 	    }  
 	       return result;  
-	}
-	
-	
-	public byte[] getIP() {
-		
-		return null;
 	}
 	
 	public void send(byte[] msg) {

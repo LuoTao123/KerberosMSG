@@ -40,6 +40,7 @@ public class UpdateKeys extends Thread{
 			IPtoSocket NewIS = null;
 			DES des = new DES();
 			BigInteger Key = des.CreateDESKey();
+			Server.Keysession = Key;
 			Data_Update DU = new Data_Update();
 			DU.setKey(Key);
 			Text text = new Text();

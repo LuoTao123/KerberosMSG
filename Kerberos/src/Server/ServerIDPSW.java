@@ -8,20 +8,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 
-public class Server extends Thread{
+public class ServerIDPSW extends Thread{
 	public static BigInteger Keysession;
 	ServerSocket serverSocket;
 	public static Vector<IPtoSocket> SocketList = new Vector<IPtoSocket>();
 	
-	public Server(){
+	public ServerIDPSW(){
 		try{
 			serverSocket = new ServerSocket(55534);
 		}catch(IOException e){
 			System.out.println(e+"无法启动服务器");
 		}
-		System.out.println("服务器启动");
-		@SuppressWarnings("unused")
-		UpdateKeys UK = new UpdateKeys();
+		System.out.println("账号密码服务器启动");
 		this.start();
 	}
 	
@@ -41,6 +39,6 @@ public class Server extends Thread{
 	}
 	
 	public static void main(String arg[]){
-		new Server();
+		new ServerIDPSW();
 	}
 }

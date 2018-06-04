@@ -13,6 +13,7 @@ public class SendThread extends Thread{
 		this.socket = socket;
 		this.Head = Head;
 		this.Data = Data;
+		this.start();
 	}
 	
 	public void run(){

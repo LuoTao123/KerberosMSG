@@ -27,8 +27,8 @@ public class SocketServer {
 					BufferedInputStream bufferedInputStream=new BufferedInputStream(inputStream);
 					byte[] bytes =new byte[2];
 					bufferedInputStream.read(bytes, 0, 2);
-					Unpack unpack = new Unpack();
-					unpack.Unpack_Head(bytes,bufferedInputStream,socket);
+//					Unpack unpack = new Unpack();
+//					unpack.Unpack_Head(bytes,bufferedInputStream,socket);
 					bufferedInputStream.close();
 					inputStream.close();
 					socket.close();

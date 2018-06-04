@@ -1,6 +1,7 @@
-package Server;
+package AS;
 
 import Package.IPtoSocket;
+import Server.Connection;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -19,9 +20,7 @@ public class Server extends Thread{
 		}catch(IOException e){
 			System.out.println(e+"无法启动服务器");
 		}
-		System.out.println("服务器启动");
-		@SuppressWarnings("unused")
-		UpdateKeys UK = new UpdateKeys();
+		System.out.println("账号密码服务器启动");
 		this.start();
 	}
 	
