@@ -171,12 +171,12 @@ public class STATE extends Thread{
 			socket.getOutputStream().write(pack.Server_Return());
 			byte[] bytess  = null;
 			switch(NewByte[1]){
-				case (byte)0x00:	bytess = new byte[133];
-									bufferedInputStream.read(bytess, 0, 133);
+				case (byte)0x00:	bytess = new byte[314];
+									bufferedInputStream.read(bytess, 0, 314);
 									Server_Regist(unpack.Unpack_0x00(bytess));
 									break;
-				case (byte)0x01:	bytess = new byte[262];
-									bufferedInputStream.read(bytess, 0, 262);
+				case (byte)0x01:	bytess = new byte[624];
+									bufferedInputStream.read(bytess, 0, 624);
 									Server_Modify(unpack.Unpack_0x01(bytess));
 									break;
 				case (byte)0x10:	bytess = new byte[4];
@@ -257,7 +257,7 @@ public class STATE extends Thread{
 	public void Server_Regist(Data_Regist DR){
 		int IDc = DR.getIDc();
 		BigInteger RSA_HASH_PASSWORD = DR.getRSA_HASH_PASSWORD();
-		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
+//		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
 		Decryption DE = new Decryption();
 		BigInteger HASH_PASSWORD = DE.decryption(RSA_HASH_PASSWORD, String.valueOf(IDis));
 		sql a = new sql();
@@ -276,9 +276,9 @@ public class STATE extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(DR.getIDc());
+/*		System.out.println(DR.getIDc());
 		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
-		System.out.println(HASH_PASSWORD);
+		System.out.println(HASH_PASSWORD);*/
 	}
 	
 	public void Server_Modify(Data_Modify DM){

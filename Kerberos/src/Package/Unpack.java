@@ -17,10 +17,27 @@ public class Unpack {
 		Data_Regist DR = new Data_Regist();
 		byte[] IDcByte = new byte[4];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);
-		byte[] PSWByte = new byte[129];
+		byte[] PSWByte = new byte[310];
 		System.arraycopy(NewByte, 4, PSWByte, 0, PSWByte.length);
+		int jishu = 0;
+		for(int i = 0;;i++){
+			if(PSWByte[i] !=(byte) 0x00){
+				break;
+			}else{
+				jishu++;
+			}
+		}
+		byte[] ChangedByte = new byte[310-jishu];
+		System.arraycopy(PSWByte, jishu, ChangedByte, 0, ChangedByte.length);
+		String PSWString = null;
+		try {
+			PSWString = new String(ChangedByte,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		int IDc = ByteArrayToInt2(IDcByte);
-		BigInteger PSW = new BigInteger(PSWByte);
+		BigInteger PSW = new BigInteger(PSWString);
 		DR.setIDc(IDc);
 		DR.setRSA_HASH_PASSWORD(PSW);
 		return DR;
@@ -30,13 +47,47 @@ public class Unpack {
 		Data_Modify DM = new Data_Modify();
 		byte[] IDcByte = new byte[4];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);
-		byte[] PSWByte = new byte[129];
+		byte[] PSWByte = new byte[310];
 		System.arraycopy(NewByte, 4, PSWByte, 0, PSWByte.length);
-		byte[] NPSWByte = new byte[129];
-		System.arraycopy(NewByte, 133, NPSWByte, 0, NPSWByte.length);
+		int jishu = 0;
+		for(int i = 0;;i++){
+			if(PSWByte[i] !=(byte) 0x00){
+				break;
+			}else{
+				jishu++;
+			}
+		}
+		byte[] ChangedByte = new byte[310-jishu];
+		System.arraycopy(PSWByte, jishu, ChangedByte, 0, ChangedByte.length);
+		String PSWString = null;
+		try {
+			PSWString = new String(ChangedByte,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		byte[] NPSWByte = new byte[310];
+		System.arraycopy(NewByte, 314, NPSWByte, 0, NPSWByte.length);
+		int jishu1 = 0;
+		for(int i = 0;;i++){
+			if(NPSWByte[i] !=(byte) 0x00){
+				break;
+			}else{
+				jishu1++;
+			}
+		}
+		byte[] NChangedByte = new byte[310-jishu1];
+		System.arraycopy(NPSWByte, jishu1, NChangedByte, 0, NChangedByte.length);
+		String NPSWString = null;
+		try {
+			NPSWString = new String(NChangedByte,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		int IDc = ByteArrayToInt2(IDcByte);
-		BigInteger PSW = new BigInteger(PSWByte);
-		BigInteger NPSW = new BigInteger(NPSWByte);
+		BigInteger PSW = new BigInteger(PSWString);
+		BigInteger NPSW = new BigInteger(NPSWString);
 		DM.setIDc(IDc);
 		DM.setRSA_HASH_PASSWORD(PSW);
 		DM.setRSA_HASH_NPASSWORD(NPSW);

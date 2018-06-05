@@ -233,7 +233,7 @@ public class Client {
 			
 		public void Regist(String IDc,String Psw) throws IOException {
 			System.out.println("开始向注册服务器发送认证请求...\n");
-			Socket C_Rsocket = new Socket("127.0.0.1",40000);
+			Socket C_Rsocket = new Socket("192.168.1.103",40000);
 			Pack pack = new Pack();
 			C_Rsocket.getOutputStream().write(pack.Pack_0x00_Cont());
 			STATE state = new STATE();
@@ -243,7 +243,6 @@ public class Client {
 			BigInteger hash_Password = hash.getMD5(Psw);
 			//hash_psw存入文件夹
 			Keys key  = new Keys();
-			System.out.println("");
 			String str=key.BigIntegerToString(hash_Password);
 			key.SaveKeyToFile("Keyc.txt", str);
 			//Rsa_hash_psw
@@ -252,9 +251,6 @@ public class Client {
 			Data_Regist DR = new Data_Regist();
 			DR.setIDc(idc);
 			DR.setRSA_HASH_PASSWORD(rsa_hash_psw);
-			System.out.println(DR.getIDc());
-			System.out.println(DR.getRSA_HASH_PASSWORD().toString());
-			System.out.println(hash_Password.toString());
 			//发送请求
 			InputStream inputstream =C_Rsocket.getInputStream();
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
@@ -282,7 +278,7 @@ public class Client {
 		
 		public void Modify(String IDc,String Psw,String Npsw) throws IOException {
 			System.out.println("开始向注册服务器发送认证请求...\n");
-			Socket C_Msocket = new Socket("127.0.0.4",40000);
+			Socket C_Msocket = new Socket("192.168.1.103",40000);
 			STATE state = new STATE();
 			state.C_RSocket = C_Msocket;
 			int idc = Integer.valueOf(IDc);

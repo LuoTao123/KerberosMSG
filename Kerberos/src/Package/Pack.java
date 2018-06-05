@@ -20,19 +20,28 @@ public class Pack {
 	}
 	
 	public byte[] Pack_0x00_Data(Data_Regist DR){
-		byte[] NewByte=new byte[133];				//1(控制包)+1（控制位0x00）+4（int账号）+128（1024/8的密码）
+		byte[] NewByte=new byte[314];				//1(控制包)+1（控制位0x00）+4（int账号）+128（1024/8的密码）
 		int IDc=DR.getIDc();
 		byte[] IDcByte=IntToByteArray2(IDc);
-		byte[] PSWByte=DR.getRSA_HASH_PASSWORD().toByteArray();
-		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
-		if(PSWByte.length==129){	
-			System.arraycopy(PSWByte, 0, NewByte, 4, PSWByte.length);
-		}else if(PSWByte.length<129){
-			for(int i = 0;i<129-PSWByte.length;i++){
-				PSWByte[i+4] = (byte)0x00;
-			}
-			System.arraycopy(PSWByte, 0, NewByte, 133-PSWByte.length, PSWByte.length);
+		String PSWString = DR.getRSA_HASH_PASSWORD().toString();
+		byte[] PSWByte = null;
+		byte[] ChangedByte = new byte[310]; 
+		try {
+			PSWByte = PSWString.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
+		if(PSWByte.length<310){
+			for(int i = 0;i<310-PSWByte.length;i++){
+				ChangedByte[i] =(byte) 0x00;
+			}
+			System.arraycopy(PSWByte, 0, ChangedByte, 310-PSWByte.length, PSWByte.length);
+		}else{
+			System.arraycopy(PSWByte, 0, ChangedByte, 0, PSWByte.length);
+		}
+		System.arraycopy(ChangedByte, 0, NewByte, 4, ChangedByte.length);
 		return NewByte;
 	}
 	
@@ -44,28 +53,46 @@ public class Pack {
 	}
 	
 	public byte[] Pack_0x01_Data(Data_Modify DM){
-		byte[] NewByte=new byte[262];				//1(控制包)+1（控制位0x00）+4（int账号）+128（1024/8的密码）
+		byte[] NewByte=new byte[624];				//1(控制包)+1（控制位0x00）+4（int账号）+128（1024/8的密码）
 		int IDc=DM.getIDc();
 		byte[] IDcByte=IntToByteArray2(IDc);
-		byte[] PSWByte=DM.getRSA_HASH_PASSWORD().toByteArray();
+		String PSWString = DM.getRSA_HASH_PASSWORD().toString();
+		byte[] PSWByte = null;
+		byte[] ChangedByte = new byte[310]; 
+		try {
+			PSWByte = PSWString.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
-		if(PSWByte.length==129){	
-			System.arraycopy(PSWByte, 0, NewByte, 4, PSWByte.length);
-		}else if(PSWByte.length<129){
-			for(int i = 0;i<129-PSWByte.length;i++){
-				NewByte[i+4] = (byte)0x00;
+		if(PSWByte.length<310){
+			for(int i = 0;i<310-PSWByte.length;i++){
+				ChangedByte[i] =(byte) 0x00;
 			}
-			System.arraycopy(PSWByte, 0, NewByte, 133-PSWByte.length, PSWByte.length);
+			System.arraycopy(PSWByte, 0, ChangedByte, 310-PSWByte.length, PSWByte.length);
+		}else{
+			System.arraycopy(PSWByte, 0, ChangedByte, 0, PSWByte.length);
 		}
-		byte[] NPSWByte=DM.getRSA_HASH_NPASSWORD().toByteArray();
-		if(NPSWByte.length==129){	
-			System.arraycopy(NPSWByte, 0, NewByte, 133, NPSWByte.length);
-		}else if(PSWByte.length<129){
-			for(int i = 0;i<129-NPSWByte.length;i++){
-				NewByte[i+133] = (byte)0x00;
+		System.arraycopy(ChangedByte, 0, NewByte, 4, ChangedByte.length);
+		String NPSWString = DM.getRSA_HASH_NPASSWORD().toString();
+		byte[] NPSWByte = null;
+		byte[] NChangedByte = new byte[310]; 
+		try {
+			NPSWByte = NPSWString.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(NPSWByte.length<310){
+			for(int i = 0;i<310-NPSWByte.length;i++){
+				NChangedByte[i] =(byte) 0x00;
 			}
-			System.arraycopy(NPSWByte, 0, NewByte, 262-NPSWByte.length, NPSWByte.length);
+			System.arraycopy(NPSWByte, 0, NChangedByte, 310-NPSWByte.length, NPSWByte.length);
+		}else{
+			System.arraycopy(NPSWByte, 0, NChangedByte, 0, NPSWByte.length);
 		}
+		System.arraycopy(NChangedByte, 0, NewByte, 314, NChangedByte.length);
 		return NewByte;
 	}
 	
