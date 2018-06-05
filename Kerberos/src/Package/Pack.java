@@ -20,15 +20,18 @@ public class Pack {
 	}
 	
 	public byte[] Pack_0x00_Data(Data_Regist DR){
-		byte[] NewByte=new byte[132];				//1(控制包)+1（控制位0x00）+4（int账号）+128（1024/8的密码）
+		byte[] NewByte=new byte[133];				//1(控制包)+1（控制位0x00）+4（int账号）+128（1024/8的密码）
 		int IDc=DR.getIDc();
 		byte[] IDcByte=IntToByteArray2(IDc);
 		byte[] PSWByte=DR.getRSA_HASH_PASSWORD().toByteArray();
 		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
-		if(PSWByte.length==128){
-			System.arraycopy(PSWByte, 0, NewByte, 4, PSWByte.length);
-		}else{	
-			System.arraycopy(PSWByte, 1, NewByte, 4, PSWByte.length-1);
+		if(PSWByte.length==129){	
+			System.arraycopy(PSWByte, 1, NewByte, 4, PSWByte.length);
+		}else if(PSWByte.length<129){
+			for(int i = 0;i<129-PSWByte.length;i++){
+				PSWByte[i+4] = (byte)0x00;
+			}
+			System.arraycopy(PSWByte, 0, NewByte, 133-PSWByte.length, PSWByte.length);
 		}
 		return NewByte;
 	}
@@ -41,21 +44,27 @@ public class Pack {
 	}
 	
 	public byte[] Pack_0x01_Data(Data_Modify DM){
-		byte[] NewByte=new byte[260];				//1(控制包)+1（控制位0x00）+4（int账号）+128（1024/8的密码）
+		byte[] NewByte=new byte[262];				//1(控制包)+1（控制位0x00）+4（int账号）+128（1024/8的密码）
 		int IDc=DM.getIDc();
 		byte[] IDcByte=IntToByteArray2(IDc);
 		byte[] PSWByte=DM.getRSA_HASH_PASSWORD().toByteArray();
 		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
-		if(PSWByte.length==128){
+		if(PSWByte.length==129){	
 			System.arraycopy(PSWByte, 0, NewByte, 4, PSWByte.length);
-		}else{	
-			System.arraycopy(PSWByte, 1, NewByte, 4, PSWByte.length-1);
+		}else if(PSWByte.length<129){
+			for(int i = 0;i<129-PSWByte.length;i++){
+				NewByte[i+4] = (byte)0x00;
+			}
+			System.arraycopy(PSWByte, 0, NewByte, 133-PSWByte.length, PSWByte.length);
 		}
 		byte[] NPSWByte=DM.getRSA_HASH_NPASSWORD().toByteArray();
-		if(NPSWByte.length==128){
-			System.arraycopy(PSWByte, 0, NewByte, 132, PSWByte.length);
-		}else{	
-			System.arraycopy(PSWByte, 1, NewByte, 132, PSWByte.length-1);
+		if(NPSWByte.length==129){	
+			System.arraycopy(NPSWByte, 0, NewByte, 133, NPSWByte.length);
+		}else if(PSWByte.length<129){
+			for(int i = 0;i<129-NPSWByte.length;i++){
+				NewByte[i+133] = (byte)0x00;
+			}
+			System.arraycopy(NPSWByte, 0, NewByte, 262-NPSWByte.length, NPSWByte.length);
 		}
 		return NewByte;
 	}
@@ -103,7 +112,7 @@ public class Pack {
 	}
 	
 	public byte[] Pack_0x07_Data(C_AS CA){
-		byte[] NewByte=new byte[26];
+		byte[] NewByte=new byte[27];
 		int IDc=CA.getIDc();
 		int IDtgs=CA.getIDtgs();
 		String TS1=CA.getTS();
@@ -131,8 +140,8 @@ public class Pack {
 	
 	public byte[] Pack_0x08_Data(AS_C AC,int[] Keyc,int[] Keytgs){
 		Text text = new Text();
-		byte[] NewByte = new byte[76];
-		byte[] TicketByte = new byte[42];
+		byte[] NewByte = new byte[80];
+		byte[] TicketByte = new byte[44];
 		byte[] KeyByte = AC.getKey().toByteArray();
 		byte[] IDtgsByte = IntToByteArray2(AC.getID());
 		byte[] TS2Byte = null;
@@ -155,27 +164,33 @@ public class Pack {
 			e.printStackTrace();
 		}
 		byte[] LT1Byte = IntToByteArray2(AC.getTicket().getLT());
-		if(KeyByte.length==8){
+		if(KeyByte.length==9){	
 			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
-		}else{	
-			System.arraycopy(KeyByte, 1, NewByte, 0, KeyByte.length-1);
+		}else if(KeyByte.length<9){
+			for(int i = 0;i<9-KeyByte.length;i++){
+				KeyByte[i] = (byte)0x00;
+			}
+			System.arraycopy(KeyByte, 0, NewByte, 9-KeyByte.length, KeyByte.length);
 		}
-		System.arraycopy(IDtgsByte, 0, NewByte, 8, IDtgsByte.length);
-		System.arraycopy(TS2Byte, 0, NewByte, 12, TS2Byte.length);
-		System.arraycopy(LTByte, 0, NewByte, 30, LTByte.length);
-		if(KeyctgsByte.length==8){
+		System.arraycopy(IDtgsByte, 0, NewByte, 9, IDtgsByte.length);
+		System.arraycopy(TS2Byte, 0, NewByte, 13, TS2Byte.length);
+		System.arraycopy(LTByte, 0, NewByte, 32, LTByte.length);
+		if(KeyctgsByte.length==9){	
 			System.arraycopy(KeyctgsByte, 0, TicketByte, 0, KeyctgsByte.length);
-		}else{	
-			System.arraycopy(KeyctgsByte, 1, TicketByte, 0, KeyctgsByte.length-1);
+		}else if(KeyctgsByte.length<9){
+			for(int i = 0;i<9-KeyctgsByte.length;i++){
+				KeyctgsByte[i] = (byte)0x00;
+			}
+			System.arraycopy(KeyctgsByte, 0, TicketByte, 9-KeyctgsByte.length, KeyctgsByte.length);
 		}
-		System.arraycopy(IDcByte, 0, TicketByte, 8, IDcByte.length);
-		System.arraycopy(ADcByte, 0, TicketByte, 12, ADcByte.length);
-		System.arraycopy(IDtgs1Byte, 0, TicketByte, 16, IDtgs1Byte.length);
-		System.arraycopy(TS2Byte1, 0, TicketByte, 20, TS2Byte1.length);
-		System.arraycopy(LT1Byte, 0, TicketByte, 38, LT1Byte.length);
+		System.arraycopy(IDcByte, 0, TicketByte, 9, IDcByte.length);
+		System.arraycopy(ADcByte, 0, TicketByte, 13, ADcByte.length);
+		System.arraycopy(IDtgs1Byte, 0, TicketByte, 17, IDtgs1Byte.length);
+		System.arraycopy(TS2Byte1, 0, TicketByte, 21, TS2Byte1.length);
+		System.arraycopy(LT1Byte, 0, TicketByte, 40, LT1Byte.length);
 		//Ektgs加密
 		byte ChangedTicket[] = text.DESSupreier(0, TicketByte, Keytgs);
-		System.arraycopy(ChangedTicket, 0, NewByte, 34, ChangedTicket.length);
+		System.arraycopy(ChangedTicket, 0, NewByte, 36, ChangedTicket.length);
 		//Ekc加密
 		byte[] ChangedNewByte = text.DESSupreier(0, TicketByte, Keyc);
 		return ChangedNewByte;
@@ -190,10 +205,10 @@ public class Pack {
 	
 	public byte[] Pack_0x09_Data(C_TGS CT,int[] Keyctgs){
 		Text text = new Text();
-		byte[] NewByte=new byte[72];
+		byte[] NewByte=new byte[75];
 		byte[] IDvByte = IntToByteArray2(CT.getID());
 		byte[] TicketByte = CT.getChangedTicket();
-		byte[] AuthenticatorByte = new byte[26];
+		byte[] AuthenticatorByte = new byte[27];
 		byte[] IDcByte = IntToByteArray2(CT.getAuthenticator().getID());
 		byte[] ADcByte = IntToByteArray2(CT.getAuthenticator().getAD());
 		byte[] TSByte = null;
@@ -210,7 +225,7 @@ public class Pack {
 		byte[] ChangedAuthenByte =  text.DESSupreier(0, TicketByte, Keyctgs);
 		System.arraycopy(IDvByte, 0, NewByte, 0, IDvByte.length);
 		System.arraycopy(TicketByte, 0, NewByte, 4, TicketByte.length);
-		System.arraycopy(ChangedAuthenByte, 0, NewByte, 46, ChangedAuthenByte.length);
+		System.arraycopy(ChangedAuthenByte, 0, NewByte, 48, ChangedAuthenByte.length);
 		return NewByte;
 	}
 	
@@ -223,7 +238,7 @@ public class Pack {
 	
 	public byte[] Pack_0x0a_Data(TGS_C TC,int[] Keyctgs,int[] Keyv){
 		Text text = new Text();
-		byte[] NewByte = new byte[72];
+		byte[] NewByte = new byte[76];
 		byte[] KeyByte = TC.getKey().toByteArray();
 		byte[] IDvByte = IntToByteArray2(TC.getID());
 		byte[] TSByte = null;
@@ -233,7 +248,7 @@ public class Pack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		byte[] TicketByte = new byte[42];
+		byte[] TicketByte = new byte[44];
 		byte[] KeyByte1 = TC.getTicket().getKey().toByteArray();
 		byte[] IDcByte = IntToByteArray2(TC.getTicket().getID1());
 		byte[] ADcByte = IntToByteArray2(TC.getTicket().getAD());
@@ -246,27 +261,33 @@ public class Pack {
 			e.printStackTrace();
 		}
 		byte[] LTByte = IntToByteArray2(TC.getTicket().getLT());
-		if(KeyByte1.length==8){
-			System.arraycopy(KeyByte1, 0, TicketByte, 0, KeyByte1.length);
-		}else{	
-			System.arraycopy(KeyByte1, 1, TicketByte, 0, KeyByte1.length-1);
+		if(KeyByte.length==9){	
+			System.arraycopy(KeyByte, 0, TicketByte, 0, KeyByte.length);
+		}else if(KeyByte.length<9){
+			for(int i = 0;i<9-KeyByte.length;i++){
+				KeyByte[i] = (byte)0x00;
+			}
+			System.arraycopy(KeyByte, 0, TicketByte, 9-KeyByte.length, KeyByte.length);
 		}
-		System.arraycopy(IDcByte, 0, TicketByte, 8, IDcByte.length);
-		System.arraycopy(ADcByte, 0, TicketByte, 12, ADcByte.length);
-		System.arraycopy(IDvByte1, 0, TicketByte, 16, IDvByte1.length);
-		System.arraycopy(TSByte1, 0, TicketByte, 20, TSByte1.length);
-		System.arraycopy(LTByte, 0, TicketByte, 38, LTByte.length);
+		System.arraycopy(IDcByte, 0, TicketByte, 9, IDcByte.length);
+		System.arraycopy(ADcByte, 0, TicketByte, 13, ADcByte.length);
+		System.arraycopy(IDvByte1, 0, TicketByte, 17, IDvByte1.length);
+		System.arraycopy(TSByte1, 0, TicketByte, 21, TSByte1.length);
+		System.arraycopy(LTByte, 0, TicketByte, 40, LTByte.length);
 		//Ekv加密
 		//////
 		byte[] ChangedTicketByte =text.DESSupreier(0, TicketByte, Keyv);
-		if(KeyByte1.length==8){
-			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
-		}else{	
-			System.arraycopy(KeyByte, 1, NewByte, 0, KeyByte.length-1);
+		if(KeyByte1.length==9){	
+			System.arraycopy(KeyByte1, 0, NewByte, 0, KeyByte1.length);
+		}else if(KeyByte1.length<9){
+			for(int i = 0;i<9-KeyByte1.length;i++){
+				KeyByte1[i] = (byte)0x00;
+			}
+			System.arraycopy(KeyByte1, 0, NewByte, 9-KeyByte1.length, KeyByte1.length);
 		}
-		System.arraycopy(IDvByte, 0, NewByte, 8, IDvByte.length);
-		System.arraycopy(TSByte, 0, NewByte, 12, TSByte.length);
-		System.arraycopy(ChangedTicketByte, 0, NewByte, 30, TicketByte.length);
+		System.arraycopy(IDvByte, 0, NewByte, 9, IDvByte.length);
+		System.arraycopy(TSByte, 0, NewByte, 13, TSByte.length);
+		System.arraycopy(ChangedTicketByte, 0, NewByte, 32, TicketByte.length);
 		//Ekc,tgs加密
 		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, Keyctgs);
 		return ChangedNewByte;
@@ -281,9 +302,9 @@ public class Pack {
 	
 	public byte[] Pack_0x0b_Data(C_V CV,int[] Keycv){
 		Text text = new Text();
-		byte[] NewByte = new byte[68];
+		byte[] NewByte = new byte[71];
 		byte[] TicketByte = CV.getChangedTicket();
-		byte[] AuthenByte = new byte[26];
+		byte[] AuthenByte = new byte[27];
 		byte[] IDcByte = IntToByteArray2(CV.getAuth().getID());
 		byte[] ADcByte = IntToByteArray2(CV.getAuth().getAD());
 		byte[] TS4Byte = null;
@@ -299,7 +320,7 @@ public class Pack {
 		//Ekc,v加密
 		byte[] ChangedAuthenByte = text.DESSupreier(0, AuthenByte, Keycv);
 		System.arraycopy(TicketByte, 0, NewByte, 0, TicketByte.length);
-		System.arraycopy(ChangedAuthenByte, 0, NewByte, 42, ChangedAuthenByte.length);
+		System.arraycopy(ChangedAuthenByte, 0, NewByte, 44, ChangedAuthenByte.length);
 		return NewByte;
 	}
 	
@@ -312,7 +333,7 @@ public class Pack {
 	
 	public byte[] Pack_0x0c_Data(V_C VC,int[] Keycv){
 		Text text =new Text();
-		byte[] NewByte = new byte[18];
+		byte[] NewByte = new byte[19];
 		byte[] TS5Byte = null;
 		try {
 			TS5Byte = VC.getTS().getBytes("UTF-8");
@@ -385,17 +406,15 @@ public class Pack {
 	
 	public byte[] Pack_0x13_Data(Data_Chat DC,int[] K1){
 		Text text =new Text();
-		byte[] NewByte=new byte[276];
+		byte[] NewByte=new byte[149];
 		int IDc=DC.getIDc();
 		byte[] IDcByte=IntToByteArray2(IDc);
 		EK_message EKm = DC.getEKMSG();
-		byte[] MSGByte=EKm.getMSG().toByteArray();
 		byte[] HMSGByte=EKm.getH_MSG().toByteArray();
 		byte[] SignByte=EKm.getSIGN().toByteArray();
 		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
-		System.arraycopy(MSGByte, 0, NewByte, 4, MSGByte.length);
-		System.arraycopy(HMSGByte, 0, NewByte, 132, HMSGByte.length);
-		System.arraycopy(SignByte, 0, NewByte, 148, MSGByte.length);
+		System.arraycopy(HMSGByte, 0, NewByte, 4, HMSGByte.length);
+		System.arraycopy(SignByte, 0, NewByte, 20, SignByte.length);
 		//DES加密
 		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, K1);
 		return ChangedNewByte;
@@ -452,12 +471,15 @@ public class Pack {
 	
 	public byte[] Pack_0x19_Data(Data_Update DU,int[] K1){
 		Text text = new Text();
-		byte[] NewByte = new byte[8];
+		byte[] NewByte = new byte[9];
 		byte[] KeyByte = DU.getKey().toByteArray();
-		if(KeyByte.length==8){
+		if(KeyByte.length==9){	
 			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
-		}else{	
-			System.arraycopy(KeyByte, 1, NewByte, 0, KeyByte.length-1);
+		}else if(KeyByte.length<9){
+			for(int i = 0;i<9-KeyByte.length;i++){
+				KeyByte[i] = (byte)0x00;
+			}
+			System.arraycopy(KeyByte, 0, NewByte, 9-KeyByte.length, KeyByte.length);
 		}
 		//DES加密
 		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, K1);

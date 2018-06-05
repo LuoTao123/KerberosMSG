@@ -36,7 +36,7 @@ public class SendThread extends Thread{
 					}else{
 						continue;
 					}
-				}else if(Head[1]==(byte)0x13){
+				}else if(Head[1]==(byte)0x1c){
 					bufferedInputStream.read(bytes, 0, 2);
 					if(bytes[1]==(byte)0x14){
 						break;

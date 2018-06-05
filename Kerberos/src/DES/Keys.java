@@ -45,7 +45,7 @@ public class Keys {
 	
 	public void SaveKeyToFile(String filename,String Keys){	//写DES的Keys到文件里去
 		try {  
-			FileWriter fw = new FileWriter("Ciphertext.txt");  
+			FileWriter fw = new FileWriter(filename,false);  
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(Keys);  
 			bw.close();  

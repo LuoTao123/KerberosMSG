@@ -10,7 +10,7 @@ public class Hash {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] input = text.getBytes();
             byte[] buff = md.digest(input);
-            System.out.println(buff.length);
+            buff[0] = (byte)0x10;
             Text = new BigInteger(buff);
         } catch (Exception e) {
             e.printStackTrace();
@@ -19,3 +19,4 @@ public class Hash {
     }
 	
 }
+

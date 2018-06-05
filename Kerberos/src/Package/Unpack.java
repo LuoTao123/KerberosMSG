@@ -17,8 +17,7 @@ public class Unpack {
 		byte[] IDcByte = new byte[4];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);
 		byte[] PSWByte = new byte[129];
-		PSWByte[0]=(byte)0x00;
-		System.arraycopy(NewByte, 4, PSWByte, 1, PSWByte.length-1);
+		System.arraycopy(NewByte, 4, PSWByte, 0, PSWByte.length);
 		int IDc = ByteArrayToInt2(IDcByte);
 		BigInteger PSW = new BigInteger(PSWByte);
 		DR.setIDc(IDc);
@@ -31,11 +30,9 @@ public class Unpack {
 		byte[] IDcByte = new byte[4];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);
 		byte[] PSWByte = new byte[129];
-		PSWByte[0]=(byte)0x00;
-		System.arraycopy(NewByte, 4, PSWByte, 1, PSWByte.length-1);
+		System.arraycopy(NewByte, 4, PSWByte, 0, PSWByte.length);
 		byte[] NPSWByte = new byte[129];
-		NPSWByte[0]=(byte)0x00;
-		System.arraycopy(NewByte, 132, NPSWByte, 1, NPSWByte.length-1);
+		System.arraycopy(NewByte, 133, NPSWByte, 0, NPSWByte.length);
 		int IDc = ByteArrayToInt2(IDcByte);
 		BigInteger PSW = new BigInteger(PSWByte);
 		BigInteger NPSW = new BigInteger(NPSWByte);
@@ -49,7 +46,7 @@ public class Unpack {
 		C_AS CA = new C_AS();
 		byte[] IDcByte = new byte[4];
 		byte[] IDtgsByte = new byte[4];
-		byte[] TS1Byte = new byte[18];
+		byte[] TS1Byte = new byte[19];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);
 		System.arraycopy(NewByte, 4, IDtgsByte, 0, IDtgsByte.length);
 		System.arraycopy(NewByte, 8, TS1Byte, 0, TS1Byte.length);
@@ -77,15 +74,14 @@ public class Unpack {
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyc);
 		byte[] KeyByte = new byte[9];
 		byte[] IDtgsByte = new byte[4];
-		byte[] TS2Byte = new byte[18];
+		byte[] TS2Byte = new byte[19];
 		byte[] LTByte = new byte[4];
-		byte[] ChangedTicket = new byte[42];
-		KeyByte[0]=(byte)0x00;
-		System.arraycopy(NewByte, 0, KeyByte, 1, KeyByte.length-1);
-		System.arraycopy(NewByte, 8, IDtgsByte, 0, IDtgsByte.length);
-		System.arraycopy(NewByte, 12, TS2Byte, 0, TS2Byte.length);
-		System.arraycopy(NewByte, 30, LTByte, 0, LTByte.length);
-		System.arraycopy(NewByte, 34, ChangedTicket, 0, ChangedTicket.length);
+		byte[] ChangedTicket = new byte[44];
+		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
+		System.arraycopy(NewByte, 9, IDtgsByte, 0, IDtgsByte.length);
+		System.arraycopy(NewByte, 13, TS2Byte, 0, TS2Byte.length);
+		System.arraycopy(NewByte, 32, LTByte, 0, LTByte.length);
+		System.arraycopy(NewByte, 36, ChangedTicket, 0, ChangedTicket.length);
 		BigInteger Key = new BigInteger(KeyByte);
 		int IDtgs = ByteArrayToInt2(IDtgsByte);
 		String TS2 = null;
@@ -112,11 +108,11 @@ public class Unpack {
 		Ticket ticket = new Ticket();
 		Authenticator Au = new Authenticator();
 		byte[] IDvByte = new byte[4];
-		byte[] ChangedTicketByte = new byte[42];
-		byte[] ChangedAuthenByte = new byte[26];
+		byte[] ChangedTicketByte = new byte[44];
+		byte[] ChangedAuthenByte = new byte[27];
 		System.arraycopy(NewByte, 0, IDvByte, 0, IDvByte.length);
 		System.arraycopy(NewByte, 4, ChangedTicketByte, 0, ChangedTicketByte.length);
-		System.arraycopy(NewByte, 46, ChangedAuthenByte, 0, ChangedAuthenByte.length);
+		System.arraycopy(NewByte, 48, ChangedAuthenByte, 0, ChangedAuthenByte.length);
 		int IDv = ByteArrayToInt2(IDvByte);
 		//EktgsΩ‚√‹
 		byte[] TicketByte = text.DESSupreier(1, ChangedTicketByte ,Keytgs);
@@ -128,18 +124,17 @@ public class Unpack {
 		byte[] IDcByte = new byte[4];
 		byte[] ADByte = new byte[4];
 		byte[] IDtgs1Byte = new byte[4];
-		byte[] TS2Byte1 = new byte[18];
+		byte[] TS2Byte1 = new byte[19];
 		byte[] LT2Byte = new byte[4];
-		Key1Byte[0]=(byte)0x00;
-		System.arraycopy(NewByte, 0, Key1Byte, 1, Key1Byte.length-1);
-		System.arraycopy(TicketByte, 8, IDcByte, 0, IDcByte.length);
-		System.arraycopy(TicketByte, 12, ADByte, 0, ADByte.length);
-		System.arraycopy(TicketByte, 16, IDtgs1Byte, 0, IDtgs1Byte.length);
-		System.arraycopy(TicketByte, 20, TS2Byte1, 0, TS2Byte1.length);
-		System.arraycopy(TicketByte, 38, LT2Byte, 0, LT2Byte.length);
+		System.arraycopy(NewByte, 0, Key1Byte, 0, Key1Byte.length);
+		System.arraycopy(TicketByte, 9, IDcByte, 0, IDcByte.length);
+		System.arraycopy(TicketByte, 13, ADByte, 0, ADByte.length);
+		System.arraycopy(TicketByte, 17, IDtgs1Byte, 0, IDtgs1Byte.length);
+		System.arraycopy(TicketByte, 21, TS2Byte1, 0, TS2Byte1.length);
+		System.arraycopy(TicketByte, 40, LT2Byte, 0, LT2Byte.length);
 		byte[] IDcByte1 = new byte[4];
 		byte[] ADcByte = new byte[4];
-		byte[] TSByte = new byte[18];
+		byte[] TSByte = new byte[19];
 		System.arraycopy(AuthenByte, 0, IDcByte1, 0, IDcByte1.length);
 		System.arraycopy(AuthenByte, 4, ADcByte, 0, ADcByte.length);
 		System.arraycopy(AuthenByte, 8, TSByte, 0, TSByte.length);
@@ -187,13 +182,12 @@ public class Unpack {
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyctgs);
 		byte[] KeyByte = new byte[9];
 		byte[] IDvByte = new byte[4];
-		byte[] TS4Byte = new byte[18];
-		byte[] TicketByte = new byte[42];
-		KeyByte[0]=(byte)0x00;
-		System.arraycopy(NewByte, 0, KeyByte, 1, KeyByte.length-1);
-		System.arraycopy(NewByte, 8, IDvByte, 0, IDvByte.length);
-		System.arraycopy(NewByte, 12, TS4Byte, 0, TS4Byte.length);
-		System.arraycopy(NewByte, 30, TicketByte, 0, TicketByte.length);
+		byte[] TS4Byte = new byte[19];
+		byte[] TicketByte = new byte[44];
+		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
+		System.arraycopy(NewByte, 9, IDvByte, 0, IDvByte.length);
+		System.arraycopy(NewByte, 13, TS4Byte, 0, TS4Byte.length);
+		System.arraycopy(NewByte, 31, TicketByte, 0, TicketByte.length);
 		BigInteger Key = new BigInteger(KeyByte);
 		int IDv = ByteArrayToInt2(IDvByte);
 		String TS4 = null;
@@ -215,10 +209,10 @@ public class Unpack {
 		C_V CV = new C_V();
 		Ticket ticket = new Ticket();
 		Authenticator Authen = new Authenticator();
-		byte[] ChangedTicketByte = new byte[42];
-		byte[] ChangedAuthenByte = new byte[26];
+		byte[] ChangedTicketByte = new byte[44];
+		byte[] ChangedAuthenByte = new byte[27];
 		System.arraycopy(NewByte, 0, ChangedTicketByte, 0, ChangedTicketByte.length);
-		System.arraycopy(NewByte, 42, ChangedAuthenByte, 0, ChangedAuthenByte.length);
+		System.arraycopy(NewByte, 44, ChangedAuthenByte, 0, ChangedAuthenByte.length);
 		//EkvΩ‚√‹
 		Keys kkey = new Keys();
 		int[] Keyv = kkey.ReadKeysFromFile("Keyv.txt"); 
@@ -227,15 +221,14 @@ public class Unpack {
 		byte[] IDcByte = new byte[4];
 		byte[] ADcByte = new byte[4];
 		byte[] IDvByte = new byte[4];
-		byte[] TS4Byte = new byte[18];
+		byte[] TS4Byte = new byte[19];
 		byte[] LT4Byte = new byte[4];
-		KeyByte[0]=(byte)0x00;
-		System.arraycopy(NewByte, 0, KeyByte, 1, KeyByte.length-1);
-		System.arraycopy(TicketByte, 8, IDcByte, 0, IDcByte.length);
-		System.arraycopy(TicketByte, 12, ADcByte, 0, ADcByte.length);
-		System.arraycopy(TicketByte, 16, IDvByte, 0, IDvByte.length);
-		System.arraycopy(TicketByte, 20, TS4Byte, 0, TS4Byte.length);
-		System.arraycopy(TicketByte, 38, LT4Byte, 0, LT4Byte.length);
+		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
+		System.arraycopy(TicketByte, 9, IDcByte, 0, IDcByte.length);
+		System.arraycopy(TicketByte, 13, ADcByte, 0, ADcByte.length);
+		System.arraycopy(TicketByte, 17, IDvByte, 0, IDvByte.length);
+		System.arraycopy(TicketByte, 21, TS4Byte, 0, TS4Byte.length);
+		System.arraycopy(TicketByte, 40, LT4Byte, 0, LT4Byte.length);
 		BigInteger Key = new BigInteger(KeyByte);
 		int IDc = ByteArrayToInt2(IDcByte);
 		int ADc = ByteArrayToInt2(ADcByte);
@@ -258,7 +251,7 @@ public class Unpack {
 		byte[] AuthenByte = text.DESSupreier(1, ChangedAuthenByte, Keycv);
 		byte[] IDcByte1 = new byte[4];
 		byte[] ADcByte1 = new byte[4];
-		byte[] TS5Byte = new byte[18];
+		byte[] TS5Byte = new byte[19];
 		System.arraycopy(AuthenByte, 0, IDcByte1, 0, IDcByte1.length);
 		System.arraycopy(AuthenByte, 0, ADcByte1, 4, ADcByte1.length);
 		System.arraycopy(AuthenByte, 0, TS5Byte, 8, TS5Byte.length);
@@ -279,9 +272,12 @@ public class Unpack {
 		return CV;
 	}
 	
-	public V_C Unpack_0x0c(byte[] ChangedNewByte){
+	public V_C Unpack_0x0c(byte[] ChangedNewByte,int[] Keycv){
+		Text text = new Text();
+		//Ekc,tgsΩ‚√‹
+		
+		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keycv);
 		V_C VC = new V_C();
-		byte[] NewByte = DESCHULI(ChangedNewByte);
 		String TS5 = null;
 		try {
 			TS5 = new String(NewByte,"UTF-8");
@@ -311,18 +307,14 @@ public class Unpack {
 		Data_Chat DC = new Data_Chat();
 		EK_message EKm = new EK_message();
 		byte[] IDcByte = new byte[4];
-		byte[] MSGByte = new byte[128];
 		byte[] HMSGByte = new byte[16];
-		byte[] SignByte = new byte[128];
+		byte[] SignByte = new byte[129];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);
-		System.arraycopy(NewByte, 4, MSGByte, 0, MSGByte.length);
-		System.arraycopy(NewByte, 132, HMSGByte, 0, HMSGByte.length);
-		System.arraycopy(NewByte, 148, SignByte, 0, SignByte.length);
+		System.arraycopy(NewByte, 4, HMSGByte, 0, HMSGByte.length);
+		System.arraycopy(NewByte, 20, SignByte, 0, SignByte.length);
 		int IDc = ByteArrayToInt2(IDcByte);
-		BigInteger MSG = new BigInteger(MSGByte);
 		BigInteger HMSG = new BigInteger(HMSGByte);
 		BigInteger Sign = new BigInteger(SignByte);
-		EKm.setMSG(MSG);
 		EKm.setH_MSG(HMSG);
 		EKm.setSIGN(Sign);
 		DC.setIDc(IDc);
@@ -344,8 +336,7 @@ public class Unpack {
 		byte[] NewByte = DESCHULI(ChangedNewByte);
 		Data_Update DU = new Data_Update();
 		byte[] KeyByte = new byte[9];
-		KeyByte[0]=(byte)0x00;
-		System.arraycopy(NewByte, 0, KeyByte, 1, KeyByte.length-1);
+		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
 		BigInteger Key = new BigInteger(KeyByte);
 		DU.setKey(Key);
 		return DU;
