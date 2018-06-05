@@ -15,7 +15,7 @@ public class Server extends Thread{
 	
 	public Server(){
 		try{
-			serverSocket = new ServerSocket(55534);
+			serverSocket = new ServerSocket(30000);
 		}catch(IOException e){
 			System.out.println(e+"无法启动服务器");
 		}

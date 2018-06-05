@@ -16,11 +16,11 @@ public class Server extends Thread{
 	
 	public Server(){
 		try{
-			serverSocket = new ServerSocket(55534);
+			serverSocket = new ServerSocket(10000);
 		}catch(IOException e){
 			System.out.println(e+"无法启动服务器");
 		}
-		System.out.println("账号密码服务器启动");
+		System.out.println("AS服务器启动");
 		this.start();
 	}
 	

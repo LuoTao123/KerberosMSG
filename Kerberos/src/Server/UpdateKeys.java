@@ -23,39 +23,40 @@ public class UpdateKeys extends Thread{
 	OutputStream outputStream;
 	
 	public UpdateKeys(){
+		this.start();
+	}
+	
+	@SuppressWarnings("static-access")
+	public void run(){
 		while(true){
-			this.start();
+			try{
+				Pack pack = new Pack();
+				IPtoSocket NewIS = null;
+				DES des = new DES();
+				BigInteger Key = des.CreateDESKey();
+				Server.Keysession = Key;
+				Data_Update DU = new Data_Update();
+				DU.setKey(Key);
+				Text text = new Text();
+				Keys kkey = new Keys();
+				for(int i=0;i<Server.SocketList.size();i++){
+					NewIS = Server.SocketList.elementAt(i);
+					sql a = new sql();
+					String[] strs = a.HasAIDc(NewIS.IDc).split(" ");
+					BigInteger Keyc = text.StringToBigInteger(strs[1]);
+					int[] Keycc = kkey.StringToInts(kkey.BigIntegerToString(Keyc));
+					@SuppressWarnings("unused")
+					SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));
+				}	
+			}catch(Exception e){
+				System.out.println(e);
+			}
 			try {
-				this.wait(3600);
+				this.sleep(360000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-	}
-	
-	public void run(){
-		try{
-			Pack pack = new Pack();
-			IPtoSocket NewIS = null;
-			DES des = new DES();
-			BigInteger Key = des.CreateDESKey();
-			Server.Keysession = Key;
-			Data_Update DU = new Data_Update();
-			DU.setKey(Key);
-			Text text = new Text();
-			Keys kkey = new Keys();
-			for(int i=0;i<Server.SocketList.size();i++){
-				NewIS = Server.SocketList.elementAt(i);
-				sql a = new sql();
-				String[] strs = a.HasAIDc(NewIS.IDc).split(" ");
-				BigInteger Keyc = text.StringToBigInteger(strs[1]);
-				int[] Keycc = kkey.StringToInts(kkey.BigIntegerToString(Keyc));
-				@SuppressWarnings("unused")
-				SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));
-			}
-		}catch(Exception e){
-			System.out.println(e);
 		}
 	}
 }

@@ -15,7 +15,7 @@ public class ServerIDPSW extends Thread{
 	
 	public ServerIDPSW(){
 		try{
-			serverSocket = new ServerSocket(55534);
+			serverSocket = new ServerSocket(40000);
 		}catch(IOException e){
 			System.out.println(e+"无法启动服务器");
 		}
