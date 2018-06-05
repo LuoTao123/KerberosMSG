@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 public class SocketServer {
 	public static void main(String args[]) throws Exception {
     // 监听指定的端口
-		int port = 55534;
+		int port = 55535;
 		@SuppressWarnings("resource")
 		ServerSocket server = new ServerSocket(port);
 		// server将一直等待连接的到来
@@ -27,8 +27,8 @@ public class SocketServer {
 					BufferedInputStream bufferedInputStream=new BufferedInputStream(inputStream);
 					byte[] bytes =new byte[2];
 					bufferedInputStream.read(bytes, 0, 2);
-//					Unpack unpack = new Unpack();
-//					unpack.Unpack_Head(bytes,bufferedInputStream,socket);
+					STATE state = new STATE();
+					state.Unpack_Head(bytes,bufferedInputStream,socket,"127.0.0.1");
 					bufferedInputStream.close();
 					inputStream.close();
 					socket.close();

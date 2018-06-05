@@ -169,22 +169,81 @@ public class STATE extends Thread{
 		}else if(NewByte[0]==(byte)0x01){
 			Pack pack = new Pack();
 			socket.getOutputStream().write(pack.Server_Return());
+			byte[] bytess  = null;
 			switch(NewByte[1]){
-				case (byte)0x00:	Server_Regist(unpack.Unpack_0x00(readFixedLengthArray(bufferedInputStream,133)));break;
-				case (byte)0x01:	Server_Modify(unpack.Unpack_0x01(readFixedLengthArray(bufferedInputStream,262)));break;
-				case (byte)0x10:	OnlineTransmit(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
-				case (byte)0x13:	ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
-				case (byte)0x07:	zhuangtaiji7(unpack.Unpack_0x07(readFixedLengthArray(bufferedInputStream,27)),ip);break;
-				case (byte)0x08:	zhuangtaiji8(unpack.Unpack_0x08(readFixedLengthArray(bufferedInputStream,80)),ip);break;
-				case (byte)0x09:	zhuangtaiji9(unpack.Unpack_0x09(readFixedLengthArray(bufferedInputStream,75)),ip);break;
-				case (byte)0x0a:	zhuangtaiji0a(unpack.Unpack_0x0a(readFixedLengthArray(bufferedInputStream,76),Keyctgs),ip);break;
-				case (byte)0x0b:	zhuangtaiji0b(unpack.Unpack_0x0b(readFixedLengthArray(bufferedInputStream,71),Keycv),ip);break;
-				case (byte)0x0c:	zhuangtaiji0c(unpack.Unpack_0x0c(readFixedLengthArray(bufferedInputStream,19),Keycv));break;
-				case (byte)0x16:	OfflineTransmit(unpack.Unpack_0x16(readFixedLengthArray(bufferedInputStream,4)),socket);break;
-				case (byte)0x19:	zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
-				case (byte)0x1c:	zhuangtaiji1c(unpack.Unpack_0x1c(readFixedLengthArray(bufferedInputStream,149)),socket);break;
-				case (byte)0x1d:zhuangtaiji1d(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
-				case (byte)0x1e:zhuangtaiji1e(unpack.Unpack_0x16(readFixedLengthArray(bufferedInputStream,4)),socket);break;
+				case (byte)0x00:	bytess = new byte[133];
+									bufferedInputStream.read(bytess, 0, 133);
+									Server_Regist(unpack.Unpack_0x00(bytess));
+									break;
+				case (byte)0x01:	bytess = new byte[262];
+									bufferedInputStream.read(bytess, 0, 262);
+									Server_Modify(unpack.Unpack_0x01(bytess));
+									break;
+				case (byte)0x10:	bytess = new byte[4];
+									bufferedInputStream.read(bytess, 0, 4);
+									OnlineTransmit(unpack.Unpack_0x10(bytess),socket);
+									break;
+									//OnlineTransmit(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
+				case (byte)0x13:	bytess = new byte[149];
+									bufferedInputStream.read(bytess, 0, 149);
+									ChatTransmit(socket,bytess);
+									break;
+									//ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
+				case (byte)0x07:	bytess = new byte[27];
+									bufferedInputStream.read(bytess, 0, 27);
+									zhuangtaiji7(unpack.Unpack_0x07(bytess),ip);
+									break;
+									//zhuangtaiji7(unpack.Unpack_0x07(readFixedLengthArray(bufferedInputStream,27)),ip);break;
+				case (byte)0x08:	bytess = new byte[80];
+									bufferedInputStream.read(bytess, 0, 80);
+									zhuangtaiji8(unpack.Unpack_0x08(bytess),ip);
+									break;
+									//zhuangtaiji8(unpack.Unpack_0x08(readFixedLengthArray(bufferedInputStream,80)),ip);break;
+				case (byte)0x09:	bytess = new byte[75];
+									bufferedInputStream.read(bytess, 0, 75);
+									zhuangtaiji9(unpack.Unpack_0x09(bytess),ip);
+									break;
+									//zhuangtaiji9(unpack.Unpack_0x09(readFixedLengthArray(bufferedInputStream,75)),ip);break;
+				case (byte)0x0a:	bytess = new byte[76];
+									bufferedInputStream.read(bytess, 0, 76);
+									zhuangtaiji0a(unpack.Unpack_0x0a(bytess,Keyctgs),ip);
+									break;
+									//zhuangtaiji0a(unpack.Unpack_0x0a(readFixedLengthArray(bufferedInputStream,76),Keyctgs),ip);break;
+				case (byte)0x0b:	bytess = new byte[71];
+									bufferedInputStream.read(bytess, 0, 71);
+									zhuangtaiji0b(unpack.Unpack_0x0b(bytess,Keycv),ip);
+									break;
+									//zhuangtaiji0b(unpack.Unpack_0x0b(readFixedLengthArray(bufferedInputStream,71),Keycv),ip);break;
+				case (byte)0x0c:	bytess = new byte[19];
+									bufferedInputStream.read(bytess, 0, 19);
+									zhuangtaiji0c(unpack.Unpack_0x0c(bytess,Keycv));
+									break;
+									//zhuangtaiji0c(unpack.Unpack_0x0c(readFixedLengthArray(bufferedInputStream,19),Keycv));break;
+				case (byte)0x16:	bytess = new byte[4];
+									bufferedInputStream.read(bytess, 0, 4);
+									OfflineTransmit(unpack.Unpack_0x16(bytess),socket);
+									break;
+									//OfflineTransmit(unpack.Unpack_0x16(readFixedLengthArray(bufferedInputStream,4)),socket);break;
+				case (byte)0x19:	bytess = new byte[9];
+									bufferedInputStream.read(bytess, 0, 9);
+									zhuangtaiji19(unpack.Unpack_0x19(bytess));
+									break;
+									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
+				case (byte)0x1c:	bytess = new byte[149];
+									bufferedInputStream.read(bytess, 0, 149);
+									zhuangtaiji1c(unpack.Unpack_0x1c(bytess),socket);
+									break;
+									//zhuangtaiji1c(unpack.Unpack_0x1c(readFixedLengthArray(bufferedInputStream,149)),socket);break;
+				case (byte)0x1d:	bytess = new byte[4];
+									bufferedInputStream.read(bytess, 0, 4);
+									zhuangtaiji1d(unpack.Unpack_0x10(bytess),socket);
+									break;
+									//zhuangtaiji1d(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
+				case (byte)0x1e:	bytess = new byte[4];
+									bufferedInputStream.read(bytess, 0, 4);
+									zhuangtaiji1e(unpack.Unpack_0x16(bytess),socket);
+									break;
+									//zhuangtaiji1e(unpack.Unpack_0x16(readFixedLengthArray(bufferedInputStream,4)),socket);break;
 
 				default : System.out.println("非法数据包");
 			}
@@ -198,16 +257,17 @@ public class STATE extends Thread{
 	public void Server_Regist(Data_Regist DR){
 		int IDc = DR.getIDc();
 		BigInteger RSA_HASH_PASSWORD = DR.getRSA_HASH_PASSWORD();
+		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
 		Decryption DE = new Decryption();
 		BigInteger HASH_PASSWORD = DE.decryption(RSA_HASH_PASSWORD, String.valueOf(IDis));
 		sql a = new sql();
-		Text text = new Text();
-		String String_Hash_PASSWORD = text.BigIntegerToString(HASH_PASSWORD);
+		Keys key = new Keys();
+//		String String_Hash_PASSWORD = key.BigIntegerToString(HASH_PASSWORD);
 		try {
 			Pack pack = new Pack();
 			//账号不存在则加入新账号，并返回0x02,否则0x03.
-			if(a.HasAIDc(IDc)!=null){
-				a.AddNewUsers(IDc, String_Hash_PASSWORD);
+			if(a.HasAIDc(IDc)==null){
+				a.AddNewUsers(IDc, HASH_PASSWORD);
 				send(pack.Pack_0x02_Cont());
 			}else{
 				send(pack.Pack_0x03_Cont());
@@ -218,6 +278,7 @@ public class STATE extends Thread{
 		}
 		System.out.println(DR.getIDc());
 		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
+		System.out.println(HASH_PASSWORD);
 	}
 	
 	public void Server_Modify(Data_Modify DM){
@@ -227,17 +288,17 @@ public class STATE extends Thread{
 		Decryption DE = new Decryption();
 		BigInteger HASH_PASSWORD = DE.decryption(RSA_HASH_PASSWORD, String.valueOf(IDis));
 		BigInteger HASH_NPASSWORD = DE.decryption(RSA_HASH_NPASSWORD, String.valueOf(IDis));
-		sql a = new sql();
-		Text text = new Text();
-		String String_Hash_PASSWORD = text.BigIntegerToString(HASH_PASSWORD);
-		String String_Hash_NPASSWORD = text.BigIntegerToString(HASH_NPASSWORD);
 		try {
+			sql a = new sql();
 			Pack pack = new Pack();
 			//账号不存在则加入新账号，并返回0x02,否则0x03.
-			String[] strs = a.HasAIDc(IDc).split(" ");
-			if(strs!=null){
-				if(strs[1]==String_Hash_PASSWORD){
-					a.UpdatePassword(IDc, String_Hash_NPASSWORD);
+			BigInteger oldPSW = a.HasAIDc(IDc);
+			if(oldPSW!=null){
+				System.out.println(HASH_PASSWORD);
+				System.out.println("????????/");
+				if(oldPSW.equals(HASH_PASSWORD)){
+					System.out.println("????????");
+					a.UpdatePassword(IDc, HASH_NPASSWORD);
 					send(pack.Pack_0x04_Cont());
 				}else{
 					send(pack.Pack_0x06_Cont());
@@ -286,25 +347,22 @@ public class STATE extends Thread{
 		int IDt = CA.getIDtgs();
 		String TS1 =CA.getTS();
 		setTS1(TS1);
-		String str = null;
+		BigInteger PSW = null;
 		Pack pack = new Pack();
 		if(IDt == IDtgs) {
 			sql a=new sql();
 			try {
-				str = a.HasAIDc (IDc);
+				PSW = a.HasAIDc (IDc);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(str !=null) {
-				String[] IDPa = str.split(" ");
-				String Hash_Pass=IDPa[1] ;
+			if(PSW !=null) {
 				Text text = new Text();
 				Keys kkey = new Keys();
 				int[] Keytgs = kkey.ReadKeysFromFile("Keytgs.txt");
-				BigInteger Keyc =text.StringToBigInteger(Hash_Pass); 
 				
-				int[] KeycInts = kkey.StringToInts(kkey.BigIntegerToString(Keyc));
+				int[] KeycInts = kkey.StringToInts(kkey.BigIntegerToString(PSW));
 
 				DES des =new DES();
 				AS_C AC = new AS_C();
@@ -464,17 +522,17 @@ public class STATE extends Thread{
 		int IDc = auth.getID();
 		int IDv = ticketv.getID2();
 		
-		String str = null;
+		BigInteger PSW = null;
 		Pack pack = new Pack();
 		if(IDv == this.IDv) {
 			sql a=new sql();
 			try {
-				str = a.HasAIDc (IDc);
+				PSW = a.HasAIDc (IDc);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(str !=null) {
+			if(PSW !=null) {
 				Keys kkey = new Keys();
 				BigInteger Keycv = ticketv.getKey();
 				int[] KeycvInts = kkey.StringToInts(kkey.BigIntegerToString(Keycv));
@@ -614,15 +672,14 @@ public class STATE extends Thread{
 		Text text = new Text();
 		Keys kkey = new Keys();
 		sql a = new sql();
-		String[] strs = null;
+		BigInteger PSW = null;
 		try {
-			strs = a.HasAIDc(IS.IDc).split(" ");
+			PSW = a.HasAIDc(IS.IDc);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		BigInteger Keyc = text.StringToBigInteger(strs[1]);
-		int[] Keycc = kkey.StringToInts(kkey.BigIntegerToString(Keyc));
+		int[] Keycc = kkey.StringToInts(kkey.BigIntegerToString(PSW));
 		@SuppressWarnings("unused")
 		SendThread ST1 = new SendThread(socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));
 		//再将上线用户加入到列表中去
@@ -734,6 +791,7 @@ public class STATE extends Thread{
 	    int readLen = 0;  
 	    int getLen = 0;  
 	    while(getLen<length){  
+	    	System.out.println(getLen);
 	        readLen = serverSocketBis.read(result, getLen, length-getLen);  
 	        serverSocketBis.read(result);  
 	        if(readLen ==-1){  

@@ -49,7 +49,7 @@ public class Encryption {
 			HasCre = true;
 			FileInputStream readerStream = new FileInputStream(filename);
 			BufferedReader br =new BufferedReader(new InputStreamReader(readerStream));
-			while((text=br.readLine())!=null||turn<4){
+			while((text=br.readLine())!=null&&turn<4){
 				if(turn<2){
 					Keys[turn]=new BigInteger(text);
 				}else if(turn==2){
@@ -142,6 +142,10 @@ public class Encryption {
 		Miller_Rabin MR=new Miller_Rabin();
 		PublicKey=MR.Power(PublicKey, ManagePublicKey, ManageMod);
 		Mod=MR.Power(Mod, ManagePublicKey, ManageMod);
+		System.out.println(PublicKey.toString());
+		System.out.println(OriginPK);
+		System.out.println(Mod.toString());
+		System.out.println(OriginPM);
 		if(!OriginPK.equals(PublicKey.toString())||!OriginPM.equals(Mod.toString())){
 			System.out.println("证书认证失败，可能因为该证书是伪造的");
 			System.exit(0);

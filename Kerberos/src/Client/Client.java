@@ -193,6 +193,9 @@ public class Client {
 			state.Unpack_Head(bytes1, bufferedInputStream, ASsocket, InetAddress.getLocalHost().toString());
 			setKeyctgs(state.getKeyctgs());
 			setTS2(state.getTS2());
+			bufferedInputStream.close();
+			inputstream.close();
+			ASsocket.close();
 			if(state.HasError) {
 				return;
 			}
@@ -203,6 +206,9 @@ public class Client {
 			bufferedInputStreamTGS.read(bytes2, 0, 2);
 			state.Unpack_Head(bytes2, bufferedInputStreamTGS, TGSsocket, InetAddress.getLocalHost().toString());
 			setTS4(state.getTS4());
+			bufferedInputStreamTGS.close();
+			inputstreamTGS.close();
+			TGSsocket.close();
 			if(state.HasError) {
 				return;
 			}
@@ -227,28 +233,30 @@ public class Client {
 			
 		public void Regist(String IDc,String Psw) throws IOException {
 			System.out.println("开始向注册服务器发送认证请求...\n");
-			Socket C_Rsocket = new Socket("127.0.0.4",20000);
+			Socket C_Rsocket = new Socket("127.0.0.1",40000);
+			Pack pack = new Pack();
+			C_Rsocket.getOutputStream().write(pack.Pack_0x00_Cont());
 			STATE state = new STATE();
 			state.C_RSocket = C_Rsocket;
 			int idc = Integer.valueOf(IDc);
 			Hash hash = new Hash();
 			BigInteger hash_Password = hash.getMD5(Psw);
 			//hash_psw存入文件夹
-			Text text = new Text();
-			String str=text.BigIntegerToString(hash_Password);
 			Keys key  = new Keys();
+			System.out.println("");
+			String str=key.BigIntegerToString(hash_Password);
 			key.SaveKeyToFile("Keyc.txt", str);
 			//Rsa_hash_psw
 			Encryption EN = new Encryption();
-			BigInteger rsa_hash_psw = EN.encryption(hash_Password, IDc);
+			BigInteger rsa_hash_psw = EN.encryption(hash_Password, String.valueOf(IDis));
 			Data_Regist DR = new Data_Regist();
 			DR.setIDc(idc);
 			DR.setRSA_HASH_PASSWORD(rsa_hash_psw);
-			
+			System.out.println(DR.getIDc());
+			System.out.println(DR.getRSA_HASH_PASSWORD().toString());
+			System.out.println(hash_Password.toString());
 			//发送请求
-			Pack pack = new Pack();
 			InputStream inputstream =C_Rsocket.getInputStream();
-			C_Rsocket.getOutputStream().write(pack.Pack_0x00_Cont());
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes,0,2);
@@ -263,14 +271,18 @@ public class Client {
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
 			state.Unpack_Head(bytes1, bufferedInputStream, C_Rsocket, InetAddress.getLocalHost().toString());
+			bufferedInputStream.close();
+			inputstream.close();
+			C_Rsocket.close();
 			if(state.HasError) {
+				System.out.println("账号已存在！");
 				return;
 			}
 		}	
 		
 		public void Modify(String IDc,String Psw,String Npsw) throws IOException {
 			System.out.println("开始向注册服务器发送认证请求...\n");
-			Socket C_Msocket = new Socket("127.0.0.4.",20000);
+			Socket C_Msocket = new Socket("127.0.0.4",40000);
 			STATE state = new STATE();
 			state.C_RSocket = C_Msocket;
 			int idc = Integer.valueOf(IDc);
@@ -278,20 +290,21 @@ public class Client {
 			BigInteger hash_psw = hash.getMD5(Psw);
 			BigInteger hash_Npsw = hash.getMD5(Npsw);
 			//hash_Npsw存入文件夹
-			Text text = new Text();
-			String str=text.BigIntegerToString(hash_Npsw);
+			//已修改
 			Keys key  = new Keys();
+			String str=key.BigIntegerToString(hash_Npsw);
 			key.SaveKeyToFile("Keyc.txt", str);
 			//Rsa_hash_psw
 			Encryption EN = new Encryption();
-			BigInteger rsa_hash_psw = EN.encryption(hash_psw, IDc);
-			BigInteger rsa_hash_Npsw = EN.encryption(hash_Npsw, IDc);
+			BigInteger rsa_hash_psw = EN.encryption(hash_psw, String.valueOf(IDis));
+			BigInteger rsa_hash_Npsw = EN.encryption(hash_Npsw, String.valueOf(IDis));
 			Data_Modify DM = new Data_Modify();
 			DM.setIDc(idc);
 			DM.setRSA_HASH_PASSWORD(rsa_hash_psw);
 			DM.setRSA_HASH_NPASSWORD(rsa_hash_Npsw);
-			
-			
+			System.out.println(DM.getIDc());
+			System.out.println(DM.getRSA_HASH_PASSWORD().toString());
+			System.out.println(DM.getRSA_HASH_NPASSWORD().toString());
 			//发送请求
 			Pack pack = new Pack();
 			InputStream inputstream =C_Msocket.getInputStream();
@@ -301,6 +314,7 @@ public class Client {
 			bufferedInputStream.read(bytes,0,2);
 			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
 				C_Msocket.getOutputStream().write(pack.Pack_0x01_Data(DM));
+				System.out.println("发送数据啦");
 			}
 			else {
 				System.out.println("客户端不处于就绪状态，不能进行注册");
@@ -309,9 +323,12 @@ public class Client {
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
 			state.Unpack_Head(bytes1, bufferedInputStream, C_Msocket, InetAddress.getLocalHost().toString());
+			bufferedInputStream.close();
+			inputstream.close();
+			C_Msocket.close();
 			if(state.HasError) {
 				return;
-			}		
+			}
 		}
 		
 		public void Offline(String IDc) throws  IOException {
@@ -343,6 +360,9 @@ public class Client {
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
 			state.Unpack_Head(bytes1, bufferedInputStream, OffSocket, InetAddress.getLocalHost().toString());
+			bufferedInputStream.close();
+			inputstream.close();
+			OffSocket.close();
 			if(state.HasError) {
 				return;
 			}		
@@ -377,6 +397,8 @@ public class Client {
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
 			state.Unpack_Head(bytes1, bufferedInputStream, OnSocket, InetAddress.getLocalHost().toString());
+			bufferedInputStream.close();
+			inputstream.close();
 			if(state.HasError) {
 				return;
 			}		
@@ -419,12 +441,13 @@ public class Client {
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
 			state.Unpack_Head(bytes1, bufferedInputStream, ChatSocket, InetAddress.getLocalHost().toString());
+			bufferedInputStream.close();
+			inputstream.close();
 			if(state.HasError) {
 				return;
 			}		
 		}
-		
-		
+			
 		public static byte[] readFixedLengthArray(BufferedInputStream serverSocketBis,int length)
 			        throws SocketTimeoutException, IOException{  //读对应长度的byte数组
 			    byte [] result = new byte[length];  
@@ -440,8 +463,7 @@ public class Client {
 			    }  
 			       return result;  
 			}
-		 
-		 
+		 	 
 		public void send(byte[] msg) {
 			try {
 				C_Ssocket.getOutputStream().write(msg);

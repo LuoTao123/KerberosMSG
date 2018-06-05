@@ -1,4 +1,5 @@
 package DataBase;
+import java.math.BigInteger;
 import java.sql.Connection;
 import Package.Authenticator;
 import Package.Ticket;
@@ -149,7 +150,7 @@ public class sql {
 		return;
 	}
 	
-	public void AddNewUsers(int IDc,String Hash_PASS)throws Exception{
+	public void AddNewUsers(int IDc,BigInteger BI)throws Exception{
 		Connection connection=null;
 		Statement statement =null;	    
 		String user="root";
@@ -159,7 +160,7 @@ public class sql {
 		System.out.println("成功连接mysql数据库"+connection);
 		statement=connection.createStatement();
 		String t="";
-		t="insert into IDtoPass values('"+IDc+"','"+Hash_PASS+"')";
+		t="insert into IDtoPass values('"+IDc+"','"+BI+"')";
 		System.out.println(t);
 		statement.executeUpdate(t);
 		statement.close();
@@ -227,7 +228,7 @@ public class sql {
 		return;
 	}
 	
-	public String HasAIDc (int idc) throws Exception	//如果有该账号则返回真
+	public BigInteger HasAIDc (int idc) throws Exception	//如果有该账号则返回真
 	 {
 	 	Connection connection=null;
 	 	Statement statement =null;
@@ -238,21 +239,19 @@ public class sql {
 	 	connection= DriverManager.getConnection(url, user, password);//连接数据库
 	 	System.out.println("成功连接mysql数据库"+connection);
 	 	statement=connection.createStatement();
-	 	String need = null;
+	 	BigInteger need = null;
 	 	String t = "Select * From IDToPass where IDc="+"'"+idc+"'";
 	 	System.out.println(t);
 	 	rs=statement.executeQuery(t);
 	 	if(rs.next()){
-	 		need = rs.getString("IDc");
-	 		need +=" ";
-	 		need += rs.getString("Hash_Password");
+	 		need = new BigInteger(rs.getString("Hash_Password"));
 	 	}
 	 	statement.close();
 	 	connection.close();
 	 	return need;
 	 }
 	
-	public void UpdatePassword(int idc,String newPassword) throws Exception{
+	public void UpdatePassword(int idc,BigInteger newPassword) throws Exception{
 		Connection connection=null;
 		Statement statement =null;
 		String user="root";

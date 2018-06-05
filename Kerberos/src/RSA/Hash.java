@@ -10,8 +10,10 @@ public class Hash {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] input = text.getBytes();
             byte[] buff = md.digest(input);
-            buff[0] = (byte)0x10;
-            Text = new BigInteger(buff);
+            byte[] bytes8 = new byte[8];
+            System.arraycopy(buff, 0, bytes8, 0, 8);
+            bytes8[0] = (byte)0x10;
+            Text = new BigInteger(bytes8);
         } catch (Exception e) {
             e.printStackTrace();
         }

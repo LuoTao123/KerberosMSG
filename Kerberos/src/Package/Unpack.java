@@ -13,6 +13,7 @@ import DES.Text;
 public class Unpack {
 	
 	public Data_Regist Unpack_0x00(byte[] NewByte){
+		System.out.println("½â°üÀ²");
 		Data_Regist DR = new Data_Regist();
 		byte[] IDcByte = new byte[4];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);

@@ -26,7 +26,7 @@ public class Pack {
 		byte[] PSWByte=DR.getRSA_HASH_PASSWORD().toByteArray();
 		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
 		if(PSWByte.length==129){	
-			System.arraycopy(PSWByte, 1, NewByte, 4, PSWByte.length);
+			System.arraycopy(PSWByte, 0, NewByte, 4, PSWByte.length);
 		}else if(PSWByte.length<129){
 			for(int i = 0;i<129-PSWByte.length;i++){
 				PSWByte[i+4] = (byte)0x00;
