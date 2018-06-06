@@ -186,7 +186,14 @@ public class Pack {
 			e.printStackTrace();
 		}
 		byte[] LTByte = IntToByteArray2(AC.getLT());
-		byte[] KeyctgsByte = AC.getTicket().getKey().toByteArray();
+		String str1 = AC.getTicket().getKey().toString();
+		byte[] KeyctgsByte = null;
+		try {
+			KeyctgsByte = str.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		byte[] IDcByte = IntToByteArray2(AC.getTicket().getID1());
 		byte[] ADcByte = IntToByteArray2(AC.getTicket().getAD());
 		byte[] IDtgs1Byte = IntToByteArray2(AC.getTicket().getID2());
@@ -226,7 +233,7 @@ public class Pack {
 		byte ChangedTicket[] = text.DESSupreier(0, TicketByte, Keytgs);
 		System.arraycopy(ChangedTicket, 0, NewByte, 47, ChangedTicket.length);
 		//Ekcº”√‹
-		byte[] ChangedNewByte = text.DESSupreier(0, TicketByte, Keyc);
+		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, Keyc);
 		return ChangedNewByte;
 	}
 	

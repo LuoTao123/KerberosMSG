@@ -17,7 +17,6 @@ public class Connection extends Thread{
 		this.ip = ip;
 		this.client = client;
 		try {
-			System.out.println("????");
 			inputStream = client.getInputStream();
 			bufferedInputStream =new BufferedInputStream(inputStream);
 		} catch (IOException e) {

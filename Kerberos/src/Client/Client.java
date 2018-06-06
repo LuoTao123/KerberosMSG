@@ -155,10 +155,10 @@ public class Client {
 
 		public void login(String IDc,String Psw) throws IOException {
 			
-			Socket ASsocket = new Socket("127.0.0.1",10000);
-			Socket TGSsocket = new Socket("127.0.0.2",10000);
-			Socket Vsocket = new Socket("127.0.0.3",10000);
-			STATE state = new STATE();
+			Socket ASsocket = new Socket("192.168.1.103",10000);
+			Socket TGSsocket = new Socket("192.168.1.103",20000);
+			Socket Vsocket = new Socket("192.168.1.103",30000);
+			STATEC state = new STATEC();
 			state.C_ASsocket = ASsocket;
 			state.C_TGSSocket = TGSsocket;
 			state.C_VSocket = Vsocket;

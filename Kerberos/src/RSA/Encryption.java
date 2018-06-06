@@ -161,7 +161,9 @@ public class Encryption {
 	
 	
 	public BigInteger encryption(BigInteger inputText,String name){
+		System.out.println("??????????");
 		renzhen(name);
+		System.out.println("??????????");
 //		String input=ReadText(filename);
 /*		byte[] input = null;
 		try {
@@ -175,6 +177,7 @@ public class Encryption {
 		BigInteger Ciphertext=new BigInteger("1");
 		Miller_Rabin MR=new Miller_Rabin();
 		Ciphertext=MR.Power(Text, PublicKey, Mod);
+		System.out.println("??????????");
 		//加密或认真完成
 		IsWork = true;
 /*		String text=null;

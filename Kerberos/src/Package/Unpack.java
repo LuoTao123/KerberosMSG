@@ -134,7 +134,14 @@ public class Unpack {
 		System.arraycopy(NewByte, 24, TS2Byte, 0, TS2Byte.length);
 		System.arraycopy(NewByte, 43, LTByte, 0, LTByte.length);
 		System.arraycopy(NewByte, 47, ChangedTicket, 0, ChangedTicket.length);
-		BigInteger Key = new BigInteger(KeyByte);
+		String str = null;
+		try {
+			str = new String(KeyByte,"UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		BigInteger Key = new BigInteger(str);
 		int IDtgs = ByteArrayToInt2(IDtgsByte);
 		String TS2 = null;
 		try {

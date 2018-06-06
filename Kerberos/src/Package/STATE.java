@@ -341,7 +341,7 @@ public class STATE extends Thread{
 		System.out.println("修改失败,原密码错误");
 	}
 	
-		public void zhuangtaiji7(C_AS CA,String ip){
+	public void zhuangtaiji7(C_AS CA,String ip){
 		int IDc = CA.getIDc();
 		setIDC(IDc);
 		int IDt = CA.getIDtgs();
@@ -364,10 +364,6 @@ public class STATE extends Thread{
 				DES des =new DES();
 				AS_C AC = new AS_C();
 				BigInteger Keyctgs = des.CreateDESKey();
-				int[] KeyctgsInts = kkey.StringToInts(kkey.BigIntegerToString(Keyctgs));
-				//保存Keyctgs到文件
-				kkey.SaveKeyToFile("Keyctgs.txt",Keyctgs);
-				
 				TimeStamp TS2 = new TimeStamp();
 				String TimeS = TS2.getTimeString();
 				setTS2(TimeS);
@@ -457,11 +453,6 @@ public class STATE extends Thread{
 				//AS_C AC = new AS_C();
 				TGS_C TC = new TGS_C();
 				BigInteger Keycv = des.CreateDESKey();
-				int[] KeycvInts = kkey.StringToInts(kkey.BigIntegerToString(Keycv));
-				
-				//保存Keycv
-				kkey.SaveKeyToFile("Keycv", Keycv);
-				
 				TimeStamp TS1 = new TimeStamp();
 				String TimeS = TS1.getTimeString();
 				setTS4(TimeS);

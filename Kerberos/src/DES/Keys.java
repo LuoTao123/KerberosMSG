@@ -68,7 +68,8 @@ public class Keys {
 		BigInteger TWO = new BigInteger("2");
 		while(true){
 			BI1 = BI.divideAndRemainder(TWO)[0];
-			str = BI1.toString()+str;
+			str = BI.divideAndRemainder(TWO)[1]+str;
+			BI = BI1;
 			if(BI1.equals(BigInteger.ZERO)){
 				break;
 			}

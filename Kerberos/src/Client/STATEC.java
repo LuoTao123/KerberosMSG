@@ -365,7 +365,8 @@ public class STATEC extends Thread{
 		C_TGS CT = new C_TGS();
 		BigInteger Keyctgs = AC.getKey();
 		Keys Key1 = new Keys();
-		int[] KeyctgsInts = Key1.StringToInts(Key1.BigIntegerToString(Keyctgs));
+		String strbuf = Key1.BigIntegerToString(Keyctgs);
+		int[] KeyctgsInts = Key1.StringToInts(strbuf);
 		//保存密钥到文件
 		Key1.SaveKeyToFile("Keyctgs.txt", Keyctgs);
 		TimeStamp TS1 = new TimeStamp();
@@ -373,15 +374,15 @@ public class STATEC extends Thread{
 		setTS3(TimeS);
 		int lifetime = 20;
 		setLifetime(lifetime);
-		Ticket ticket = new Ticket();
+		byte[] ticket = new byte[55];
 		Authenticator auth = new Authenticator();
-		ticket = getTickettgs();
+		ticket = AC.getChangedTicket();
 		int ADc = pack.ByteArrayToInt2(pack.IPStringToByte(ip));
 		auth.setAD(ADc);
 		auth.setID(IDc);
 		auth.setTS(TimeS);
 		CT.setID(this.IDv);
-		CT.setTicket(ticket);
+		CT.setChangedTicket(ticket);
 		CT.setAuthenticator(auth);
 		this.C_Ssocket = this.C_TGSSocket;
 		byte[] Headmsg = pack.Pack_0x09_Cont();
@@ -492,6 +493,8 @@ public class STATEC extends Thread{
 		setTS4(TS);
 		BigInteger Keycv = TC.getKey();
 		Keys Key3 = new Keys();
+		String strbuf = Key3.BigIntegerToString(Keycv);
+		int[] KeyctgsInts = Key3.StringToInts(strbuf);
 		Key3.SaveKeyToFile("Keycv.txt", Keycv);
 		int[]  KeycvInts = Key3.StringToInts(Key3.BigIntegerToString(Keycv));
 		Ticket ticketv  = TC.getTicket();
