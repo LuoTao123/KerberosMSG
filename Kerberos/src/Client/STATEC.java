@@ -1,5 +1,4 @@
-package Package;
-
+package Client;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -8,12 +7,30 @@ import java.net.SocketTimeoutException;
 import DataBase.sql;
 import DES.*;
 import Kerberos.TimeStamp;
+import Package.AS_C;
+import Package.Authenticator;
+import Package.C_AS;
+import Package.C_TGS;
+import Package.C_V;
+import Package.Data_Chat;
+import Package.Data_Modify;
+import Package.Data_Offline;
+import Package.Data_Online;
+import Package.Data_Regist;
+import Package.Data_Update;
+import Package.EK_message;
+import Package.IPtoSocket;
+import Package.Pack;
+import Package.TGS_C;
+import Package.Ticket;
+import Package.Unpack;
+import Package.V_C;
 import RSA.Decryption;
 import RSA.Hash;
 import Server.Server;
 import Server.SendThread;
 
-public class STATE extends Thread{
+public class STATEC extends Thread{
 	public static int IDas = 1000000000;
 	public static int IDtgs = 1000000001;
 	public static int IDv = 1000000002;
@@ -171,29 +188,16 @@ public class STATE extends Thread{
 			socket.getOutputStream().write(pack.Server_Return());
 			byte[] bytess  = null;
 			switch(NewByte[1]){
-				case (byte)0x00:	bytess = new byte[314];
-									bufferedInputStream.read(bytess, 0, 314);
-									Server_Regist(unpack.Unpack_0x00(bytess));
-									break;
-				case (byte)0x01:	bytess = new byte[624];
-									bufferedInputStream.read(bytess, 0, 624);
-									Server_Modify(unpack.Unpack_0x01(bytess));
-									break;
 				case (byte)0x10:	bytess = new byte[4];
 									bufferedInputStream.read(bytess, 0, 4);
-									OnlineTransmit(unpack.Unpack_0x10(bytess),socket);
+									Online(unpack.Unpack_0x10(bytess),socket);
 									break;
 									//OnlineTransmit(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
 				case (byte)0x13:	bytess = new byte[149];
 									bufferedInputStream.read(bytess, 0, 149);
-									ChatTransmit(socket,bytess);
+									Chat(unpack.Unpack_0x1c(bytess),socket);
 									break;
 									//ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
-				case (byte)0x07:	bytess = new byte[27];
-									bufferedInputStream.read(bytess, 0, 27);
-									zhuangtaiji7(unpack.Unpack_0x07(bytess),ip);
-									break;
-									//zhuangtaiji7(unpack.Unpack_0x07(readFixedLengthArray(bufferedInputStream,27)),ip);break;
 				case (byte)0x08:	bytess = new byte[80];
 									bufferedInputStream.read(bytess, 0, 80);
 									zhuangtaiji8(unpack.Unpack_0x08(bytess),ip);
@@ -221,30 +225,15 @@ public class STATE extends Thread{
 									//zhuangtaiji0c(unpack.Unpack_0x0c(readFixedLengthArray(bufferedInputStream,19),Keycv));break;
 				case (byte)0x16:	bytess = new byte[4];
 									bufferedInputStream.read(bytess, 0, 4);
-									OfflineTransmit(unpack.Unpack_0x16(bytess),socket);
+									Offline(unpack.Unpack_0x16(bytess),socket);
 									break;
 									//OfflineTransmit(unpack.Unpack_0x16(readFixedLengthArray(bufferedInputStream,4)),socket);break;
 				case (byte)0x19:	bytess = new byte[9];
 									bufferedInputStream.read(bytess, 0, 9);
-									Keys key1 = new Keys();
-									zhuangtaiji19(unpack.Unpack_0x19(bytess,key1.ReadKeysFromFile("Key1.txt")));
+									Keys Key1 = new Keys();
+									zhuangtaiji19(unpack.Unpack_0x19(bytess,Key1.ReadKeysFromFile("Key1.txt")));
 									break;
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
-				case (byte)0x1c:	bytess = new byte[149];
-									bufferedInputStream.read(bytess, 0, 149);
-									zhuangtaiji1c(unpack.Unpack_0x1c(bytess),socket);
-									break;
-									//zhuangtaiji1c(unpack.Unpack_0x1c(readFixedLengthArray(bufferedInputStream,149)),socket);break;
-				case (byte)0x1d:	bytess = new byte[4];
-									bufferedInputStream.read(bytess, 0, 4);
-									zhuangtaiji1d(unpack.Unpack_0x10(bytess),socket);
-									break;
-									//zhuangtaiji1d(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
-				case (byte)0x1e:	bytess = new byte[4];
-									bufferedInputStream.read(bytess, 0, 4);
-									zhuangtaiji1e(unpack.Unpack_0x16(bytess),socket);
-									break;
-									//zhuangtaiji1e(unpack.Unpack_0x16(readFixedLengthArray(bufferedInputStream,4)),socket);break;
 
 				default : System.out.println("非法数据包");
 			}
@@ -253,66 +242,6 @@ public class STATE extends Thread{
 			System.out.println("该包非法！");
 			///////////////////////////////////////////////////////////////log
 		}
-	}
-	
-	public void Server_Regist(Data_Regist DR){
-		int IDc = DR.getIDc();
-		BigInteger RSA_HASH_PASSWORD = DR.getRSA_HASH_PASSWORD();
-//		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
-		Decryption DE = new Decryption();
-		BigInteger HASH_PASSWORD = DE.decryption(RSA_HASH_PASSWORD, String.valueOf(IDis));
-		sql a = new sql();
-//		String String_Hash_PASSWORD = key.BigIntegerToString(HASH_PASSWORD);
-		try {
-			Pack pack = new Pack();
-			//账号不存在则加入新账号，并返回0x02,否则0x03.
-			if(a.HasAIDc(IDc)==null){
-				a.AddNewUsers(IDc, HASH_PASSWORD);
-				send(pack.Pack_0x02_Cont());
-			}else{
-				send(pack.Pack_0x03_Cont());
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-/*		System.out.println(DR.getIDc());
-		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
-		System.out.println(HASH_PASSWORD);*/
-	}
-	
-	public void Server_Modify(Data_Modify DM){
-		int IDc = DM.getIDc();
-		BigInteger RSA_HASH_PASSWORD = DM.getRSA_HASH_PASSWORD();
-		BigInteger RSA_HASH_NPASSWORD = DM.getRSA_HASH_NPASSWORD();
-		Decryption DE = new Decryption();
-		BigInteger HASH_PASSWORD = DE.decryption(RSA_HASH_PASSWORD, String.valueOf(IDis));
-		BigInteger HASH_NPASSWORD = DE.decryption(RSA_HASH_NPASSWORD, String.valueOf(IDis));
-		try {
-			sql a = new sql();
-			Pack pack = new Pack();
-			//账号不存在则加入新账号，并返回0x02,否则0x03.
-			BigInteger oldPSW = a.HasAIDc(IDc);
-			if(oldPSW!=null){
-				System.out.println(HASH_PASSWORD);
-				System.out.println("????????/");
-				if(oldPSW.equals(HASH_PASSWORD)){
-					System.out.println("????????");
-					a.UpdatePassword(IDc, HASH_NPASSWORD);
-					send(pack.Pack_0x04_Cont());
-				}else{
-					send(pack.Pack_0x06_Cont());
-				}
-			}else{
-				send(pack.Pack_0x05_Cont());
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(DM.getIDc());
-		System.out.println(DM.getRSA_HASH_PASSWORD().toString());
-		System.out.println(DM.getRSA_HASH_NPASSWORD().toString());
 	}
 	
 	public void zhuangtaiji2(){
@@ -341,7 +270,7 @@ public class STATE extends Thread{
 		System.out.println("修改失败,原密码错误");
 	}
 	
-		public void zhuangtaiji7(C_AS CA,String ip){
+	public void zhuangtaiji7(C_AS CA,String ip){
 		int IDc = CA.getIDc();
 		setIDC(IDc);
 		int IDt = CA.getIDtgs();
@@ -358,14 +287,16 @@ public class STATE extends Thread{
 				e.printStackTrace();
 			}
 			if(PSW !=null) {
+				Text text = new Text();
 				Keys kkey = new Keys();
 				int[] Keytgs = kkey.ReadKeysFromFile("Keytgs.txt");
 				int[] KeycInts = kkey.StringToInts(kkey.BigIntegerToString(PSW));
 				DES des =new DES();
 				AS_C AC = new AS_C();
 				BigInteger Keyctgs = des.CreateDESKey();
-				int[] KeyctgsInts = kkey.StringToInts(kkey.BigIntegerToString(Keyctgs));
-				//保存Keyctgs到文件
+				//int[] KeyctgsInts = kkey.StringToInts(kkey.BigIntegerToString(Keyctgs));
+				
+				//保存Keyctgs
 				kkey.SaveKeyToFile("Keyctgs.txt",Keyctgs);
 				
 				TimeStamp TS2 = new TimeStamp();
@@ -381,14 +312,36 @@ public class STATE extends Thread{
 				ticket.setKey(Keyctgs);
 				ticket.setTS(TimeS);
 				ticket.setLT(lifetime);
+
 				
 				AC.setID(IDc);
 				AC.setKey(Keyctgs);
 				AC.setLT(lifetime);
 				AC.setTicket(ticket);
 				AC.setTS(TimeS);
-				byte[] msg = pack.Pack_0x08_Data(AC,KeycInts,Keytgs);
-				send(msg);
+				byte[] Headmsg = pack.Pack_0x08_Cont();
+				send(Headmsg);
+				BufferedInputStream bufferedInputStream = null;
+				try {
+					bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				byte[] bytes = new byte[2];
+				try {
+					bufferedInputStream.read(bytes,0,2);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+					send(pack.Pack_0x08_Data(AC,KeycInts,Keytgs));
+				}
+				else {
+					System.out.println("客户端不处于就绪状态，不能进行认证");
+					return;
+				}
 			}else {
 				byte[] msg = pack.Pack_0x0d_Cont();
 				send(msg);
@@ -403,7 +356,7 @@ public class STATE extends Thread{
 	}
 	
 	//客户端完成收包拆包
-		public void zhuangtaiji8(AS_C AC,String ip){
+	public void zhuangtaiji8(AS_C AC,String ip){
 		int IDc =IDC;
 		int IDt = AC.getID();
 		String TS2 = AC.getTS();
@@ -422,19 +375,39 @@ public class STATE extends Thread{
 		setLifetime(lifetime);
 		Ticket ticket = new Ticket();
 		Authenticator auth = new Authenticator();
-		ticket = AC.getTicket();
+		ticket = getTickettgs();
 		int ADc = pack.ByteArrayToInt2(pack.IPStringToByte(ip));
 		auth.setAD(ADc);
 		auth.setID(IDc);
 		auth.setTS(TimeS);
-		
 		CT.setID(this.IDv);
 		CT.setTicket(ticket);
 		CT.setAuthenticator(auth);
-		byte[] msg = pack.Pack_0x09_Data(CT,KeyctgsInts);
 		this.C_Ssocket = this.C_TGSSocket;
-		send(msg);
-		System.out.println("AS->C成功！");
+		byte[] Headmsg = pack.Pack_0x09_Cont();
+		send(Headmsg);
+		BufferedInputStream bufferedInputStream = null;
+		try {
+			bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		byte[] bytes = new byte[2];
+		try {
+			bufferedInputStream.read(bytes,0,2);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+			byte[] msg = pack.Pack_0x09_Data(CT,KeyctgsInts);
+			send(msg);
+		}
+		else {
+			System.out.println("服务器不处于就绪状态，不能进行认证");
+			return;
+		}
 	}
 	
 	public void zhuangtaiji9(C_TGS CT,String ip){
@@ -457,7 +430,7 @@ public class STATE extends Thread{
 				//AS_C AC = new AS_C();
 				TGS_C TC = new TGS_C();
 				BigInteger Keycv = des.CreateDESKey();
-				int[] KeycvInts = kkey.StringToInts(kkey.BigIntegerToString(Keycv));
+				//int[] KeycvInts = kkey.StringToInts(kkey.BigIntegerToString(Keycv));
 				
 				//保存Keycv
 				kkey.SaveKeyToFile("Keycv", Keycv);
@@ -481,8 +454,30 @@ public class STATE extends Thread{
 				TC.setID(IDv);
 				TC.setKey(Keycv);
 				TC.setTS(TimeS);
-				byte[] msg = pack.Pack_0x0a_Data(TC,KeyctgsInts,Keyv);
-				send(msg);
+				byte[] Headmsg = pack.Pack_0x0a_Cont();
+				send(Headmsg);
+				BufferedInputStream bufferedInputStream = null;
+				try {
+					bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				byte[] bytes = new byte[2];
+				try {
+					bufferedInputStream.read(bytes,0,2);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+					byte[] msg = pack.Pack_0x0a_Data(TC,KeyctgsInts,Keyv);
+					send(msg);
+				}
+				else {
+					System.out.println("客户端不处于就绪状态，不能进行认证");
+					return;
+				}
 		}else {
 			byte[] msg = pack.Pack_0x0e_Cont();
 			send(msg);
@@ -498,7 +493,7 @@ public class STATE extends Thread{
 		BigInteger Keycv = TC.getKey();
 		Keys Key3 = new Keys();
 		Key3.SaveKeyToFile("Keycv.txt", Keycv);
-		int[] KeycvInts = Key3.StringToInts(Key3.BigIntegerToString(Keycv));
+		int[]  KeycvInts = Key3.StringToInts(Key3.BigIntegerToString(Keycv));
 		Ticket ticketv  = TC.getTicket();
 		Authenticator auth = new Authenticator();	
 		
@@ -514,12 +509,33 @@ public class STATE extends Thread{
 		auth.setAD(ADc);
 		auth.setID(IDc);
 		auth.setTS(TimeS);
-		
 		CV.setAuthenticator(auth);
 		CV.setTicket(ticketv);
-		byte[] msg = pack.Pack_0x0b_Data(CV,KeycvInts);
 		this.C_Ssocket = this.C_VSocket;
-		send(msg);
+		byte[] Headmsg = pack.Pack_0x0b_Cont();
+		send(Headmsg);
+		BufferedInputStream bufferedInputStream = null;
+		try {
+			bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		byte[] bytes = new byte[2];
+		try {
+			bufferedInputStream.read(bytes,0,2);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+			byte[] msg = pack.Pack_0x0b_Data(CV,KeycvInts);
+			send(msg);
+		}
+		else {
+			System.out.println("客户端不处于就绪状态，不能进行认证");
+			return;
+		}
 		System.out.println("TGS->C");
 	}
 	
@@ -546,15 +562,37 @@ public class STATE extends Thread{
 				int ADc = pack.ByteArrayToInt2(pack.IPStringToByte(ip));
 				V_C VC = new V_C();
 
-				String TS5 = auth.getTS();
+				String TS5 = getTS5();
 				int Time = Integer.valueOf(TS5);
 				String Times = String.valueOf(Time+1);
 				setTS6(TS6);
 				int lifetime = 20;
 
 				VC.setTS(Times);
-				byte[] msg = pack.Pack_0x0c_Data(VC,KeycvInts);
-				send(msg);
+				byte[] Headmsg = pack.Pack_0x0c_Cont();
+				send(Headmsg);
+				BufferedInputStream bufferedInputStream = null;
+				try {
+					bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				byte[] bytes = new byte[2];
+				try {
+					bufferedInputStream.read(bytes,0,2);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+					byte[] msg = pack.Pack_0x0c_Data(VC,KeycvInts);
+					send(msg);
+				}
+				else {
+					System.out.println("客户端不处于就绪状态，不能进行认证");
+					return;
+				}
 			}else {
 				byte[] msg = pack.Pack_0x0f_Cont();
 				send(msg);
@@ -570,9 +608,9 @@ public class STATE extends Thread{
 		String Time = getTS5();
 		int time = Integer.valueOf(Time);
 		String TM = String.valueOf(time+1);
-		String TM1 = VC.getTS();
+		String TM1 = getTS6();
 		if(TM.equals(TM1)) {
-			System.out.println("C->V成功");
+			System.out.println("C->V");
 		}
 	}
 
@@ -606,7 +644,7 @@ public class STATE extends Thread{
 		System.out.println("下线失败");
 	}
 	
-//收更新密钥包///////////存key1
+	////////////////////////////////////////////////////////////
 	public void zhuangtaiji19(Data_Update DU){
 		BigInteger Key1 = DU.getKey();
 		//Key1写入文件
@@ -624,8 +662,32 @@ public class STATE extends Thread{
 		//弹窗
 		System.out.println("更新密钥失败");
 	}
-	//////////////////////客户端 //收聊天包////////////////////////////////////////
-	public void zhuangtaiji1c(Data_Chat DC,Socket socket){
+	
+	
+	//上线发
+	public void Online(Data_Online DOn,Socket socket){
+		IPtoSocket IS = new IPtoSocket();
+		IS.IDc = DOn.getIDc();
+		IS.socket = socket;
+		Pack pack = new Pack();
+		try {
+			socket.getOutputStream().write(pack.Pack_0x11_Cont());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(IS.IDc+"上线");
+	}
+	
+	public void zhuangtaiji11(){
+		System.out.println("上线成功！");
+	}
+	
+	public void zhuangtaiji12(){
+		System.out.println("上线失败！");
+	}
+	
+	public void Chat(Data_Chat DC,Socket socket){
 		EK_message EK_m = DC.getEKMSG();
 		int IDc = DC.getIDc();
 		String idc = String.valueOf(IDc);
@@ -652,75 +714,6 @@ public class STATE extends Thread{
 		//////////////////////////////修改
 		/////////////////////////////////////////////////////////////////////////////////////////
 	}
-	
-	//上线发
-	public void OnlineTransmit(Data_Online DOn,Socket socket){
-		IPtoSocket IS = new IPtoSocket();
-		IS.IDc = DOn.getIDc();
-		IS.socket = socket;
-		Pack pack = new Pack();
-		try {
-			socket.getOutputStream().write(pack.Pack_0x11_Cont());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//上线先给上线用户发最新的KeySession
-		Data_Update DU = new Data_Update();
-		DU.setKey(Server.Keysession);
-		Text text = new Text();
-		Keys kkey = new Keys();
-		sql a = new sql();
-		BigInteger PSW = null;
-		try {
-			PSW = a.HasAIDc(IS.IDc);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		int[] Keycc = kkey.StringToInts(kkey.BigIntegerToString(PSW));
-		@SuppressWarnings("unused")
-		SendThread ST1 = new SendThread(socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));
-		//再将上线用户加入到列表中去
-		Server.SocketList.addElement(IS);
-		IPtoSocket NewIS = null;
-		//开始给所有的用户通知上线
-		for(int i=0;i<Server.SocketList.size();i++){
-			NewIS = Server.SocketList.elementAt(i);
-			@SuppressWarnings("unused")
-			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x10_Cont(),pack.Pack_0x10_Data(DOn));
-		}
-		System.out.println(DOn.getIDc()+"上线啦！");
-	}
-	
-	public void zhuangtaiji11(){
-		System.out.println("上线成功！");
-	}
-	
-	public void zhuangtaiji12(){
-		System.out.println("上线失败！");
-	}
-	
-	public void ChatTransmit(Socket socket,byte[] bytes){
-		Pack pack = new Pack();
-		try {
-			socket.getOutputStream().write(pack.Pack_0x14_Cont());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		IPtoSocket NewIS = null;
-		for(int i=0;i<Server.SocketList.size();i++){
-			NewIS = Server.SocketList.elementAt(i);
-			@SuppressWarnings("unused")
-			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x1c_Cont(),bytes);
-		}
-		//EK_message EKm = DC.getEKMSG();
-		//System.out.println(DC.getIDc());
-		//System.out.println(EKm.getMSG().toString());
-		//System.out.println(EKm.getH_MSG().toString());
-		//System.out.println(EKm.getSIGN().toString());
-	}
 
 	public void zhuangtaiji14(){
 		System.out.println("发送聊天信息成功！");
@@ -730,23 +723,8 @@ public class STATE extends Thread{
 		System.out.println("发送聊天内容失败！");
 	}
 	
-	//上线收
-	public void zhuangtaiji1d(Data_Online DOn,Socket socket){
-		IPtoSocket IS = new IPtoSocket();
-		IS.IDc = DOn.getIDc();
-		IS.socket = socket;
-		Pack pack = new Pack();
-		try {
-			socket.getOutputStream().write(pack.Pack_0x11_Cont());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(IS.IDc+"上线");
-	}
-	
 	//下线收
-	public void zhuangtaiji1e(Data_Offline DOf,Socket socket) {
+	public void Offline(Data_Offline DOf,Socket socket){
 		IPtoSocket IS = new IPtoSocket();
 		IS.IDc = DOf.getIDc();
 		IS.socket = socket;
@@ -758,31 +736,6 @@ public class STATE extends Thread{
 			e.printStackTrace();
 		}
 		System.out.println(IS.IDc+"下线");
-	}
-	
-	//下线发
-	public void OfflineTransmit(Data_Offline DOf,Socket socket){
-		IPtoSocket IS = new IPtoSocket();
-		IS.IDc = DOf.getIDc();
-		IS.socket = socket;
-		Pack pack = new Pack();
-		try {
-			socket.getOutputStream().write(pack.Pack_0x17_Cont());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		IPtoSocket NewIS = null;
-		for(int i=0;i<Server.SocketList.size();i++){
-			NewIS = Server.SocketList.elementAt(i);
-			if(NewIS.IDc == IS.IDc){
-				Server.SocketList.remove(i);
-				continue;
-			}
-			@SuppressWarnings("unused")
-			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
-		}
-		System.out.println(DOf.getIDc()+"下线啦！");
 	}
 
 	public byte[] readFixedLengthArray(BufferedInputStream serverSocketBis,int length)

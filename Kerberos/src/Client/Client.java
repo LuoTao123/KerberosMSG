@@ -1,7 +1,6 @@
 package Client;
 
 import Package.*;
-import RSA.Hash;
 import DES.*;
 import RSA.*;
 
@@ -186,11 +185,13 @@ public class Client {
 			}
 			else {
 				System.out.println("客户端不处于就绪状态，不能进行认证");
+				return;
 			}
 			//接收回复
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
 			state.Unpack_Head(bytes1, bufferedInputStream, ASsocket, InetAddress.getLocalHost().toString());
+			//AS_C整个包
 			setKeyctgs(state.getKeyctgs());
 			setTS2(state.getTS2());
 			bufferedInputStream.close();
@@ -227,7 +228,7 @@ public class Client {
 			int time = Integer.valueOf(TS);
 			String Time = String.valueOf(time+1);
 			if(TS.equals(Time)) {
-				System.out.println("Keberos 认证完成，实现登录");
+				System.out.println("Kerberos 认证完成，实现登录");
 			}
 		}
 			
@@ -274,6 +275,8 @@ public class Client {
 				System.out.println("账号已存在！");
 				return;
 			}
+			ManagementOfCredential MOF = new ManagementOfCredential();
+			MOF.Process1(IDc);
 		}	
 		
 		public void Modify(String IDc,String Psw,String Npsw) throws IOException {
@@ -351,6 +354,7 @@ public class Client {
 			}
 			else {
 				System.out.println("客户端下线失败");
+				return;
 			}
 			//接收请求
 			byte[] bytes1 = new byte[2];
@@ -388,6 +392,7 @@ public class Client {
 			}
 			else {
 				System.out.println("客户端上线失败");
+				return;
 			}
 			//接收请求
 			byte[] bytes1 = new byte[2];
@@ -417,10 +422,8 @@ public class Client {
 			EK_m.setH_MSG(hash_msg);
 			EK_m.setSIGN(rsa_msg);
 			Data_Chat DC = new Data_Chat();
-			DC.setEK_message(EK_m);
-			
-			//发送消息
-			
+			DC.setEK_message(EK_m);			
+			//发送消息			
 			Pack pack = new Pack();
 			InputStream inputstream =ChatSocket.getInputStream();
 			ChatSocket.getOutputStream().write(pack.Pack_0x13_Cont());

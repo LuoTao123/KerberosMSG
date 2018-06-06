@@ -124,16 +124,16 @@ public class Unpack {
 		int[] Keyc = kkey.ReadKeysFromFile("Keyc.txt");
 		//Ekc解密
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyc);
-		byte[] KeyByte = new byte[9];
+		byte[] KeyByte = new byte[20];
 		byte[] IDtgsByte = new byte[4];
 		byte[] TS2Byte = new byte[19];
 		byte[] LTByte = new byte[4];
-		byte[] ChangedTicket = new byte[44];
+		byte[] ChangedTicket = new byte[55];
 		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
-		System.arraycopy(NewByte, 9, IDtgsByte, 0, IDtgsByte.length);
-		System.arraycopy(NewByte, 13, TS2Byte, 0, TS2Byte.length);
-		System.arraycopy(NewByte, 32, LTByte, 0, LTByte.length);
-		System.arraycopy(NewByte, 36, ChangedTicket, 0, ChangedTicket.length);
+		System.arraycopy(NewByte, 20, IDtgsByte, 0, IDtgsByte.length);
+		System.arraycopy(NewByte, 24, TS2Byte, 0, TS2Byte.length);
+		System.arraycopy(NewByte, 43, LTByte, 0, LTByte.length);
+		System.arraycopy(NewByte, 47, ChangedTicket, 0, ChangedTicket.length);
 		BigInteger Key = new BigInteger(KeyByte);
 		int IDtgs = ByteArrayToInt2(IDtgsByte);
 		String TS2 = null;
@@ -226,11 +226,12 @@ public class Unpack {
 		return CT;
 	}
 ///////////////////////////////	
-	public TGS_C Unpack_0x0a(byte[] ChangedNewByte,int[] Keyctgs){
+	public TGS_C Unpack_0x0a(byte[] ChangedNewByte){
 		Text text = new Text();
 		TGS_C TC = new TGS_C();
 		//Ekc,tgs解密
-		
+		Keys Key1 = new Keys();
+		int[] Keyctgs = Key1.ReadKeysFromFile("Keyctgs.txt");
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyctgs);
 		byte[] KeyByte = new byte[9];
 		byte[] IDvByte = new byte[4];
@@ -255,8 +256,9 @@ public class Unpack {
 		TC.setChangedTicket(TicketByte);
 		return TC;
 	}
+
 	
-	public C_V Unpack_0x0b(byte[] NewByte,int[] Keycv){
+	public C_V Unpack_0x0b(byte[] NewByte){
 		Text text = new Text();
 		C_V CV = new C_V();
 		Ticket ticket = new Ticket();
@@ -300,6 +302,9 @@ public class Unpack {
 		ticket.setLT(LT4);
 		ticket.setTS(TS4);
 		//Ekc,v解密
+		Keys Key1 = new Keys();
+		BigInteger Keyc_v = ticket.getKey();
+		int[] Keycv  = Key1.StringToInts(Key1.BigIntegerToString(Keyc_v));
 		byte[] AuthenByte = text.DESSupreier(1, ChangedAuthenByte, Keycv);
 		byte[] IDcByte1 = new byte[4];
 		byte[] ADcByte1 = new byte[4];
@@ -323,11 +328,13 @@ public class Unpack {
 		CV.setAuthenticator(Authen);
 		return CV;
 	}
+
 	
-	public V_C Unpack_0x0c(byte[] ChangedNewByte,int[] Keycv){
+	public V_C Unpack_0x0c(byte[] ChangedNewByte){
 		Text text = new Text();
 		//Ekc,tgs解密
-		
+		Keys Key1 = new Keys();
+		int[] Keycv = Key1.ReadKeysFromFile("Keycv.txt");
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keycv);
 		V_C VC = new V_C();
 		String TS5 = null;
@@ -340,6 +347,7 @@ public class Unpack {
 		VC.setTS(TS5);
 		return VC;
 	}
+
 	
 	public Data_Online Unpack_0x10(byte[] NewByte){
 		Data_Online DOn = new Data_Online();
@@ -383,9 +391,11 @@ public class Unpack {
 		return DOf;
 	}
 	
-	public Data_Update Unpack_0x19(byte[] ChangedNewByte){
+	public Data_Update Unpack_0x19(byte[] ChangedNewByte,int[] Keyc){
 		//DES解密
-		byte[] NewByte = DESCHULI(ChangedNewByte);
+		Text text = new Text();
+		//Ekc,tgs解密
+		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyc);
 		Data_Update DU = new Data_Update();
 		byte[] KeyByte = new byte[9];
 		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
@@ -393,14 +403,7 @@ public class Unpack {
 		DU.setKey(Key);
 		return DU;
 	}
-	
-	public byte[] DESCHULI(byte[] Origin){
-		byte[] Changed =new byte[Origin.length];
-		Changed = Origin;
-		////////////////////////////////////////////////////////////////
-		return Changed;
-	}
-	
+		
 	public byte[] IntToByteArray2(int value)     
 	{     
 	    byte[] src = new byte[4];    

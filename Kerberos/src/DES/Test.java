@@ -1,7 +1,9 @@
 package DES;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 
+import Package.AS_C;
 import RSA.Decryption;
 import RSA.Encryption;
 import RSA.Hash;
@@ -10,15 +12,30 @@ public class Test {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String Psw = "12345678";
+		DES des =new DES();
 		Hash hash = new Hash();
-		BigInteger hash_Password = hash.getMD5(Psw);
-		Encryption En = new Encryption();
-		Decryption De = new Decryption();
-		BigInteger BI = En.encryption(hash_Password, "1000000003");
-		BigInteger BW = De.decryption(BI, "1000000003");
-		System.out.println(hash_Password.toString());
-		System.out.println(BW.toString());
+		BigInteger Keyctgs = hash.getMD5("2212111111");
+		String str = Keyctgs.toString();
+		byte[] KeyByte = null;
+		try {
+			KeyByte = str.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(KeyByte.length);
+		String nstr = null;
+		try {
+			nstr = new String(KeyByte,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BigInteger NKey = new BigInteger(nstr);
+		System.out.println(nstr);
+		if(NKey.equals(Keyctgs)){
+			System.out.println("ПаµИ");
+		}
 //		DES des =new DES();
 //		des.ModeChoose();
 	}

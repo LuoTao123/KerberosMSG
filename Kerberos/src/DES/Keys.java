@@ -63,16 +63,17 @@ public class Keys {
 	}
 	
 	public String BigIntegerToString(BigInteger BI){				//直接的BigInteger转String
-		String Keys = null;
-		byte[] Key = BI.toByteArray();
-		byte[] NewKey = new byte[8];
-		if(Key.length==9){
-			System.arraycopy(Key, 1, NewKey, 0, NewKey.length);
-			Keys = ByteToString(NewKey);
-		}else{
-			Keys = ByteToString(Key);
+		String str = "";
+		BigInteger BI1 = null;
+		BigInteger TWO = new BigInteger("2");
+		while(true){
+			BI1 = BI.divideAndRemainder(TWO)[0];
+			str = BI1.toString()+str;
+			if(BI1.equals(BigInteger.ZERO)){
+				break;
+			}
 		}
-		return Keys;
+		return str;
 	}
 	
 	public int[] StringToInts(String str) {

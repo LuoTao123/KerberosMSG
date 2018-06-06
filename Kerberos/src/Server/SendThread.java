@@ -20,44 +20,12 @@ public class SendThread extends Thread{
 		try{
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(socket.getInputStream());
 			byte[] bytes = new byte[2];
-			while(true){
-				socket.getOutputStream().write(Head);
-				bufferedInputStream.read(bytes, 0, 2);
-				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-					socket.getOutputStream().write(Data);
-				}else{
-					System.out.println("客户端返回出错");
-					break;
-				}
-				if(Head[1]==(byte)0x10){
-					bufferedInputStream.read(bytes, 0, 2);
-					if(bytes[1]==(byte)0x11){
-						break;
-					}else{
-						continue;
-					}
-				}else if(Head[1]==(byte)0x1c){
-					bufferedInputStream.read(bytes, 0, 2);
-					if(bytes[1]==(byte)0x14){
-						break;
-					}else{
-						continue;
-					}
-				}else if(Head[1]==(byte)0x16){
-					bufferedInputStream.read(bytes, 0, 2);
-					if(bytes[1]==(byte)0x17){
-						break;
-					}else{
-						continue;
-					}
-				}else if(Head[1]==(byte)0x19){
-					bufferedInputStream.read(bytes, 0, 2);
-					if(bytes[1]==(byte)0x1a){
-						break;
-					}else{
-						continue;
-					}
-				}
+			socket.getOutputStream().write(Head);
+			bufferedInputStream.read(bytes, 0, 2);
+			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+				socket.getOutputStream().write(Data);
+			}else{
+				System.out.println("客户端返回出错");
 			}
 			bufferedInputStream.close();
 		}catch(IOException e){

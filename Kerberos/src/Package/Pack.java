@@ -167,9 +167,16 @@ public class Pack {
 	
 	public byte[] Pack_0x08_Data(AS_C AC,int[] Keyc,int[] Keytgs){
 		Text text = new Text();
-		byte[] NewByte = new byte[80];
-		byte[] TicketByte = new byte[44];
-		byte[] KeyByte = AC.getKey().toByteArray();
+		byte[] NewByte = new byte[102];
+		byte[] TicketByte = new byte[55];
+		String str = AC.getKey().toString();
+		byte[] KeyByte = null;
+		try {
+			KeyByte = str.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		byte[] IDtgsByte = IntToByteArray2(AC.getID());
 		byte[] TS2Byte = null;
 		try {
@@ -191,33 +198,33 @@ public class Pack {
 			e.printStackTrace();
 		}
 		byte[] LT1Byte = IntToByteArray2(AC.getTicket().getLT());
-		if(KeyByte.length==9){	
+		if(KeyByte.length==20){	
 			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
-		}else if(KeyByte.length<9){
-			for(int i = 0;i<9-KeyByte.length;i++){
+		}else if(KeyByte.length<20){
+			for(int i = 0;i<20-KeyByte.length;i++){
 				KeyByte[i] = (byte)0x00;
 			}
-			System.arraycopy(KeyByte, 0, NewByte, 9-KeyByte.length, KeyByte.length);
+			System.arraycopy(KeyByte, 0, NewByte, 20-KeyByte.length, KeyByte.length);
 		}
-		System.arraycopy(IDtgsByte, 0, NewByte, 9, IDtgsByte.length);
-		System.arraycopy(TS2Byte, 0, NewByte, 13, TS2Byte.length);
-		System.arraycopy(LTByte, 0, NewByte, 32, LTByte.length);
-		if(KeyctgsByte.length==9){	
+		System.arraycopy(IDtgsByte, 0, NewByte, 20, IDtgsByte.length);
+		System.arraycopy(TS2Byte, 0, NewByte, 24, TS2Byte.length);
+		System.arraycopy(LTByte, 0, NewByte, 43, LTByte.length);
+		if(KeyctgsByte.length==20){	
 			System.arraycopy(KeyctgsByte, 0, TicketByte, 0, KeyctgsByte.length);
-		}else if(KeyctgsByte.length<9){
-			for(int i = 0;i<9-KeyctgsByte.length;i++){
+		}else if(KeyctgsByte.length<20){
+			for(int i = 0;i<20-KeyctgsByte.length;i++){
 				KeyctgsByte[i] = (byte)0x00;
 			}
-			System.arraycopy(KeyctgsByte, 0, TicketByte, 9-KeyctgsByte.length, KeyctgsByte.length);
+			System.arraycopy(KeyctgsByte, 0, TicketByte, 20-KeyctgsByte.length, KeyctgsByte.length);
 		}
-		System.arraycopy(IDcByte, 0, TicketByte, 9, IDcByte.length);
-		System.arraycopy(ADcByte, 0, TicketByte, 13, ADcByte.length);
-		System.arraycopy(IDtgs1Byte, 0, TicketByte, 17, IDtgs1Byte.length);
-		System.arraycopy(TS2Byte1, 0, TicketByte, 21, TS2Byte1.length);
-		System.arraycopy(LT1Byte, 0, TicketByte, 40, LT1Byte.length);
+		System.arraycopy(IDcByte, 0, TicketByte, 20, IDcByte.length);
+		System.arraycopy(ADcByte, 0, TicketByte, 24, ADcByte.length);
+		System.arraycopy(IDtgs1Byte, 0, TicketByte, 28, IDtgs1Byte.length);
+		System.arraycopy(TS2Byte1, 0, TicketByte, 32, TS2Byte1.length);
+		System.arraycopy(LT1Byte, 0, TicketByte, 51, LT1Byte.length);
 		//Ektgs¼ÓÃÜ
 		byte ChangedTicket[] = text.DESSupreier(0, TicketByte, Keytgs);
-		System.arraycopy(ChangedTicket, 0, NewByte, 36, ChangedTicket.length);
+		System.arraycopy(ChangedTicket, 0, NewByte, 47, ChangedTicket.length);
 		//Ekc¼ÓÃÜ
 		byte[] ChangedNewByte = text.DESSupreier(0, TicketByte, Keyc);
 		return ChangedNewByte;

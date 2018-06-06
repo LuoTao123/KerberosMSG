@@ -68,6 +68,12 @@ public class ManagementOfCredential {
 		CreateCredential();
 	}
 	
+	public void Process1(String idc){
+		CreateKeys(1024);
+		CreatePubAndPriKey(idc);
+		CreateCredential();
+	}
+	
 	public void CreateCredential(){
 		this.CredentialFilename="Cre_"+Owner+".txt";
 		if(!CreateKeyFile(CredentialFilename)){
@@ -79,6 +85,24 @@ public class ManagementOfCredential {
 		addtext(this.CredentialFilename,this.Owner.toString());
 		Decryption de=new Decryption();
 		de.decryCre(Owner);
+	}
+	
+	public void CreatePubAndPriKey(String idc){
+		this.Owner=idc;
+		this.PublicKeyFilename="Pub_"+Owner+".txt";
+		this.PrivateKeyFilename="Pri_"+Owner+".txt";
+		if(!CreateKeyFile(PublicKeyFilename)){
+			System.out.println("创建公钥文件失败！可能已存在该名称！");
+			System.exit(0);
+		}
+		if(!CreateKeyFile(PrivateKeyFilename)){
+			System.out.println("创建私钥文件失败！可能已存在该名称！");
+			System.exit(0);
+		}
+		addtext(this.PublicKeyFilename,this.PublicKey.toString());
+		addtext(this.PublicKeyFilename,this.Mod.toString());
+		addtext(this.PrivateKeyFilename,this.PrivateKey.toString());
+		addtext(this.PrivateKeyFilename,this.Mod.toString());
 	}
 	
 	public void CreatePubAndPriKey(){

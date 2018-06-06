@@ -454,8 +454,17 @@ public class DES {
 	}
 	
 	public BigInteger CreateDESKey(){
-		Random rand = new Random();
-		BigInteger bigInt=new BigInteger(64, rand);
+		BigInteger bigInt = null;
+		while(true){
+			Random rand = new Random();
+			bigInt =new BigInteger(64, rand);
+			BigInteger Min = new BigInteger("9223372036854776028");
+			if(bigInt.compareTo(Min)<0){
+				continue;
+			}else{
+				break;
+			}
+		}
 		return bigInt;
 	}
 }

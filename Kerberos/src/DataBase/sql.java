@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 //import java.sql.SQLException;
 import java.sql.Statement;
 public class sql {
-	private String url="jdbc:mysql://127.0.0.1:3306/LiaoTianShi";
+	private String url="jdbc:mysql://192.168.1.103:3306/LiaoTianShi";
 	
 	public void AddNewAuthenticator(Authenticator Au)throws Exception{
 		int ID = Au.getID();
