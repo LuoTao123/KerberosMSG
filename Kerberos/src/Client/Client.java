@@ -156,12 +156,12 @@ public class Client {
 		public void login(String IDc,String Psw) throws IOException {
 			
 			Socket ASsocket = new Socket("192.168.1.103",10000);
-			Socket TGSsocket = new Socket("192.168.1.103",20000);
-			Socket Vsocket = new Socket("192.168.1.103",30000);
+//			Socket TGSsocket = new Socket("192.168.1.103",20000);
+//			Socket Vsocket = new Socket("192.168.1.103",30000);
 			STATEC state = new STATEC();
 			state.C_ASsocket = ASsocket;
-			state.C_TGSSocket = TGSsocket;
-			state.C_VSocket = Vsocket;
+//			state.C_TGSSocket = TGSsocket;
+//			state.C_VSocket = Vsocket;
 			int idc = Integer.valueOf(IDc);
 			setIDc(idc);
 			TimeStamp TS1 = new TimeStamp();
@@ -200,6 +200,7 @@ public class Client {
 			if(state.HasError) {
 				return;
 			}
+			/*
 			setTS3(state.getTS3());
 			InputStream inputstreamTGS = TGSsocket.getInputStream();
 			BufferedInputStream bufferedInputStreamTGS = new BufferedInputStream(inputstreamTGS);
@@ -229,7 +230,7 @@ public class Client {
 			String Time = String.valueOf(time+1);
 			if(TS.equals(Time)) {
 				System.out.println("Kerberos 认证完成，实现登录");
-			}
+			}*/
 		}
 			
 		public void Regist(String IDc,String Psw) throws IOException {

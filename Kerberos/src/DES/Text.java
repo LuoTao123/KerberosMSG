@@ -31,28 +31,32 @@ public class Text {
 	
 	public int[] BytesToInts(byte[] text){
 		String texts = ByteToString(text);
-		int[] TextInts = new int[texts.length()];
-		for(int i=0;i<64;i++){
-			TextInts[i]=Integer.parseInt(texts.substring(i,i+1));
+		String tString = null;
+		StringBuffer SB = new StringBuffer();
+		for(int i =0;i<text.length;i++){
+			SB.append(Integer.toBinaryString((text[i] & 0xFF) + 0x100).substring(1)); 
+		}
+		tString = SB.toString();
+		System.out.println(tString);
+		int[] TextInts = new int[tString.length()];
+		for(int i=0;i<tString.length();i++){
+			TextInts[i]=Integer.parseInt(tString.substring(i,i+1));
 		}
 		return TextInts;
 	}
 	
 	public byte[] IntsToBytes(int[] text){
-		String[] texts = new String[8];
-		for(int i = 0;i<texts.length;i++){
-			StringBuffer SB = new StringBuffer();
-			for(int j = 0;j<texts.length;j++){
-				SB.append(text[i*8+j]);
+		byte[] newByte = new byte[text.length/8];
+		int n = 0;
+		for(int i = 0;i<text.length/8;i++){
+			for(int j = 0,k = 256;j<8;j++){
+				k = k/2;
+				n = n+k*text[i*8+j];
 			}
-			texts[i] = SB.toString();
+			newByte[i] = (byte)n;
+			n = 0;
 		}
-		byte[] TextByte = new byte[texts.length];  
-        for (int i = 0; i < TextByte.length; i++) {  
-        	//将二进制字符串转化为Byte
-        	TextByte[i] = Byte.parseByte(texts[i],2);  
-        }  
-		return TextByte;
+		return newByte;
 	}
 	
 	public String ByteToString(byte [] b){  
@@ -69,33 +73,23 @@ public class Text {
 		int[] Ints64bit = new int[64];
 		int[] ChangedInts64bit = new int[64];
 		int turn = TextInts.length/64;
-		DES des = new DES();
 		if(TextInts.length%64==0){
 			for(int i = 0;i<turn;i++){
 				System.arraycopy(TextInts, i*64, Ints64bit, 0, Ints64bit.length);
+				DES des = new DES();
 				ChangedInts64bit = des.ModeChoose(mode, Ints64bit, Keys);
 				System.arraycopy(ChangedInts64bit, 0, ChangedTextInts, i*64, ChangedInts64bit.length);
 			}
 		}else{
-			if(mode==0){
-				for(int i = 0;i<turn;i++){
-					System.arraycopy(TextInts, i*64, Ints64bit, 0, Ints64bit.length);
-					ChangedInts64bit = des.ModeChoose(mode, Ints64bit, Keys);
-					System.arraycopy(ChangedInts64bit, 0, ChangedTextInts, i*64, ChangedInts64bit.length);
-				}
-				System.arraycopy(TextInts, TextInts.length-64, Ints64bit, 0, Ints64bit.length);
+			for(int i = 0;i<turn;i++){
+				System.arraycopy(TextInts, i*64, Ints64bit, 0, Ints64bit.length);
+				DES des = new DES();
 				ChangedInts64bit = des.ModeChoose(mode, Ints64bit, Keys);
-				System.arraycopy(ChangedInts64bit, 0, ChangedTextInts, ChangedTextInts.length-64, ChangedInts64bit.length);
-			}else{
-				System.arraycopy(TextInts, TextInts.length-64, Ints64bit, 0, Ints64bit.length);
-				ChangedInts64bit = des.ModeChoose(mode, Ints64bit, Keys);
-				System.arraycopy(ChangedInts64bit, 0, ChangedTextInts, ChangedTextInts.length-64, ChangedInts64bit.length);
-				for(int i = 0;i<turn;i++){
-					System.arraycopy(TextInts, i*64, Ints64bit, 0, Ints64bit.length);
-					ChangedInts64bit = des.ModeChoose(mode, Ints64bit, Keys);
-					System.arraycopy(ChangedInts64bit, 0, ChangedTextInts, i*64, ChangedInts64bit.length);
-				}
+				System.arraycopy(ChangedInts64bit, 0, ChangedTextInts, i*64, ChangedInts64bit.length);
 			}
+			System.out.println(turn);
+			System.out.println(ChangedTextInts.length-64*turn);
+			System.arraycopy(TextInts, turn*64, ChangedTextInts, turn*64, ChangedTextInts.length-64*turn);
 		}
 		byte[] ChangedByte = IntsToBytes(ChangedTextInts);
 		return ChangedByte;

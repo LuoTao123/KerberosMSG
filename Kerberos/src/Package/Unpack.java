@@ -123,7 +123,20 @@ public class Unpack {
 		Keys kkey = new Keys();
 		int[] Keyc = kkey.ReadKeysFromFile("Keyc.txt");
 		//EkcΩ‚√‹
+		for(int i = 0;i<Keyc.length;i++){
+			System.out.print(Keyc[i]);
+		}
+		System.out.println();
+/*		for(int i = 0;i<ChangedNewByte.length;i++){
+			System.out.print(ChangedNewByte[i]);
+		}
+		System.out.println();*/
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyc);
+		System.out.print("‘≠Œƒ£∫");
+		for(int i = 0;i<NewByte.length;i++){
+			System.out.print(NewByte[i]);
+		}
+		System.out.println();
 		byte[] KeyByte = new byte[20];
 		byte[] IDtgsByte = new byte[4];
 		byte[] TS2Byte = new byte[19];
@@ -141,6 +154,7 @@ public class Unpack {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		System.out.println(str);
 		BigInteger Key = new BigInteger(str);
 		int IDtgs = ByteArrayToInt2(IDtgsByte);
 		String TS2 = null;

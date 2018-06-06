@@ -198,8 +198,8 @@ public class STATEC extends Thread{
 									Chat(unpack.Unpack_0x1c(bytess),socket);
 									break;
 									//ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
-				case (byte)0x08:	bytess = new byte[80];
-									bufferedInputStream.read(bytess, 0, 80);
+				case (byte)0x08:	bytess = new byte[102];
+									bufferedInputStream.read(bytess, 0, 102);
 									zhuangtaiji8(unpack.Unpack_0x08(bytess),ip);
 									break;
 									//zhuangtaiji8(unpack.Unpack_0x08(readFixedLengthArray(bufferedInputStream,80)),ip);break;

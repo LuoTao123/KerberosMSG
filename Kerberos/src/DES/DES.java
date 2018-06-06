@@ -298,6 +298,7 @@ public class DES {
 	}
 	
 	public void translate(int[] InputPlaintext,int[] AllKeys){
+		turn = 0;
 		inputPltxt(InputPlaintext);
 		inputKey(AllKeys);
 		initPltxt();
@@ -340,17 +341,17 @@ public class DES {
 			System.out.println("输入二进制位数不等于64位，请重新输入");
 			System.exit(0);
 		}
-		System.out.print("密文是：");
+//		System.out.print("密文是：");
 		for(int i=0;i<64;i++){
 			Ciphertext[i]=InputCyphertext[i];
 			if(Ciphertext[i]!=0&&Ciphertext[i]!=1){
 				System.out.println("输入的"+i+"位不为0或1，密文有误");
 				System.exit(0);
 			}else{
-				System.out.print(Ciphertext[i]);
+//				System.out.print(Ciphertext[i]);
 			}
 		}
-		System.out.println("");
+//		System.out.println("");
 	}
 	
 	public void initCytxt(){
@@ -371,6 +372,7 @@ public class DES {
 	}
 	
 	public void translate1(int[] InputPlaintext,int[] AllKeys){
+		turn = 0;
 		inputKey(AllKeys);
 		initKey();
 		while(turn<16){
@@ -419,12 +421,12 @@ public class DES {
 		}   
 	}
 	
-	public void print(int[] a){
+/*	public void print(int[] a){
 		for(int i=0;i<a.length;i++){
 			System.out.print(a[i]);
 		}
 		System.out.println("");
-	}
+	}*/
 	
 	public int[] ModeChoose(int mode,int[] InputPlaintext,int[] AllKeys){
 /*		System.out.print("请输入模式（0为加密，1为解密）：");

@@ -2,6 +2,7 @@ package Package;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -194,8 +195,8 @@ public class STATE extends Thread{
 									zhuangtaiji7(unpack.Unpack_0x07(bytess),ip);
 									break;
 									//zhuangtaiji7(unpack.Unpack_0x07(readFixedLengthArray(bufferedInputStream,27)),ip);break;
-				case (byte)0x08:	bytess = new byte[80];
-									bufferedInputStream.read(bytess, 0, 80);
+				case (byte)0x08:	bytess = new byte[102];
+									bufferedInputStream.read(bytess, 0, 102);
 									zhuangtaiji8(unpack.Unpack_0x08(bytess),ip);
 									break;
 									//zhuangtaiji8(unpack.Unpack_0x08(readFixedLengthArray(bufferedInputStream,80)),ip);break;
@@ -360,6 +361,7 @@ public class STATE extends Thread{
 			if(PSW !=null) {
 				Keys kkey = new Keys();
 				int[] Keytgs = kkey.ReadKeysFromFile("Keytgs.txt");
+				System.out.println(kkey.BigIntegerToString(PSW).length());
 				int[] KeycInts = kkey.StringToInts(kkey.BigIntegerToString(PSW));
 				DES des =new DES();
 				AS_C AC = new AS_C();
@@ -383,8 +385,27 @@ public class STATE extends Thread{
 				AC.setLT(lifetime);
 				AC.setTicket(ticket);
 				AC.setTS(TimeS);
-				byte[] msg = pack.Pack_0x08_Data(AC,KeycInts,Keytgs);
-				send(msg);
+				byte[] Headmsg = pack.Pack_0x08_Cont();
+				InputStream inputstream = null;
+				try {
+					inputstream = C_Ssocket.getInputStream();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				send(Headmsg);
+				BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
+				byte[] bytes = new byte[2];
+				try {
+					bufferedInputStream.read(bytes,0,2);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+					byte[] msg = pack.Pack_0x08_Data(AC,KeycInts,Keytgs);
+					send(msg);
+				}
 			}else {
 				byte[] msg = pack.Pack_0x0d_Cont();
 				send(msg);

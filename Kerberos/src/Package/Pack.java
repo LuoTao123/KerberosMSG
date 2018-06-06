@@ -170,6 +170,7 @@ public class Pack {
 		byte[] NewByte = new byte[102];
 		byte[] TicketByte = new byte[55];
 		String str = AC.getKey().toString();
+		System.out.println(str);
 		byte[] KeyByte = null;
 		try {
 			KeyByte = str.getBytes("UTF-8");
@@ -233,7 +234,16 @@ public class Pack {
 		byte ChangedTicket[] = text.DESSupreier(0, TicketByte, Keytgs);
 		System.arraycopy(ChangedTicket, 0, NewByte, 47, ChangedTicket.length);
 		//Ekcº”√‹
+		System.out.print("‘≠Œƒ£∫");
+		for(int i = 0;i<NewByte.length;i++){
+			System.out.print(NewByte[i]);
+		}
+		System.out.println();
 		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, Keyc);
+/*		for(int i = 0;i<ChangedNewByte.length;i++){
+			System.out.print(ChangedNewByte[i]);
+		}
+		System.out.println();*/
 		return ChangedNewByte;
 	}
 	
