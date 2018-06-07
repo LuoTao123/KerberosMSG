@@ -32,6 +32,7 @@ public class Client {
 		
 		//Socket变量
 		int port;
+		Socket NowSocket;
 		Socket clientASSocket,clientRegisterSocket,clientServerSocket,C_Ssocket;
 		OutputStream outstream,outstream2,outstream3;
 		InputStream instream,instream2,instream3;
@@ -161,6 +162,7 @@ public class Client {
 			String ip = LIP.getLocalHostLANAddress().getHostAddress().toString();
 			System.out.println(ip);
 			STATEC state = new STATEC();
+			
 			state.C_ASsocket = ASsocket;
 			state.C_TGSSocket = TGSsocket;
 			state.C_VSocket = Vsocket;
@@ -227,13 +229,17 @@ public class Client {
 			bufferedInputStreamV.read(bytes3, 0, 2);
 			state.Unpack_Head(bytes3, bufferedInputStreamV, Vsocket, ip);
 			setTS6(state.getTS6());
+			bufferedInputStreamV.close();
+			inputstreamV.close();
+			Vsocket.close();
 			if(state.HasError) {
 				return;
+			}else{
+				System.out.println("Kerberos 认证完成，实现登录");
+				this.NowSocket = new Socket("192.168.1.103",30000);
+				this.IDc = Integer.valueOf(IDc);
 			}
 			///////////////////////////////////////////////////////////////
-			if(!state.HasError) {
-				System.out.println("Kerberos 认证完成，实现登录");
-			}
 		}
 			
 		public void Regist(String IDc,String Psw) throws IOException {
@@ -334,18 +340,10 @@ public class Client {
 			}
 		}
 		
-		public void Offline(String IDc) throws  IOException {
-			STATE state = new STATE();
-			Socket OffSocket =state.C_VSocket;
-			int idc = Integer.valueOf(IDc);
-
-
-			//Rsa_hash_psw
-
+		public void Offline() throws  IOException {
+			Socket OffSocket =this.NowSocket;
 			Data_Offline DO = new Data_Offline();
-			DO.setIDc(idc);
-			
-			
+			DO.setIDc(this.IDc);
 			//发送请求
 			Pack pack = new Pack();
 			InputStream inputstream =OffSocket.getInputStream();
@@ -360,30 +358,17 @@ public class Client {
 				System.out.println("客户端下线失败");
 				return;
 			}
-			//接收请求
-			byte[] bytes1 = new byte[2];
-			bufferedInputStream.read(bytes1, 0, 2);
-			state.Unpack_Head(bytes1, bufferedInputStream, OffSocket, InetAddress.getLocalHost().toString());
 			bufferedInputStream.close();
 			inputstream.close();
 			OffSocket.close();
-			if(state.HasError) {
-				return;
-			}		
 		}
 		
-		public void Online(String IDc) throws  IOException {
+		public void Online() throws  IOException {
 			STATE state = new STATE();
-			Socket OnSocket = state.C_VSocket;
-			int idc = Integer.valueOf(IDc);
-
-
-			//Rsa_hash_psw
-
+			Socket OnSocket = new Socket("192.168.1.103",30000);
+			this.NowSocket = OnSocket;
 			Data_Online DO = new Data_Online();
-			DO.setIDc(idc);
-			
-			
+			DO.setIDc(this.IDc);
 			//发送请求
 			Pack pack = new Pack();
 			InputStream inputstream =OnSocket.getInputStream();
@@ -411,14 +396,22 @@ public class Client {
 		
 		public void Chat(String Message) throws IOException {
 			STATE state = new STATE();
-			Socket ChatSocket = state.C_VSocket;
-			int ID = getIDc();
+			Socket ChatSocket = new Socket("192.168.1.103",30000);
+			this.NowSocket = ChatSocket;
+			int ID = this.IDc;
 			String idc = String.valueOf(ID);
 			//message签名
 			Text text = new Text();
-			BigInteger msg = text.StringToBigInteger(Message);
-			Encryption En = new Encryption();
-			BigInteger rsa_msg = En.encryption(msg, idc);
+			byte[] msgByte = null;
+			try {
+				msgByte = Message.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			BigInteger msg = new BigInteger(msgByte);
+			Decryption De = new Decryption();
+			BigInteger rsa_msg = De.sign(msg, idc);
 			//message Hash
 			Hash hash  =new Hash();
 			BigInteger hash_msg = hash.getMD5(Message);
@@ -426,16 +419,20 @@ public class Client {
 			EK_m.setH_MSG(hash_msg);
 			EK_m.setSIGN(rsa_msg);
 			Data_Chat DC = new Data_Chat();
-			DC.setEK_message(EK_m);			
+			DC.setEK_message(EK_m);	
+			Keys key1 = new Keys();
+			int[] Key1 = key1.ReadKeysFromFile("Key1.txt");
 			//发送消息			
 			Pack pack = new Pack();
+			System.out.println("aaaaa");
 			InputStream inputstream =ChatSocket.getInputStream();
 			ChatSocket.getOutputStream().write(pack.Pack_0x13_Cont());
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes,0,2);
 			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-				ChatSocket.getOutputStream().write(pack.Pack_0x13_Data(DC, state.getKey1()));
+				System.out.println("aaaaa");
+				ChatSocket.getOutputStream().write(pack.Pack_0x13_Data(DC, Key1));
 			}
 			else {
 				System.out.println("客户端发送消息失败");

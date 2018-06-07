@@ -5,7 +5,7 @@ import java.math.BigInteger;
 
 public class Text {
 	//RSA
-	public BigInteger StringToBigInteger(String text){
+/*	public BigInteger StringToBigInteger(String text){
 		byte[] TextByte = null;
 		try {
 			TextByte = text.getBytes("UTF-8");
@@ -15,9 +15,9 @@ public class Text {
 		}
 		BigInteger BigText = new BigInteger(TextByte);
 		return BigText;
-	}
+	}*/
 	
-	public String BigIntegerToString(BigInteger BI){
+/*	public String BigIntegerToString(BigInteger BI){
 		byte[] TextByte = BI.toByteArray();
 		String Text = null;
 		try {
@@ -27,7 +27,7 @@ public class Text {
 			e.printStackTrace();
 		}
 		return Text;
-	}
+	}*/
 	
 	public int[] BytesToInts(byte[] text){
 		String texts = ByteToString(text);

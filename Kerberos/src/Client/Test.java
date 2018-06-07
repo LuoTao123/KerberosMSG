@@ -44,14 +44,16 @@ package Client;
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.println("请输入发送的信息");
-				String	Message = in.nextLine();
 				try {
-					client.Online(ID);
+					client.Online();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+//				@SuppressWarnings("unused")
+//				Listen listen = new Listen(ID,client.NowSocket);
+				System.out.println("请输入发送的信息");
+				String	Message = in.nextLine();
 				try {
 					client.Chat(Message);
 				} catch (IOException e) {

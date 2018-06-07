@@ -59,6 +59,7 @@ public class STATE extends Thread{
 	public int getLifetime() {
 		return lifetime;
 	}
+	
 	public void setTS1(String ts) {
 		this.TS1 = ts;
 	}
@@ -118,6 +119,7 @@ public class STATE extends Thread{
 	public void setKey1(int[] key) {
 		this.Key1 = key;
 	}
+	
 	public int[] getKeyctgs() {
 		return Keyctgs;
 	}
@@ -187,7 +189,7 @@ public class STATE extends Thread{
 									OnlineTransmit(unpack.Unpack_0x10(bytess),socket);
 									break;
 									//OnlineTransmit(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
-				case (byte)0x13:	bytess = new byte[149];
+				case (byte)0x13:	bytess = new byte[334];
 									bufferedInputStream.read(bytess, 0, 149);
 									ChatTransmit(socket,bytess);
 									break;
@@ -230,7 +232,7 @@ public class STATE extends Thread{
 				case (byte)0x19:	bytess = new byte[9];
 									bufferedInputStream.read(bytess, 0, 9);
 									Keys key1 = new Keys();
-									zhuangtaiji19(unpack.Unpack_0x19(bytess,key1.ReadKeysFromFile("Key1.txt")));
+									zhuangtaiji19(unpack.Unpack_0x19(bytess,key1.ReadKeysFromFile("Keyc.txt")));
 									break;
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
 				default : System.out.println("非法数据包");
@@ -723,8 +725,11 @@ public class STATE extends Thread{
 		BigInteger Key1 = DU.getKey();
 		//Key1写入文件
 		Keys key  =new Keys();
-		key.SaveKeyToFile("Key1.txt", Key1);
+		String keys = key.BigIntegerToString(Key1);
+		key.SaveKeyToFile("Key1.txt", keys);
 		System.out.println("更新密钥");
+		Pack pack = new Pack();
+		send(pack.Pack_0x02_Cont());
 	}
 	
 	public void zhuangtaiji1a(){
@@ -736,35 +741,7 @@ public class STATE extends Thread{
 		//弹窗
 		System.out.println("更新密钥失败");
 	}
-	//////////////////////客户端 //收聊天包////////////////////////////////////////
-	public void zhuangtaiji1c(Data_Chat DC,Socket socket){
-		EK_message EK_m = DC.getEKMSG();
-		int IDc = DC.getIDc();
-		String idc = String.valueOf(IDc);
-		BigInteger H_msg = EK_m.getH_MSG();
-		BigInteger Rsa_msg = EK_m.getSIGN();
-		Decryption De =new Decryption();
-		Text text  = new Text();
-		Hash hash  = new Hash();
-		BigInteger mes = De.decryption(Rsa_msg, idc);
-		
-		String message = text.BigIntegerToString(mes);
-		System.out.println(message);
-		BigInteger h_msg =hash.getMD5(message);
-		
-		Pack pack = new Pack();
-		if(h_msg.compareTo(H_msg) !=0) {
-			try {
-				socket.getOutputStream().write(pack.Pack_0x15_Cont());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		//////////////////////////////修改
-		/////////////////////////////////////////////////////////////////////////////////////////
-	}
-	
+
 	//上线发
 	public void OnlineTransmit(Data_Online DOn,Socket socket){
 		IPtoSocket IS = new IPtoSocket();
@@ -777,6 +754,7 @@ public class STATE extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("上线包发送！！！");
 		//上线先给上线用户发最新的KeySession
 		Data_Update DU = new Data_Update();
 		DU.setKey(Server.Keysession);
@@ -821,9 +799,11 @@ public class STATE extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println("aaaaa");
 		IPtoSocket NewIS = null;
 		for(int i=0;i<Server.SocketList.size();i++){
 			NewIS = Server.SocketList.elementAt(i);
+			System.out.println("aaaaa");
 			@SuppressWarnings("unused")
 			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x13_Cont(),bytes);
 		}
@@ -840,36 +820,6 @@ public class STATE extends Thread{
 	
 	public void zhuangtaiji15(){
 		System.out.println("发送聊天内容失败！");
-	}
-	
-	//上线收
-	public void zhuangtaiji1d(Data_Online DOn,Socket socket){
-		IPtoSocket IS = new IPtoSocket();
-		IS.IDc = DOn.getIDc();
-		IS.socket = socket;
-		Pack pack = new Pack();
-		try {
-			socket.getOutputStream().write(pack.Pack_0x11_Cont());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(IS.IDc+"上线");
-	}
-	
-	//下线收
-	public void zhuangtaiji1e(Data_Offline DOf,Socket socket) {
-		IPtoSocket IS = new IPtoSocket();
-		IS.IDc = DOf.getIDc();
-		IS.socket = socket;
-		Pack pack = new Pack();
-		try {
-			socket.getOutputStream().write(pack.Pack_0x17_Cont());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(IS.IDc+"下线");
 	}
 	
 	//下线发

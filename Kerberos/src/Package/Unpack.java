@@ -413,23 +413,47 @@ public class Unpack {
 		return DOn;
 	}
 	
-	public Data_Chat Unpack_0x1c(byte[] ChangedNewByte){
+	public Data_Chat Unpack_0x13(byte[] ChangedNewByte){
 		Text text  = new Text();
 		Keys kkey = new Keys();
-		int[] Keyc = kkey.ReadKeysFromFile("Keyc.txt");
+		int[] Keyc = kkey.ReadKeysFromFile("Key1.txt");
 		//DESΩ‚√‹
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyc);
 		Data_Chat DC = new Data_Chat();
 		EK_message EKm = new EK_message();
 		byte[] IDcByte = new byte[4];
-		byte[] HMSGByte = new byte[16];
-		byte[] SignByte = new byte[129];
+		byte[] HMSGByte = new byte[20];
+		byte[] SignByte = new byte[310];
 		System.arraycopy(NewByte, 0, IDcByte, 0, IDcByte.length);
 		System.arraycopy(NewByte, 4, HMSGByte, 0, HMSGByte.length);
-		System.arraycopy(NewByte, 20, SignByte, 0, SignByte.length);
+		System.arraycopy(NewByte, 24, SignByte, 0, SignByte.length);
+		int jishu = 0;
+		for(int i = 0;;i++){
+			if(SignByte[i] !=(byte) 0x00){
+				break;
+			}else{
+				jishu++;
+			}
+		}
+		byte[] OriginSignByte = new byte[310-jishu];
+		System.arraycopy(SignByte, jishu, OriginSignByte, 0, OriginSignByte.length);
 		int IDc = ByteArrayToInt2(IDcByte);
-		BigInteger HMSG = new BigInteger(HMSGByte);
-		BigInteger Sign = new BigInteger(SignByte);
+		String str1 = null;
+		try {
+			str1 = new String(HMSGByte,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BigInteger HMSG = new BigInteger(str1);
+		String str2 = null;
+		try {
+			str2 = new String(OriginSignByte,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BigInteger Sign = new BigInteger(str2);
 		EKm.setH_MSG(HMSG);
 		EKm.setSIGN(Sign);
 		DC.setIDc(IDc);

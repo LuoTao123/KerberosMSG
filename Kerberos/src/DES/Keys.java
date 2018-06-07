@@ -97,5 +97,38 @@ public class Keys {
             result.append(Long.toString(b[i] & 0xff, 2));  
         }  
         return result.toString().substring(0, result.length()-1);  
-    }  
+    }
+	
+	public byte[] String2Tobyte(String str){
+		byte[] NewByte = new byte[str.length()/8];
+		String[] Strs = new String[str.length()/8];
+		for(int i = 0;i<str.length()/8;i++){
+			Strs[i] = str.substring(i*8, i*8+8);
+			int k = 0;
+			for(int j = 0;j<8;j++){
+				String Strss = Strs[i].substring(j, j+1);
+				if(Integer.valueOf(Strss)==1){
+					if(j==0){
+						k += 128;
+					}else if(j==1){
+						k += 64;
+					}else if(j==2){
+						k +=32;
+					}else if(j==3){
+						k +=16;
+					}else if(j==4){
+						k +=8;
+					}else if(j==5){
+						k +=4;
+					}else if(j==6){
+						k +=2;
+					}else if(j==7){
+						k +=1;
+					}
+				}
+			}
+			NewByte[i] = (byte)k;
+		}
+		return NewByte;
+	}
 }

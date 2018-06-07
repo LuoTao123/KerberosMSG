@@ -39,11 +39,13 @@ public class UpdateKeys extends Thread{
 				DU.setKey(Key);
 				Text text = new Text();
 				Keys kkey = new Keys();
+				int[] Keycc = null;
+				BigInteger Keyc = null;
+				sql a = new sql();
 				for(int i=0;i<Server.SocketList.size();i++){
 					NewIS = Server.SocketList.elementAt(i);
-					sql a = new sql();
-					BigInteger Keyc = a.HasAIDc(NewIS.IDc);
-					int[] Keycc = kkey.StringToInts(kkey.BigIntegerToString(Keyc));
+					Keyc = a.HasAIDc(NewIS.IDc);
+					Keycc = kkey.StringToInts(kkey.BigIntegerToString(Keyc));
 					@SuppressWarnings("unused")
 					SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));
 				}	

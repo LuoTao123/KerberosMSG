@@ -223,7 +223,7 @@ public class Pack {
 			System.arraycopy(KeyctgsByte, 0, TicketByte, 0, KeyctgsByte.length);
 		}else if(KeyctgsByte.length<20){
 			for(int i = 0;i<20-KeyctgsByte.length;i++){
-				KeyctgsByte[i] = (byte)0x00;
+				TicketByte[i] = (byte)0x00;
 			}
 			System.arraycopy(KeyctgsByte, 0, TicketByte, 20-KeyctgsByte.length, KeyctgsByte.length);
 		}
@@ -328,11 +328,11 @@ public class Pack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(KeyByte.length==20){	
-			System.arraycopy(KeyByte, 0, TicketByte, 0, KeyByte.length);
-		}else if(KeyByte.length<20){
-			for(int i = 0;i<20-KeyByte.length;i++){
-				KeyByte[i] = (byte)0x00;
+		if(KeyByte1.length==20){	
+			System.arraycopy(KeyByte1, 0, TicketByte, 0, KeyByte1.length);
+		}else if(KeyByte1.length<20){
+			for(int i = 0;i<20-KeyByte1.length;i++){
+				TicketByte[i] = (byte)0x00;
 			}
 			System.arraycopy(KeyByte1, 0, TicketByte, 20-KeyByte1.length, KeyByte1.length);
 		}
@@ -348,7 +348,7 @@ public class Pack {
 			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
 		}else if(KeyByte.length<20){
 			for(int i = 0;i<20-KeyByte.length;i++){
-				KeyByte[i] = (byte)0x00;
+				NewByte[i] = (byte)0x00;
 			}
 			System.arraycopy(KeyByte, 0, NewByte, 20-KeyByte.length, KeyByte.length);
 		}
@@ -479,15 +479,44 @@ public class Pack {
 	
 	public byte[] Pack_0x13_Data(Data_Chat DC,int[] K1){
 		Text text =new Text();
-		byte[] NewByte=new byte[149];
+		byte[] NewByte=new byte[334];
 		int IDc=DC.getIDc();
 		byte[] IDcByte=IntToByteArray2(IDc);
 		EK_message EKm = DC.getEKMSG();
-		byte[] HMSGByte=EKm.getH_MSG().toByteArray();
-		byte[] SignByte=EKm.getSIGN().toByteArray();
+		String str1 = EKm.getH_MSG().toString();
+		byte[] HMSGByte = null;
+		try {
+			HMSGByte = str1.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String str2 = EKm.getSIGN().toString();
+		byte[] SignByte = null;
+		try {
+			SignByte = str2.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
+		if(SignByte.length==20){	
+			System.arraycopy(SignByte, 0, NewByte, 4, SignByte.length);
+		}else if(SignByte.length<20){
+			for(int i = 0;i<20-SignByte.length;i++){
+				NewByte[i+4] = (byte)0x00;
+			}
+			System.arraycopy(SignByte, 0, NewByte, 24-SignByte.length, SignByte.length);
+		}
 		System.arraycopy(HMSGByte, 0, NewByte, 4, HMSGByte.length);
-		System.arraycopy(SignByte, 0, NewByte, 20, SignByte.length);
+		if(SignByte.length<310){
+			for(int i = 0;i<310-SignByte.length;i++){
+				NewByte[i+24] =(byte) 0x00;
+			}
+			System.arraycopy(SignByte, 0, NewByte, 310+24-SignByte.length, SignByte.length);
+		}else{
+			System.arraycopy(SignByte, 0, NewByte, 24, SignByte.length);
+		}
 		//DES¼ÓÃÜ
 		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, K1);
 		return ChangedNewByte;

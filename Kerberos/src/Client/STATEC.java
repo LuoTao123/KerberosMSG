@@ -2,6 +2,7 @@ package Client;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -29,6 +30,7 @@ import Package.Ticket;
 import Package.Unpack;
 import Package.V_C;
 import RSA.Decryption;
+import RSA.Encryption;
 import RSA.Hash;
 import Server.Server;
 import Server.SendThread;
@@ -196,9 +198,9 @@ public class STATEC extends Thread{
 									Online(unpack.Unpack_0x10(bytess),socket);
 									break;
 									//OnlineTransmit(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
-				case (byte)0x13:	bytess = new byte[149];
-									bufferedInputStream.read(bytess, 0, 149);
-									Chat(unpack.Unpack_0x1c(bytess),socket);
+				case (byte)0x13:	bytess = new byte[334];
+									bufferedInputStream.read(bytess, 0, 334);
+									Chat(unpack.Unpack_0x13(bytess),socket);
 									break;
 									//ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
 				case (byte)0x08:	bytess = new byte[102];
@@ -234,7 +236,7 @@ public class STATEC extends Thread{
 				case (byte)0x19:	bytess = new byte[9];
 									bufferedInputStream.read(bytess, 0, 9);
 									Keys Key1 = new Keys();
-									zhuangtaiji19(unpack.Unpack_0x19(bytess,Key1.ReadKeysFromFile("Key1.txt")));
+									zhuangtaiji19(unpack.Unpack_0x19(bytess,Key1.ReadKeysFromFile("Keyc.txt")));
 									break;
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
 
@@ -667,8 +669,11 @@ public class STATEC extends Thread{
 		BigInteger Key1 = DU.getKey();
 		//Key1写入文件
 		Keys key  =new Keys();
-		key.SaveKeyToFile("Key1.txt", Key1);
+		String keys = key.BigIntegerToString(Key1);
+		key.SaveKeyToFile("Key1.txt", keys);
 		System.out.println("更新密钥");
+		Pack pack = new Pack();
+		send(pack.Pack_0x02_Cont());
 	}
 	
 	public void zhuangtaiji1a(){
@@ -711,15 +716,11 @@ public class STATEC extends Thread{
 		String idc = String.valueOf(IDc);
 		BigInteger H_msg = EK_m.getH_MSG();
 		BigInteger Rsa_msg = EK_m.getSIGN();
-		Decryption De =new Decryption();
-		Text text  = new Text();
+		Encryption En = new Encryption();
+		
 		Hash hash  = new Hash();
-		BigInteger mes = De.decryption(Rsa_msg, idc);
-		
-		String message = text.BigIntegerToString(mes);
-		System.out.println(message);
-		BigInteger h_msg =hash.getMD5(message);
-		
+		String mes = En.authenticate(Rsa_msg, idc);
+		BigInteger h_msg =hash.getMD5(mes);
 		Pack pack = new Pack();
 		if(h_msg.compareTo(H_msg) !=0) {
 			try {
@@ -729,6 +730,7 @@ public class STATEC extends Thread{
 				e.printStackTrace();
 			}
 		}
+		System.out.println(idc+"说："+mes);
 		//////////////////////////////修改
 		/////////////////////////////////////////////////////////////////////////////////////////
 	}

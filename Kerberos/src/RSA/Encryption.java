@@ -196,7 +196,7 @@ public class Encryption {
 		return Ciphertext;
 	}
 	
-	public String authenticate(BigInteger inputtext,String name,String OriginText){
+	public String authenticate(BigInteger inputtext,String name){
 		renzhen(name);
 //		String input=ReadText(filename);
 /*		byte[] input = null;
@@ -215,13 +215,6 @@ public class Encryption {
 		String text=null;
 		System.out.println("验证完成："+Ciphertext.toString());
 		text=Ciphertext.toString();
-		if(!text.equals(OriginText)){
-			System.out.println("该签名认证失败，可能因为该签名是伪造的");
-			System.exit(0);
-		}else{
-			IsTrue = true;
-			System.out.println("认证为真，继续执行操作！");
-		}
 /*		System.out.print("请输入存储转化完成内容的文件名(格式：XXX.txt)：");
 		@SuppressWarnings("resource")
 		Scanner Sca = new Scanner(System.in);
