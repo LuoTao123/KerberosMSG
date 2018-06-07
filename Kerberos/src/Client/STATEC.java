@@ -1,9 +1,12 @@
 package Client;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
 import DataBase.sql;
 import DES.*;
 import Kerberos.TimeStamp;
@@ -203,18 +206,18 @@ public class STATEC extends Thread{
 									zhuangtaiji8(unpack.Unpack_0x08(bytess),ip);
 									break;
 									//zhuangtaiji8(unpack.Unpack_0x08(readFixedLengthArray(bufferedInputStream,80)),ip);break;
-				case (byte)0x09:	bytess = new byte[75];
-									bufferedInputStream.read(bytess, 0, 75);
+				case (byte)0x09:	bytess = new byte[86];
+									bufferedInputStream.read(bytess, 0, 86);
 									zhuangtaiji9(unpack.Unpack_0x09(bytess),ip);
 									break;
 									//zhuangtaiji9(unpack.Unpack_0x09(readFixedLengthArray(bufferedInputStream,75)),ip);break;
-				case (byte)0x0a:	bytess = new byte[76];
-									bufferedInputStream.read(bytess, 0, 76);
+				case (byte)0x0a:	bytess = new byte[98];
+									bufferedInputStream.read(bytess, 0, 98);
 									zhuangtaiji0a(unpack.Unpack_0x0a(bytess),ip);
 									break;
 									//zhuangtaiji0a(unpack.Unpack_0x0a(readFixedLengthArray(bufferedInputStream,76),Keyctgs),ip);break;
-				case (byte)0x0b:	bytess = new byte[71];
-									bufferedInputStream.read(bytess, 0, 71);
+				case (byte)0x0b:	bytess = new byte[82];
+									bufferedInputStream.read(bytess, 0, 82);
 									zhuangtaiji0b(unpack.Unpack_0x0b(bytess),ip);
 									break;
 									//zhuangtaiji0b(unpack.Unpack_0x0b(readFixedLengthArray(bufferedInputStream,71),Keycv),ip);break;
@@ -287,32 +290,33 @@ public class STATEC extends Thread{
 				e.printStackTrace();
 			}
 			if(PSW !=null) {
-				Text text = new Text();
 				Keys kkey = new Keys();
 				int[] Keytgs = kkey.ReadKeysFromFile("Keytgs.txt");
+				System.out.println(kkey.BigIntegerToString(PSW).length());
 				int[] KeycInts = kkey.StringToInts(kkey.BigIntegerToString(PSW));
 				DES des =new DES();
 				AS_C AC = new AS_C();
 				BigInteger Keyctgs = des.CreateDESKey();
-				//int[] KeyctgsInts = kkey.StringToInts(kkey.BigIntegerToString(Keyctgs));
-				
-				//保存Keyctgs
-				kkey.SaveKeyToFile("Keyctgs.txt",Keyctgs);
-				
 				TimeStamp TS2 = new TimeStamp();
 				String TimeS = TS2.getTimeString();
 				setTS2(TimeS);
 				int lifetime = 20;
 				Ticket ticket = new Ticket();
-				int ADc = pack.ByteArrayToInt2(pack.IPStringToByte(ip));
+				int ADc = 0;
+				try {
+					ADc = pack.ipStringToInts(ip);
+				} catch (UnknownHostException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 				setADC(ADc);
+				System.out.println("ADc"+ADc);
 				ticket.setID1(IDc);
 				ticket.setAD(ADc);
 				ticket.setID2(IDt);
 				ticket.setKey(Keyctgs);
 				ticket.setTS(TimeS);
 				ticket.setLT(lifetime);
-
 				
 				AC.setID(IDc);
 				AC.setKey(Keyctgs);
@@ -320,14 +324,15 @@ public class STATEC extends Thread{
 				AC.setTicket(ticket);
 				AC.setTS(TimeS);
 				byte[] Headmsg = pack.Pack_0x08_Cont();
-				send(Headmsg);
-				BufferedInputStream bufferedInputStream = null;
+				InputStream inputstream = null;
 				try {
-					bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
+					inputstream = C_Ssocket.getInputStream();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				send(Headmsg);
+				BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
 				byte[] bytes = new byte[2];
 				try {
 					bufferedInputStream.read(bytes,0,2);
@@ -336,12 +341,14 @@ public class STATEC extends Thread{
 					e.printStackTrace();
 				}
 				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-					send(pack.Pack_0x08_Data(AC,KeycInts,Keytgs));
+					byte[] msg = pack.Pack_0x08_Data(AC,KeycInts,Keytgs);
+					send(msg);
 				}
-				else {
-					System.out.println("客户端不处于就绪状态，不能进行认证");
-					return;
-				}
+				System.out.println("Here");
+				System.out.println(AC.getTicket().getID1());
+				System.out.println(AC.getTicket().getAD());
+				System.out.println(AC.getTicket().getTS());
+				System.out.println(AC.getTicket().getLT());
 			}else {
 				byte[] msg = pack.Pack_0x0d_Cont();
 				send(msg);
@@ -377,10 +384,17 @@ public class STATEC extends Thread{
 		byte[] ticket = new byte[55];
 		Authenticator auth = new Authenticator();
 		ticket = AC.getChangedTicket();
-		int ADc = pack.ByteArrayToInt2(pack.IPStringToByte(ip));
+		int ADc = 0;
+		try {
+			ADc = pack.ipStringToInts(ip);
+		} catch (UnknownHostException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		auth.setAD(ADc);
 		auth.setID(IDc);
 		auth.setTS(TimeS);
+		System.out.println("ip"+ip);
 		CT.setID(this.IDv);
 		CT.setChangedTicket(ticket);
 		CT.setAuthenticator(auth);
@@ -409,17 +423,28 @@ public class STATEC extends Thread{
 			System.out.println("服务器不处于就绪状态，不能进行认证");
 			return;
 		}
+		System.out.println(IDv);
+		System.out.println(this.IDv);
+		System.out.println(CT.getAuthenticator().getAD());
+		System.out.println(CT.getAuthenticator().getID());
+		System.out.println(this.IDtgs);
+		System.out.println(CT.getAuthenticator().getTS());
 	}
 	
 	public void zhuangtaiji9(C_TGS CT,String ip){
-		int IDc = IDC;
+		int IDc = CT.getTicket().getID1();
 		int IDv = CT.getID();
 		Ticket ticket = CT.getTicket();
 		Authenticator auth = CT.getAuthenticator();
 		String TS3 = auth.getTS();
 		setTS3(TS3);
 		Pack pack = new Pack();
-		if(IDv== this.IDv) {
+		int LT = CT.getTicket().getLT();
+		TimeStamp TSp = new TimeStamp();
+		if(IDv== this.IDv&&CT.getTicket().getID1()==CT.getAuthenticator().getID()
+				&&CT.getTicket().getAD()==CT.getAuthenticator().getAD()
+				&&CT.getTicket().getID2()==this.IDtgs
+				&&TSp.IsOverLifeTime(CT.getTicket().getTS(), LT,CT.getAuthenticator().getTS())) {
 				Keys kkey = new Keys();
 				BigInteger Keyctgs = ticket.getKey();
 				//Kv
@@ -431,17 +456,18 @@ public class STATEC extends Thread{
 				//AS_C AC = new AS_C();
 				TGS_C TC = new TGS_C();
 				BigInteger Keycv = des.CreateDESKey();
-				//int[] KeycvInts = kkey.StringToInts(kkey.BigIntegerToString(Keycv));
-				
-				//保存Keycv
-				kkey.SaveKeyToFile("Keycv", Keycv);
-				
 				TimeStamp TS1 = new TimeStamp();
 				String TimeS = TS1.getTimeString();
 				setTS4(TimeS);
 				int lifetime = 20;
 				Ticket ticketv = new Ticket();
-				int ADc = pack.ByteArrayToInt2(pack.IPStringToByte(ip));
+				int ADc = 0;
+				try {
+					ADc = pack.ipStringToInts(ip);
+				} catch (UnknownHostException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
 				ticketv.setID1(IDc);
 				ticketv.setAD(ADc);
 				ticketv.setID2(this.IDtgs);
@@ -451,19 +477,18 @@ public class STATEC extends Thread{
 				
 				//保存ticketv
 				setTicketv(ticketv);
-				
 				TC.setID(IDv);
 				TC.setKey(Keycv);
 				TC.setTS(TimeS);
 				byte[] Headmsg = pack.Pack_0x0a_Cont();
-				send(Headmsg);
 				BufferedInputStream bufferedInputStream = null;
 				try {
-					bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
+					bufferedInputStream = new BufferedInputStream(this.C_Ssocket.getInputStream());
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				send(Headmsg);
 				byte[] bytes = new byte[2];
 				try {
 					bufferedInputStream.read(bytes,0,2);
@@ -474,10 +499,6 @@ public class STATEC extends Thread{
 				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
 					byte[] msg = pack.Pack_0x0a_Data(TC,KeyctgsInts,Keyv);
 					send(msg);
-				}
-				else {
-					System.out.println("客户端不处于就绪状态，不能进行认证");
-					return;
 				}
 		}else {
 			byte[] msg = pack.Pack_0x0e_Cont();
@@ -493,11 +514,11 @@ public class STATEC extends Thread{
 		setTS4(TS);
 		BigInteger Keycv = TC.getKey();
 		Keys Key3 = new Keys();
+		//10转2
 		String strbuf = Key3.BigIntegerToString(Keycv);
-		int[] KeyctgsInts = Key3.StringToInts(strbuf);
-		Key3.SaveKeyToFile("Keycv.txt", Keycv);
-		int[]  KeycvInts = Key3.StringToInts(Key3.BigIntegerToString(Keycv));
-		Ticket ticketv  = TC.getTicket();
+		int[] KeycvInts = Key3.StringToInts(strbuf);
+		Key3.SaveKeyToFile("Keycv.txt", strbuf);
+		byte[] ticketv = TC.getChangedTicket();
 		Authenticator auth = new Authenticator();	
 		
 		Pack pack = new Pack();
@@ -508,12 +529,18 @@ public class STATEC extends Thread{
 		setTS5(TimeS);
 		int lifetime = 20;
 		
-		int ADc = pack.ByteArrayToInt2(pack.IPStringToByte(ip));
+		int ADc = 0;
+		try {
+			ADc = pack.ipStringToInts(ip);
+		} catch (UnknownHostException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		auth.setAD(ADc);
 		auth.setID(IDc);
 		auth.setTS(TimeS);
 		CV.setAuthenticator(auth);
-		CV.setTicket(ticketv);
+		CV.setChangedTicket(ticketv);
 		this.C_Ssocket = this.C_VSocket;
 		byte[] Headmsg = pack.Pack_0x0b_Cont();
 		send(Headmsg);
@@ -547,33 +574,23 @@ public class STATEC extends Thread{
 		Authenticator auth = CV.getAuth();
 		int IDc = auth.getID();
 		int IDv = ticketv.getID2();
-		
-		BigInteger PSW = null;
 		Pack pack = new Pack();
-		if(IDv == this.IDv) {
-			sql a=new sql();
-			try {
-				PSW = a.HasAIDc (IDc);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			if(PSW !=null) {
+		TimeStamp TSp = new TimeStamp();
+		if(IDv == this.IDv&&ticketv.getID1()==auth.getID()&&ticketv.getAD()==auth.getAD()
+				&&TSp.IsOverLifeTime(ticketv.getTS(), ticketv.getLT(), auth.getTS())) {
 				Keys kkey = new Keys();
 				BigInteger Keycv = ticketv.getKey();
+				//10转2
 				int[] KeycvInts = kkey.StringToInts(kkey.BigIntegerToString(Keycv));
-				int ADc = pack.ByteArrayToInt2(pack.IPStringToByte(ip));
 				V_C VC = new V_C();
-
-				String TS5 = getTS5();
-				int Time = Integer.valueOf(TS5);
-				String Times = String.valueOf(Time+1);
-				setTS6(TS6);
-				int lifetime = 20;
-
-				VC.setTS(Times);
+				String TS5 = auth.getTS();
+				String TS2 = TSp.TimeStringToTimeStamp(TS5);
+				int ts = Integer.valueOf(TS2);
+				String Times = String.valueOf(ts+1);
+				String TS3 = TSp.TimeStampToTimeString(Times);
+				setTS6(TS3);
+				VC.setTS(TS3);
 				byte[] Headmsg = pack.Pack_0x0c_Cont();
-				send(Headmsg);
 				BufferedInputStream bufferedInputStream = null;
 				try {
 					bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
@@ -581,6 +598,7 @@ public class STATEC extends Thread{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				send(Headmsg);
 				byte[] bytes = new byte[2];
 				try {
 					bufferedInputStream.read(bytes,0,2);
@@ -592,28 +610,25 @@ public class STATEC extends Thread{
 					byte[] msg = pack.Pack_0x0c_Data(VC,KeycvInts);
 					send(msg);
 				}
-				else {
-					System.out.println("客户端不处于就绪状态，不能进行认证");
-					return;
-				}
 			}else {
 				byte[] msg = pack.Pack_0x0f_Cont();
 				send(msg);
 			}
-		}else {
-			byte[] msg = pack.Pack_0x0f_Cont();
-			send(msg);
 		System.out.println("TGS->C");
-		}
-}
+	}
 	
 	public void zhuangtaiji0c(V_C VC){
-		String Time = getTS5();
-		int time = Integer.valueOf(Time);
-		String TM = String.valueOf(time+1);
-		String TM1 = getTS6();
-		if(TM.equals(TM1)) {
+		TimeStamp TSp = new TimeStamp();
+		String TS5 = getTS5();
+		String TS2 = TSp.TimeStringToTimeStamp(TS5);
+		int ts = Integer.valueOf(TS2);
+		String Times = String.valueOf(ts+1);
+		String TS3 = TSp.TimeStampToTimeString(Times);
+		String TM1 = VC.getTS();
+		if(TS3.equals(TM1)) {
 			System.out.println("C->V");
+		}else{
+			this.HasError = true;
 		}
 	}
 

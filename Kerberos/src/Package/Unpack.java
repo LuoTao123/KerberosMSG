@@ -181,38 +181,35 @@ public class Unpack {
 		Ticket ticket = new Ticket();
 		Authenticator Au = new Authenticator();
 		byte[] IDvByte = new byte[4];
-		byte[] ChangedTicketByte = new byte[44];
+		byte[] ChangedTicketByte = new byte[55];
 		byte[] ChangedAuthenByte = new byte[27];
 		System.arraycopy(NewByte, 0, IDvByte, 0, IDvByte.length);
 		System.arraycopy(NewByte, 4, ChangedTicketByte, 0, ChangedTicketByte.length);
-		System.arraycopy(NewByte, 48, ChangedAuthenByte, 0, ChangedAuthenByte.length);
+		System.arraycopy(NewByte, 59, ChangedAuthenByte, 0, ChangedAuthenByte.length);
 		int IDv = ByteArrayToInt2(IDvByte);
 		//Ektgs解密
 		byte[] TicketByte = text.DESSupreier(1, ChangedTicketByte ,Keytgs);
-		BigInteger Keyctgs=ticket.getKey();
-		int[] Keyc_tgs = kkey.StringToInts(kkey.BigIntegerToString(Keyctgs));
-		//Ekc,tgs解密
-		byte[] AuthenByte = text.DESSupreier(1, ChangedAuthenByte, Keyc_tgs);
-		byte[] Key1Byte = new byte[9];
+		byte[] Key1Byte = new byte[20];
 		byte[] IDcByte = new byte[4];
 		byte[] ADByte = new byte[4];
 		byte[] IDtgs1Byte = new byte[4];
 		byte[] TS2Byte1 = new byte[19];
 		byte[] LT2Byte = new byte[4];
-		System.arraycopy(NewByte, 0, Key1Byte, 0, Key1Byte.length);
-		System.arraycopy(TicketByte, 9, IDcByte, 0, IDcByte.length);
-		System.arraycopy(TicketByte, 13, ADByte, 0, ADByte.length);
-		System.arraycopy(TicketByte, 17, IDtgs1Byte, 0, IDtgs1Byte.length);
-		System.arraycopy(TicketByte, 21, TS2Byte1, 0, TS2Byte1.length);
-		System.arraycopy(TicketByte, 40, LT2Byte, 0, LT2Byte.length);
-		byte[] IDcByte1 = new byte[4];
-		byte[] ADcByte = new byte[4];
-		byte[] TSByte = new byte[19];
-		System.arraycopy(AuthenByte, 0, IDcByte1, 0, IDcByte1.length);
-		System.arraycopy(AuthenByte, 4, ADcByte, 0, ADcByte.length);
-		System.arraycopy(AuthenByte, 8, TSByte, 0, TSByte.length);
-		BigInteger Key = new BigInteger(Key1Byte);
-		int IDc = ByteArrayToInt2(Key1Byte);
+		System.arraycopy(TicketByte, 0, Key1Byte, 0, Key1Byte.length);
+		System.arraycopy(TicketByte, 20, IDcByte, 0, IDcByte.length);
+		System.arraycopy(TicketByte, 24, ADByte, 0, ADByte.length);
+		System.arraycopy(TicketByte, 28, IDtgs1Byte, 0, IDtgs1Byte.length);
+		System.arraycopy(TicketByte, 32, TS2Byte1, 0, TS2Byte1.length);
+		System.arraycopy(TicketByte, 51, LT2Byte, 0, LT2Byte.length);
+		String str = null;
+		try {
+			str = new String(Key1Byte,"UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		BigInteger Key = new BigInteger(str);
+		int IDc = ByteArrayToInt2(IDcByte);
 		int ADc = ByteArrayToInt2(ADByte);
 		int IDtgs = ByteArrayToInt2(IDtgs1Byte);
 		int LT2 = ByteArrayToInt2(LT2Byte);
@@ -223,6 +220,23 @@ public class Unpack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		ticket.setKey(Key);
+		ticket.setID1(IDc);
+		ticket.setAD(ADc);
+		ticket.setID2(IDtgs);
+		ticket.setTS(TS2);
+		ticket.setLT(LT2);
+		BigInteger Keyctgs=ticket.getKey();
+		
+		int[] Keyc_tgs = kkey.StringToInts(kkey.BigIntegerToString(Keyctgs));
+		//Ekc,tgs解密
+		byte[] AuthenByte = text.DESSupreier(1, ChangedAuthenByte, Keyc_tgs);
+		byte[] IDcByte1 = new byte[4];
+		byte[] ADcByte = new byte[4];
+		byte[] TSByte = new byte[19];
+		System.arraycopy(AuthenByte, 0, IDcByte1, 0, IDcByte1.length);
+		System.arraycopy(AuthenByte, 4, ADcByte, 0, ADcByte.length);
+		System.arraycopy(AuthenByte, 8, TSByte, 0, TSByte.length);
 		int IDc1 = ByteArrayToInt2(IDcByte1);
 		int ADc1 = ByteArrayToInt2(ADcByte);
 		String TS = null;
@@ -232,12 +246,6 @@ public class Unpack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ticket.setKey(Key);
-		ticket.setID1(IDc);
-		ticket.setAD(ADc);
-		ticket.setID2(IDtgs);
-		ticket.setTS(TS2);
-		ticket.setLT(LT2);
 		Au.setID(IDc1);
 		Au.setAD(ADc1);
 		Au.setTS(TS);
@@ -254,15 +262,27 @@ public class Unpack {
 		Keys Key1 = new Keys();
 		int[] Keyctgs = Key1.ReadKeysFromFile("Keyctgs.txt");
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyctgs);
-		byte[] KeyByte = new byte[9];
+		for(int i = 0;i<NewByte.length;i++){
+			System.out.print(NewByte[i]);
+		}
+		System.out.println();
+		byte[] KeyByte = new byte[20];
 		byte[] IDvByte = new byte[4];
 		byte[] TS4Byte = new byte[19];
-		byte[] TicketByte = new byte[44];
+		byte[] TicketByte = new byte[55];
 		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
-		System.arraycopy(NewByte, 9, IDvByte, 0, IDvByte.length);
-		System.arraycopy(NewByte, 13, TS4Byte, 0, TS4Byte.length);
-		System.arraycopy(NewByte, 31, TicketByte, 0, TicketByte.length);
-		BigInteger Key = new BigInteger(KeyByte);
+		System.arraycopy(NewByte, 20, IDvByte, 0, IDvByte.length);
+		System.arraycopy(NewByte, 24, TS4Byte, 0, TS4Byte.length);
+		System.arraycopy(NewByte, 43, TicketByte, 0, TicketByte.length);
+		String str = null;
+		try {
+			str = new String(KeyByte,"UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println(str);
+		BigInteger Key = new BigInteger(str);
 		int IDv = ByteArrayToInt2(IDvByte);
 		String TS4 = null;
 		try {
@@ -284,27 +304,34 @@ public class Unpack {
 		C_V CV = new C_V();
 		Ticket ticket = new Ticket();
 		Authenticator Authen = new Authenticator();
-		byte[] ChangedTicketByte = new byte[44];
+		byte[] ChangedTicketByte = new byte[55];
 		byte[] ChangedAuthenByte = new byte[27];
 		System.arraycopy(NewByte, 0, ChangedTicketByte, 0, ChangedTicketByte.length);
-		System.arraycopy(NewByte, 44, ChangedAuthenByte, 0, ChangedAuthenByte.length);
+		System.arraycopy(NewByte, 55, ChangedAuthenByte, 0, ChangedAuthenByte.length);
 		//Ekv解密
 		Keys kkey = new Keys();
 		int[] Keyv = kkey.ReadKeysFromFile("Keyv.txt"); 
 		byte[] TicketByte = text.DESSupreier(1, ChangedTicketByte, Keyv);
-		byte[] KeyByte = new byte[9];
+		byte[] KeyByte = new byte[20];
 		byte[] IDcByte = new byte[4];
 		byte[] ADcByte = new byte[4];
 		byte[] IDvByte = new byte[4];
 		byte[] TS4Byte = new byte[19];
 		byte[] LT4Byte = new byte[4];
-		System.arraycopy(NewByte, 0, KeyByte, 0, KeyByte.length);
-		System.arraycopy(TicketByte, 9, IDcByte, 0, IDcByte.length);
-		System.arraycopy(TicketByte, 13, ADcByte, 0, ADcByte.length);
-		System.arraycopy(TicketByte, 17, IDvByte, 0, IDvByte.length);
-		System.arraycopy(TicketByte, 21, TS4Byte, 0, TS4Byte.length);
-		System.arraycopy(TicketByte, 40, LT4Byte, 0, LT4Byte.length);
-		BigInteger Key = new BigInteger(KeyByte);
+		System.arraycopy(TicketByte, 0, KeyByte, 0, KeyByte.length);
+		System.arraycopy(TicketByte, 20, IDcByte, 0, IDcByte.length);
+		System.arraycopy(TicketByte, 24, ADcByte, 0, ADcByte.length);
+		System.arraycopy(TicketByte, 28, IDvByte, 0, IDvByte.length);
+		System.arraycopy(TicketByte, 32, TS4Byte, 0, TS4Byte.length);
+		System.arraycopy(TicketByte, 51, LT4Byte, 0, LT4Byte.length);
+		String str = null;
+		try {
+			str = new String(KeyByte,"UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		BigInteger Key = new BigInteger(str);
 		int IDc = ByteArrayToInt2(IDcByte);
 		int ADc = ByteArrayToInt2(ADcByte);
 		int IDv = ByteArrayToInt2(IDvByte);
@@ -325,14 +352,16 @@ public class Unpack {
 		//Ekc,v解密
 		Keys Key1 = new Keys();
 		BigInteger Keyc_v = ticket.getKey();
+		///////10转2
 		int[] Keycv  = Key1.StringToInts(Key1.BigIntegerToString(Keyc_v));
 		byte[] AuthenByte = text.DESSupreier(1, ChangedAuthenByte, Keycv);
+		System.out.println(AuthenByte.length);
 		byte[] IDcByte1 = new byte[4];
 		byte[] ADcByte1 = new byte[4];
 		byte[] TS5Byte = new byte[19];
 		System.arraycopy(AuthenByte, 0, IDcByte1, 0, IDcByte1.length);
-		System.arraycopy(AuthenByte, 0, ADcByte1, 4, ADcByte1.length);
-		System.arraycopy(AuthenByte, 0, TS5Byte, 8, TS5Byte.length);
+		System.arraycopy(AuthenByte, 4, ADcByte1, 0, ADcByte1.length);
+		System.arraycopy(AuthenByte, 8, TS5Byte, 0, TS5Byte.length);
 		int IDc1 = ByteArrayToInt2(IDcByte1);
 		int ADc1 = ByteArrayToInt2(ADcByte1);
 		String TS5 = null;
@@ -352,6 +381,11 @@ public class Unpack {
 
 	
 	public V_C Unpack_0x0c(byte[] ChangedNewByte){
+		System.out.println("到这里");
+		for(int i = 0;i<ChangedNewByte.length;i++){
+			System.out.print(ChangedNewByte[i]);
+		}
+		System.out.println();
 		Text text = new Text();
 		//Ekc,tgs解密
 		Keys Key1 = new Keys();

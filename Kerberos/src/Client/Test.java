@@ -7,6 +7,7 @@ package Client;
 			System.out.println("Ñ¡Ôñ·½·¨");
 			Client client = new Client();
 			int input;
+			@SuppressWarnings("resource")
 			Scanner in = new Scanner(System.in);
 			String str = in.nextLine();
 			input = Integer.valueOf(str);

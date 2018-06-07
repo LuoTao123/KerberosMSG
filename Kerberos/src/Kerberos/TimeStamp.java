@@ -35,8 +35,7 @@ public class TimeStamp {
 		return sdf.format(date);   
 	}
 	
-	public boolean IsOverLifeTime(String TimeStamp1,int LifeTime){
-		String TimeStamp2 = TimeStringToTimeStamp(getTimeString());
+	public boolean IsOverLifeTime(String TimeStamp1,int LifeTime,String TimeStamp2){
 		int TS1 = Integer.valueOf(TimeStamp1);
 		int TS2 = Integer.valueOf(TimeStamp2);
 		if(TS2-TS1>LifeTime){

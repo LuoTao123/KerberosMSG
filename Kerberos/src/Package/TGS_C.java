@@ -6,7 +6,7 @@ public class TGS_C {
 	private BigInteger Key;
 	private int ID;
 	private String TS;
-	private Ticket ticket=new Ticket();
+	private Ticket ticket;
 	private byte[] ChangedTicket;
 	public void setKey(BigInteger key){
 		this.Key=key;
@@ -16,6 +16,9 @@ public class TGS_C {
 	}
 	public void setTS(String ts){
 		this.TS=ts;
+	}
+	public void setTicket(Ticket ticket){
+		this.ticket = ticket;
 	}
 	public void setChangedTicket(byte[] ChangedTicket){
 		this.ChangedTicket=ChangedTicket;

@@ -9,8 +9,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.*;
 
 import DES.Text;
 import Kerberos.TimeStamp;
@@ -103,7 +101,7 @@ public class Client {
 		}
 		
 		public void setIDtgs(int idtgs) {
-			this.IDtgs = idtgs;
+			Client.IDtgs = idtgs;
 		}
 
 		public void setAuthat() {
@@ -153,15 +151,19 @@ public class Client {
 		}
 		
 
+		@SuppressWarnings("resource")
 		public void login(String IDc,String Psw) throws IOException {
 			
-			Socket ASsocket = new Socket("192.168.1.103",10000);
-//			Socket TGSsocket = new Socket("192.168.1.103",20000);
-//			Socket Vsocket = new Socket("192.168.1.103",30000);
+			Socket ASsocket = new Socket("192.168.25.1",10000);
+			Socket TGSsocket = new Socket("192.168.25.1",20000);
+			Socket Vsocket = new Socket("192.168.25.1",30000);
+			InetAddress addr = (InetAddress)InetAddress.getLocalHost();
+			String ip = addr.getHostAddress().toString();
 			STATEC state = new STATEC();
 			state.C_ASsocket = ASsocket;
-//			state.C_TGSSocket = TGSsocket;
-//			state.C_VSocket = Vsocket;
+			state.C_TGSSocket = TGSsocket;
+			state.C_VSocket = Vsocket;
+			state.setIDC(Integer.valueOf(IDc));
 			int idc = Integer.valueOf(IDc);
 			setIDc(idc);
 			TimeStamp TS1 = new TimeStamp();
@@ -190,7 +192,7 @@ public class Client {
 			//接收回复
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
-			state.Unpack_Head(bytes1, bufferedInputStream, ASsocket, InetAddress.getLocalHost().toString());
+			state.Unpack_Head(bytes1, bufferedInputStream, ASsocket,ip);
 			//AS_C整个包
 			setKeyctgs(state.getKeyctgs());
 			setTS2(state.getTS2());
@@ -200,13 +202,13 @@ public class Client {
 			if(state.HasError) {
 				return;
 			}
-			/*
+			///////////////////////////////////////////////////////
 			setTS3(state.getTS3());
 			InputStream inputstreamTGS = TGSsocket.getInputStream();
 			BufferedInputStream bufferedInputStreamTGS = new BufferedInputStream(inputstreamTGS);
 			byte[] bytes2 = new byte[2];
 			bufferedInputStreamTGS.read(bytes2, 0, 2);
-			state.Unpack_Head(bytes2, bufferedInputStreamTGS, TGSsocket, InetAddress.getLocalHost().toString());
+			state.Unpack_Head(bytes2, bufferedInputStreamTGS, TGSsocket,  ip);
 			setTS4(state.getTS4());
 			bufferedInputStreamTGS.close();
 			inputstreamTGS.close();
@@ -214,23 +216,23 @@ public class Client {
 			if(state.HasError) {
 				return;
 			}
+			///////////////////////////////////////////////
+			System.out.println("这里已经过了！");
 			setKeycv(state.getKeycv());
 			setTS5(state.getTS5());
 			InputStream inputstreamV = Vsocket.getInputStream();
 			BufferedInputStream bufferedInputStreamV = new BufferedInputStream(inputstreamV);
 			byte[] bytes3 = new byte[2];
 			bufferedInputStreamV.read(bytes3, 0, 2);
-			state.Unpack_Head(bytes2, bufferedInputStreamV, Vsocket, InetAddress.getLocalHost().toString());
+			state.Unpack_Head(bytes3, bufferedInputStreamV, Vsocket, ip);
 			setTS6(state.getTS6());
 			if(state.HasError) {
 				return;
 			}
-			String TS = getTS6();
-			int time = Integer.valueOf(TS);
-			String Time = String.valueOf(time+1);
-			if(TS.equals(Time)) {
+			///////////////////////////////////////////////////////////////
+			if(!state.HasError) {
 				System.out.println("Kerberos 认证完成，实现登录");
-			}*/
+			}
 		}
 			
 		public void Regist(String IDc,String Psw) throws IOException {

@@ -1,6 +1,8 @@
 package Package;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import DES.Text;
 
@@ -256,7 +258,7 @@ public class Pack {
 	
 	public byte[] Pack_0x09_Data(C_TGS CT,int[] Keyctgs){
 		Text text = new Text();
-		byte[] NewByte=new byte[75];
+		byte[] NewByte=new byte[86];
 		byte[] IDvByte = IntToByteArray2(CT.getID());
 		byte[] TicketByte = CT.getChangedTicket();
 		byte[] AuthenticatorByte = new byte[27];
@@ -273,10 +275,10 @@ public class Pack {
 		System.arraycopy(ADcByte, 0, AuthenticatorByte, 4, ADcByte.length);
 		System.arraycopy(TSByte, 0, AuthenticatorByte, 8, TSByte.length);
 		//Ekc,tgs加密
-		byte[] ChangedAuthenByte =  text.DESSupreier(0, TicketByte, Keyctgs);
+		byte[] ChangedAuthenByte =  text.DESSupreier(0, AuthenticatorByte, Keyctgs);
 		System.arraycopy(IDvByte, 0, NewByte, 0, IDvByte.length);
 		System.arraycopy(TicketByte, 0, NewByte, 4, TicketByte.length);
-		System.arraycopy(ChangedAuthenByte, 0, NewByte, 48, ChangedAuthenByte.length);
+		System.arraycopy(ChangedAuthenByte, 0, NewByte, 59, ChangedAuthenByte.length);
 		return NewByte;
 	}
 	
@@ -289,8 +291,15 @@ public class Pack {
 	
 	public byte[] Pack_0x0a_Data(TGS_C TC,int[] Keyctgs,int[] Keyv){
 		Text text = new Text();
-		byte[] NewByte = new byte[76];
-		byte[] KeyByte = TC.getKey().toByteArray();
+		byte[] NewByte = new byte[98];
+		String str = TC.getKey().toString();
+		byte[] KeyByte = null;
+		try {
+			KeyByte = str.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		byte[] IDvByte = IntToByteArray2(TC.getID());
 		byte[] TSByte = null;
 		try {
@@ -299,11 +308,19 @@ public class Pack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		byte[] TicketByte = new byte[44];
-		byte[] KeyByte1 = TC.getTicket().getKey().toByteArray();
+		byte[] TicketByte = new byte[55];
+		String str1 = TC.getTicket().getKey().toString();
+		byte[] KeyByte1 = null;
+		try {
+			KeyByte1 = str1.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		byte[] IDcByte = IntToByteArray2(TC.getTicket().getID1());
 		byte[] ADcByte = IntToByteArray2(TC.getTicket().getAD());
 		byte[] IDvByte1 = IntToByteArray2(TC.getTicket().getID2());
+		byte[] LTByte = IntToByteArray2(TC.getTicket().getLT());
 		byte[] TSByte1 = null;
 		try {
 			TSByte1 = TC.getTicket().getTS().getBytes("UTF-8");
@@ -311,36 +328,36 @@ public class Pack {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		byte[] LTByte = IntToByteArray2(TC.getTicket().getLT());
-		if(KeyByte.length==9){	
+		if(KeyByte.length==20){	
 			System.arraycopy(KeyByte, 0, TicketByte, 0, KeyByte.length);
-		}else if(KeyByte.length<9){
-			for(int i = 0;i<9-KeyByte.length;i++){
+		}else if(KeyByte.length<20){
+			for(int i = 0;i<20-KeyByte.length;i++){
 				KeyByte[i] = (byte)0x00;
 			}
-			System.arraycopy(KeyByte, 0, TicketByte, 9-KeyByte.length, KeyByte.length);
+			System.arraycopy(KeyByte1, 0, TicketByte, 20-KeyByte1.length, KeyByte1.length);
 		}
-		System.arraycopy(IDcByte, 0, TicketByte, 9, IDcByte.length);
-		System.arraycopy(ADcByte, 0, TicketByte, 13, ADcByte.length);
-		System.arraycopy(IDvByte1, 0, TicketByte, 17, IDvByte1.length);
-		System.arraycopy(TSByte1, 0, TicketByte, 21, TSByte1.length);
-		System.arraycopy(LTByte, 0, TicketByte, 40, LTByte.length);
+		System.arraycopy(IDcByte, 0, TicketByte, 20, IDcByte.length);
+		System.arraycopy(ADcByte, 0, TicketByte, 24, ADcByte.length);
+		System.arraycopy(IDvByte1, 0, TicketByte, 28, IDvByte1.length);
+		System.arraycopy(TSByte1, 0, TicketByte, 32, TSByte1.length);
+		System.arraycopy(LTByte, 0, TicketByte, 51, LTByte.length);
 		//Ekv加密
 		//////
 		byte[] ChangedTicketByte =text.DESSupreier(0, TicketByte, Keyv);
-		if(KeyByte1.length==9){	
-			System.arraycopy(KeyByte1, 0, NewByte, 0, KeyByte1.length);
-		}else if(KeyByte1.length<9){
-			for(int i = 0;i<9-KeyByte1.length;i++){
-				KeyByte1[i] = (byte)0x00;
+		if(KeyByte.length==20){	
+			System.arraycopy(KeyByte, 0, NewByte, 0, KeyByte.length);
+		}else if(KeyByte.length<20){
+			for(int i = 0;i<20-KeyByte.length;i++){
+				KeyByte[i] = (byte)0x00;
 			}
-			System.arraycopy(KeyByte1, 0, NewByte, 9-KeyByte1.length, KeyByte1.length);
+			System.arraycopy(KeyByte, 0, NewByte, 20-KeyByte.length, KeyByte.length);
 		}
-		System.arraycopy(IDvByte, 0, NewByte, 9, IDvByte.length);
-		System.arraycopy(TSByte, 0, NewByte, 13, TSByte.length);
-		System.arraycopy(ChangedTicketByte, 0, NewByte, 32, TicketByte.length);
+		System.arraycopy(IDvByte, 0, NewByte, 20, IDvByte.length);
+		System.arraycopy(TSByte, 0, NewByte, 24, TSByte.length);
+		System.arraycopy(ChangedTicketByte, 0, NewByte, 43, TicketByte.length);
 		//Ekc,tgs加密
 		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, Keyctgs);
+		System.out.println();
 		return ChangedNewByte;
 	}
 	
@@ -353,12 +370,13 @@ public class Pack {
 	
 	public byte[] Pack_0x0b_Data(C_V CV,int[] Keycv){
 		Text text = new Text();
-		byte[] NewByte = new byte[71];
+		byte[] NewByte = new byte[82];
 		byte[] TicketByte = CV.getChangedTicket();
 		byte[] AuthenByte = new byte[27];
 		byte[] IDcByte = IntToByteArray2(CV.getAuth().getID());
 		byte[] ADcByte = IntToByteArray2(CV.getAuth().getAD());
 		byte[] TS4Byte = null;
+		System.out.println("时间戳！"+CV.getAuth().getTS());
 		try {
 			TS4Byte = CV.getAuth().getTS().getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -371,7 +389,7 @@ public class Pack {
 		//Ekc,v加密
 		byte[] ChangedAuthenByte = text.DESSupreier(0, AuthenByte, Keycv);
 		System.arraycopy(TicketByte, 0, NewByte, 0, TicketByte.length);
-		System.arraycopy(ChangedAuthenByte, 0, NewByte, 44, ChangedAuthenByte.length);
+		System.arraycopy(ChangedAuthenByte, 0, NewByte, 55, ChangedAuthenByte.length);
 		return NewByte;
 	}
 	
@@ -395,6 +413,10 @@ public class Pack {
 		System.arraycopy(TS5Byte, 0, NewByte, 0, TS5Byte.length);
 		//Ekc,v加密
 		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, Keycv);
+		for(int i = 0;i<ChangedNewByte.length;i++){
+			System.out.print(ChangedNewByte[i]);
+		}
+		System.out.println();
 		return ChangedNewByte;
 	}
 	
@@ -585,26 +607,30 @@ public class Pack {
 				| ((bArr[3] & 0xff) << 0)));     
 	}
 	
-	public String IPByteToString(byte[] bArr){
-		int[] bArrInt = new int[bArr.length];
-		for(int i = 0;i<bArrInt.length;i++){
-			if((int)bArr[i]<0){
-				bArrInt[i] = 256+(int)bArr[i];
-			}else{
-				bArrInt[i] = (int)bArr[i];
-			}
-		}
-		return bArrInt[0]+"."+bArrInt[1]+"."+bArrInt[2]+"."+bArrInt[3];
+	public int ipStringToInts(String ip) throws UnknownHostException {
+        byte[] addr = ipStringToBytes(ip);
+        //reference  java.net.Inet4Address.Inet4Address
+        int address  = addr[3] & 0xFF;
+        address |= ((addr[2] << 8) & 0xFF00);
+        address |= ((addr[1] << 16) & 0xFF0000);
+        address |= ((addr[0] << 24) & 0xFF000000);
+        return address;
+    }
+	
+	public String bytesToIp(byte[] src) {
+		return (src[0] & 0xff) + "." + (src[1] & 0xff) + "." + (src[2] & 0xff)+ "." + (src[3] & 0xff);
+	}
+
+	public String ipIntsToString(int ip) {
+		byte[] addr = new byte[4];
+		addr[0] = (byte) ((ip >>> 24) & 0xFF);
+		addr[1] = (byte) ((ip >>> 16) & 0xFF);
+		addr[2] = (byte) ((ip >>> 8) & 0xFF);
+		addr[3] = (byte) (ip & 0xFF);
+		return bytesToIp(addr);
 	}
 	
-	public byte[] IPStringToByte(String ip){
-		String[] IpStrings = ip.split(".");
-		int[] IpInts = new int[IpStrings.length];
-		byte[] IpByte = new byte[IpStrings.length];
-		for(int i = 0;i<IpInts.length;i++){
-			 IpInts[i] = Integer.valueOf(IpStrings[i]);
-			 IpByte[i] = (byte) IpInts[i];
-		}
-		return IpByte;
-	}
+	public byte[] ipStringToBytes(String ip) throws UnknownHostException {
+        return InetAddress.getByName(ip).getAddress();
+    }
 }
