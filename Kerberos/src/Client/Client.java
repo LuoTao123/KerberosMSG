@@ -154,11 +154,12 @@ public class Client {
 		@SuppressWarnings("resource")
 		public void login(String IDc,String Psw) throws IOException {
 			
-			Socket ASsocket = new Socket("192.168.25.1",10000);
-			Socket TGSsocket = new Socket("192.168.25.1",20000);
-			Socket Vsocket = new Socket("192.168.25.1",30000);
-			InetAddress addr = (InetAddress)InetAddress.getLocalHost();
-			String ip = addr.getHostAddress().toString();
+			Socket ASsocket = new Socket("192.168.1.103",10000);
+			Socket TGSsocket = new Socket("192.168.1.103",20000);
+			Socket Vsocket = new Socket("192.168.1.103",30000);
+			LocalIP LIP = new LocalIP();
+			String ip = LIP.getLocalHostLANAddress().getHostAddress().toString();
+			System.out.println(ip);
 			STATEC state = new STATEC();
 			state.C_ASsocket = ASsocket;
 			state.C_TGSSocket = TGSsocket;

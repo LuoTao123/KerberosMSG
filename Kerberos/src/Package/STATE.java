@@ -656,7 +656,6 @@ public class STATE extends Thread{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				System.out.println("£¿£¿£¿£¿£¿£¿"+Headmsg[0]+" "+Headmsg[1]);
 				send(Headmsg);
 				byte[] bytes = new byte[2];
 				try {
@@ -673,7 +672,7 @@ public class STATE extends Thread{
 				byte[] msg = pack.Pack_0x0f_Cont();
 				send(msg);
 			}
-		System.out.println("TGS->C");
+		System.out.println("V->C");
 	}
 	
 	public void zhuangtaiji0c(V_C VC){
