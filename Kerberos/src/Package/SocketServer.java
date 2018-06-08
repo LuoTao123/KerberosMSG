@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 public class SocketServer {
 	public static void main(String args[]) throws Exception {
     // 监听指定的端口
-		int port = 55535;
+		/*int port = 55535;
 		@SuppressWarnings("resource")
 		ServerSocket server = new ServerSocket(port);
 		// server将一直等待连接的到来
@@ -56,5 +56,6 @@ public class SocketServer {
 	        getLen = getLen + readLen;  
 	    }  
 	       return result;  
-	}
+	}*/
+}
 }

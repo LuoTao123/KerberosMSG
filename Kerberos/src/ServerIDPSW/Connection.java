@@ -1,8 +1,7 @@
-package Server;
+package ServerIDPSW;
 import java.net.*;
 import java.io.*;
 //import java.util.*;
-
 
 public class Connection extends Thread{
 	String ip;

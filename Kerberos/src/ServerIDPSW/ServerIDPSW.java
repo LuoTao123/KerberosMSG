@@ -1,6 +1,7 @@
-package Server;
+package ServerIDPSW;
 
 import Package.IPtoSocket;
+import Server.Connection;
 
 import java.io.IOException;
 import java.math.BigInteger;

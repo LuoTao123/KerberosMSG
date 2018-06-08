@@ -1,4 +1,4 @@
-package Package;
+package TGS;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -11,6 +11,22 @@ import java.net.UnknownHostException;
 import DataBase.sql;
 import DES.*;
 import Kerberos.TimeStamp;
+import Package.AS_C;
+import Package.Authenticator;
+import Package.C_AS;
+import Package.C_TGS;
+import Package.C_V;
+import Package.Data_Modify;
+import Package.Data_Offline;
+import Package.Data_Online;
+import Package.Data_Regist;
+import Package.Data_Update;
+import Package.IPtoSocket;
+import Package.Pack;
+import Package.TGS_C;
+import Package.Ticket;
+import Package.Unpack;
+import Package.V_C;
 import RSA.Decryption;
 import RSA.Hash;
 import Server.Server;

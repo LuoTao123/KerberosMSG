@@ -256,7 +256,7 @@ public class Client {
 			Socket C_Rsocket = new Socket("192.168.1.103",40000);
 			Pack pack = new Pack();
 			C_Rsocket.getOutputStream().write(pack.Pack_0x00_Cont());
-			STATE state = new STATE();
+			STATEC state = new STATEC();
 			state.C_RSocket = C_Rsocket;
 			int idc = Integer.valueOf(IDc);
 			Hash hash = new Hash();
@@ -301,7 +301,7 @@ public class Client {
 		public void Modify(String IDc,String Psw,String Npsw) throws IOException {
 			System.out.println("开始向注册服务器发送认证请求...\n");
 			Socket C_Msocket = new Socket("192.168.1.103",40000);
-			STATE state = new STATE();
+			STATEC state = new STATEC();
 			state.C_RSocket = C_Msocket;
 			int idc = Integer.valueOf(IDc);
 			Hash hash = new Hash();
@@ -373,7 +373,7 @@ public class Client {
 		}
 		
 		public void Online() throws  IOException {
-			STATE state = new STATE();
+			STATEC state = new STATEC();
 			Socket OnSocket = this.NowSocket;
 			System.out.println("New connection accepted "+
 				      NowSocket.getInetAddress()+":"+NowSocket.getPort());
@@ -414,7 +414,7 @@ public class Client {
 		}
 		
 		public void Chat(String Message) throws IOException {
-			STATE state = new STATE();
+			STATEC state = new STATEC();
 			Socket ChatSocket = this.NowSocket;
 			System.out.println("New connection accepted "+
 				      NowSocket.getInetAddress()+":"+NowSocket.getPort());
