@@ -26,8 +26,6 @@ public class Listen extends Thread{
     
     //*******************************线程运行方法***************************************
 	public void run(){                               
-	    
-	    while(true){	
 	    	
 	    	try{
 	    		toServer=this.socket.getOutputStream();
@@ -54,7 +52,7 @@ public class Listen extends Thread{
 			catch(IOException e){
 		    	System.out.println();
 		    }
-		}  
+		  
 	}
 }
 	

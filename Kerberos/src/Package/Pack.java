@@ -157,6 +157,10 @@ public class Pack {
 		}
 		System.arraycopy(IDcByte, 0, NewByte, 0, IDcByte.length);
 		System.arraycopy(IDtgsByte, 0, NewByte, 4, IDtgsByte.length);
+		for(int i = 0;i<NewByte.length;i++){
+			System.out.print(NewByte[i]);
+		}
+		System.out.println();
 		return NewByte;
 	}
 	
@@ -241,14 +245,24 @@ public class Pack {
 			System.out.print(NewByte[i]);
 		}
 		System.out.println();
+		for(int i=0;i<Keyc.length;i++){
+			System.out.print(Keyc[i]);
+		}
+		System.out.println();
 		byte[] ChangedNewByte = text.DESSupreier(0, NewByte, Keyc);
 /*		for(int i = 0;i<ChangedNewByte.length;i++){
 			System.out.print(ChangedNewByte[i]);
 		}
 		System.out.println();*/
+		for(int i = 0;i<ChangedNewByte.length;i++){
+			System.out.print(ChangedNewByte[i]);
+		}
+		System.out.println();
 		return ChangedNewByte;
 	}
 	
+//	1100000010011101110110011110001101000011000111001000000110000111
+//	1100000001000111100101000100111010001111011111111001010001001010
 	public byte[] Pack_0x09_Cont(){
 		byte[] NewByte=new byte[2];
 		NewByte[0]=(byte)0x01;						//0Îª¿ØÖÆ°ü

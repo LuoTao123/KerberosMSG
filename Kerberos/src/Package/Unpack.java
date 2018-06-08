@@ -118,6 +118,10 @@ public class Unpack {
 	}
 	
 	public AS_C Unpack_0x08(byte[] ChangedNewByte){
+		for(int i = 0;i<ChangedNewByte.length;i++){
+			System.out.print(ChangedNewByte[i]);
+		}
+		System.out.println();
 		Text text = new Text();
 		AS_C AC = new AS_C();
 		Keys kkey = new Keys();
@@ -131,6 +135,10 @@ public class Unpack {
 			System.out.print(ChangedNewByte[i]);
 		}
 		System.out.println();*/
+		for(int i=0;i<Keyc.length;i++){
+			System.out.print(Keyc[i]);
+		}
+		System.out.println();
 		byte[] NewByte = text.DESSupreier(1, ChangedNewByte, Keyc);
 		System.out.print("Ô­ÎÄ£º");
 		for(int i = 0;i<NewByte.length;i++){
@@ -147,9 +155,17 @@ public class Unpack {
 		System.arraycopy(NewByte, 24, TS2Byte, 0, TS2Byte.length);
 		System.arraycopy(NewByte, 43, LTByte, 0, LTByte.length);
 		System.arraycopy(NewByte, 47, ChangedTicket, 0, ChangedTicket.length);
+		byte[] ChangedKeyByte = null;
+		for(int i = 0;i<KeyByte.length;i++){
+			if(KeyByte[i]!=0){
+				ChangedKeyByte = new byte[20-i];
+				System.arraycopy(KeyByte, i, ChangedKeyByte, 0, ChangedKeyByte.length);
+				break;
+			}
+		}
 		String str = null;
 		try {
-			str = new String(KeyByte,"UTF-8");
+			str = new String(ChangedKeyByte,"UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -201,9 +217,17 @@ public class Unpack {
 		System.arraycopy(TicketByte, 28, IDtgs1Byte, 0, IDtgs1Byte.length);
 		System.arraycopy(TicketByte, 32, TS2Byte1, 0, TS2Byte1.length);
 		System.arraycopy(TicketByte, 51, LT2Byte, 0, LT2Byte.length);
+		byte[] ChangedKeyByte = null;
+		for(int i = 0;i<Key1Byte.length;i++){
+			if(Key1Byte[i]!=0){
+				ChangedKeyByte = new byte[20-i];
+				System.arraycopy(Key1Byte, i, ChangedKeyByte, 0, ChangedKeyByte.length);
+				break;
+			}
+		}
 		String str = null;
 		try {
-			str = new String(Key1Byte,"UTF-8");
+			str = new String(ChangedKeyByte,"UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -274,9 +298,17 @@ public class Unpack {
 		System.arraycopy(NewByte, 20, IDvByte, 0, IDvByte.length);
 		System.arraycopy(NewByte, 24, TS4Byte, 0, TS4Byte.length);
 		System.arraycopy(NewByte, 43, TicketByte, 0, TicketByte.length);
+		byte[] ChangedKeyByte = null;
+		for(int i = 0;i<KeyByte.length;i++){
+			if(KeyByte[i]!=0){
+				ChangedKeyByte = new byte[20-i];
+				System.arraycopy(NewByte, i, ChangedKeyByte, 0, ChangedKeyByte.length);
+				break;
+			}
+		}
 		String str = null;
 		try {
-			str = new String(KeyByte,"UTF-8");
+			str = new String(ChangedKeyByte,"UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -324,9 +356,17 @@ public class Unpack {
 		System.arraycopy(TicketByte, 28, IDvByte, 0, IDvByte.length);
 		System.arraycopy(TicketByte, 32, TS4Byte, 0, TS4Byte.length);
 		System.arraycopy(TicketByte, 51, LT4Byte, 0, LT4Byte.length);
+		byte[] ChangedKeyByte = null;
+		for(int i = 0;i<KeyByte.length;i++){
+			if(KeyByte[i]!=0){
+				ChangedKeyByte = new byte[20-i];
+				System.arraycopy(KeyByte, i, ChangedKeyByte, 0, ChangedKeyByte.length);
+				break;
+			}
+		}
 		String str = null;
 		try {
-			str = new String(KeyByte,"UTF-8");
+			str = new String(ChangedKeyByte,"UTF-8");
 		} catch (UnsupportedEncodingException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -438,9 +478,17 @@ public class Unpack {
 		byte[] OriginSignByte = new byte[310-jishu];
 		System.arraycopy(SignByte, jishu, OriginSignByte, 0, OriginSignByte.length);
 		int IDc = ByteArrayToInt2(IDcByte);
+		byte[] ChangedHMSGByte = null;
+		for(int i = 0;i<HMSGByte.length;i++){
+			if(HMSGByte[i]!=0){
+				ChangedHMSGByte = new byte[20-i];
+				System.arraycopy(HMSGByte, i, ChangedHMSGByte, 0, ChangedHMSGByte.length);
+				break;
+			}
+		}
 		String str1 = null;
 		try {
-			str1 = new String(HMSGByte,"UTF-8");
+			str1 = new String(ChangedHMSGByte,"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

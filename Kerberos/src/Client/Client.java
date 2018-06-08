@@ -7,6 +7,7 @@ import RSA.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
@@ -29,6 +30,7 @@ public class Client {
 		Ticket tickettgs,ticketv;
 		Authenticator at,as;//需初始化
 		int[] Keyctgs,Keycv;
+		ServerSocket serverSocket;
 		
 		//Socket变量
 		int port;
@@ -36,6 +38,7 @@ public class Client {
 		Socket clientASSocket,clientRegisterSocket,clientServerSocket,C_Ssocket;
 		OutputStream outstream,outstream2,outstream3;
 		InputStream instream,instream2,instream3;
+		Listen listen;
 
 		public void setIDc(int idc) {
 			this.IDc = idc;
@@ -148,7 +151,11 @@ public class Client {
 		}
 		
 		public Client() {
-		
+			try{
+				serverSocket = new ServerSocket(50000);
+			}catch(IOException e){
+				System.out.println(e+"无法启动服务器");
+			}
 		}
 		
 
@@ -231,12 +238,14 @@ public class Client {
 			setTS6(state.getTS6());
 			bufferedInputStreamV.close();
 			inputstreamV.close();
-			Vsocket.close();
+			//Vsocket.close();
 			if(state.HasError) {
 				return;
 			}else{
 				System.out.println("Kerberos 认证完成，实现登录");
 				this.NowSocket = new Socket("192.168.1.103",30000);
+				System.out.println("New connection accepted "+
+					      NowSocket.getInetAddress()+":"+NowSocket.getPort());
 				this.IDc = Integer.valueOf(IDc);
 			}
 			///////////////////////////////////////////////////////////////
@@ -365,8 +374,12 @@ public class Client {
 		
 		public void Online() throws  IOException {
 			STATE state = new STATE();
-			Socket OnSocket = new Socket("192.168.1.103",30000);
-			this.NowSocket = OnSocket;
+			Socket OnSocket = this.NowSocket;
+			System.out.println("New connection accepted "+
+				      NowSocket.getInetAddress()+":"+NowSocket.getPort());
+			System.out.println("New connection accepted "+
+				      OnSocket.getInetAddress()+":"+OnSocket.getPort());
+			//this.NowSocket = OnSocket;
 			Data_Online DO = new Data_Online();
 			DO.setIDc(this.IDc);
 			//发送请求
@@ -391,13 +404,22 @@ public class Client {
 			inputstream.close();
 			if(state.HasError) {
 				return;
-			}		
+			}
+			else{
+				System.out.println("开始聊天");
+				System.out.println("New connection accepted "+
+					      NowSocket.getInetAddress()+":"+NowSocket.getPort());
+				this.NowSocket = new Socket("192.168.1.103",30000);
+			}
 		}
 		
 		public void Chat(String Message) throws IOException {
 			STATE state = new STATE();
-			Socket ChatSocket = new Socket("192.168.1.103",30000);
-			this.NowSocket = ChatSocket;
+			Socket ChatSocket = this.NowSocket;
+			System.out.println("New connection accepted "+
+				      NowSocket.getInetAddress()+":"+NowSocket.getPort());
+			System.out.println("New connection accepted "+
+				      ChatSocket.getInetAddress()+":"+ChatSocket.getPort());
 			int ID = this.IDc;
 			String idc = String.valueOf(ID);
 			//message签名
@@ -425,6 +447,7 @@ public class Client {
 			//发送消息			
 			Pack pack = new Pack();
 			System.out.println("aaaaa");
+			/////////////////////////////////////
 			InputStream inputstream =ChatSocket.getInputStream();
 			ChatSocket.getOutputStream().write(pack.Pack_0x13_Cont());
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
