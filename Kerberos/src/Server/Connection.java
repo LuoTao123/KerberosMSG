@@ -48,7 +48,10 @@ public class Connection extends Thread{
 //				}
 				if(state.HasError) {
 					return;
-				}		
+				}
+				if(state.Online == false){
+					break;
+				}
 			}
 			catch(IOException e){
 		    	System.out.println();

@@ -52,6 +52,7 @@ public class STATE extends Thread{
 	public Socket C_RSocket;
 	public static byte[] Send;
 	public  boolean HasError = false;
+	public boolean Online = true;
 	
  	public void setIDC(int idc) {
 		this.IDC = idc;
@@ -852,7 +853,7 @@ public class STATE extends Thread{
 		for(int i=0;i<Server.SocketList.size();i++){
 			NewIS = Server.SocketList.elementAt(i);
 			try {
-				socket.getOutputStream().write(pack.Pack_0x13_Cont());
+				NewIS.socket.getOutputStream().write(pack.Pack_0x13_Cont());
 				System.out.println(pack.Pack_0x13_Cont()[0]+" "+pack.Pack_0x13_Cont()[1]);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -892,13 +893,15 @@ public class STATE extends Thread{
 			for(int i=0;i<Server.SocketList.size();i++){
 				NewIS = Server.SocketList.elementAt(i);
 				if(NewIS.IDc == IS.IDc){
+					System.out.println("?????");
 					Server.SocketList.remove(i);
 					continue;
 				}
-				@SuppressWarnings("unused")
-				SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
+//				@SuppressWarnings("unused")
+//				SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
 			}
 			System.out.println(DOf.getIDc()+"ÏÂÏßÀ²£¡");
+			this.Online = false;
 		}
 
 	public byte[] readFixedLengthArray(BufferedInputStream serverSocketBis,int length)

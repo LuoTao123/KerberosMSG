@@ -20,8 +20,8 @@ public class Server extends Thread{
 			System.out.println(e+"无法启动服务器");
 		}
 		System.out.println("服务器启动");
-		@SuppressWarnings("unused")
-		UpdateKeys UK = new UpdateKeys();
+//		@SuppressWarnings("unused")
+//		UpdateKeys UK = new UpdateKeys();
 		this.start();
 	}
 	

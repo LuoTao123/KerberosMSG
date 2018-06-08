@@ -54,6 +54,7 @@ public class STATEC extends Thread{
 	public Socket C_VSocket;
 	public Socket C_RSocket;
 	public byte[] Send;
+	public Client client;
 	public  boolean HasError = false;
 	
  	public void setIDC(int idc) {
@@ -214,6 +215,7 @@ public class STATEC extends Thread{
 									}
 									System.out.println();
 									Chat(unpack.Unpack_0x13(bytess),socket);
+									client.flag = false;
 									break;
 									//ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
 				case (byte)0x08:	bytess = new byte[102];
@@ -244,6 +246,7 @@ public class STATEC extends Thread{
 				case (byte)0x16:	bytess = new byte[4];
 									bufferedInputStream.read(bytess, 0, 4);
 									Offline(unpack.Unpack_0x16(bytess),socket);
+									client.flag = false;
 									break;
 									//OfflineTransmit(unpack.Unpack_0x16(readFixedLengthArray(bufferedInputStream,4)),socket);break;
 				case (byte)0x19:	bytess = new byte[9];

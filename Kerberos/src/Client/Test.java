@@ -6,6 +6,7 @@ package Client;
 			System.out.println("选择方法");
 			STATEC statec = new STATEC();
 			Client client = new Client(statec);
+			statec.client = client;
 			int input;
 			@SuppressWarnings("resource")
 			Scanner in = new Scanner(System.in);
@@ -56,7 +57,7 @@ package Client;
 //				@SuppressWarnings("unused")
 //				Listen listen = new Listen(ID,client.NowSocket);
 				int i = 0;
-				while(i<20) {
+				while(i<4) {
 					i++;
 					System.out.println("请输入发送的信息");
 					String	Message = in.nextLine();

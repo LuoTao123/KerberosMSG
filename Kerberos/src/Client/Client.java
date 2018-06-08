@@ -32,7 +32,7 @@ public class Client {
 		Authenticator at,as;//需初始化
 		int[] Keyctgs,Keycv;
 		ServerSocket serverSocket;
-		
+		public boolean flag = false;
 		//Socket变量
 		int port;
 		Socket NowSocket;
@@ -389,6 +389,14 @@ public class Client {
 			Pack pack = new Pack();
 			Data_Offline DOf = new Data_Offline();
 			DOf.setIDc(IDc);
+			while(true){
+				if(this.flag == true){
+					continue;
+				}else{
+					this.flag = true;
+					break;
+				}
+			}
 			state.Send = pack.Pack_0x16_Data(DOf);
 			try {
 				this.C_VSocket.getOutputStream().write(pack.Pack_0x16_Cont());
@@ -396,6 +404,13 @@ public class Client {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			while(true){
+				if(this.flag == false){
+					break;
+				}else{
+					continue;
+				}
 			}
 		}
 		
@@ -411,6 +426,7 @@ public class Client {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 		
 		public void Chat(String Message) throws IOException {
@@ -439,7 +455,16 @@ public class Client {
 			DC.setEK_message(EK_m);	
 			Keys key1 = new Keys();
 			int[] Key1 = key1.ReadKeysFromFile("Key1.txt");
-			//发送消息			
+			//发送消息	
+			while(true){
+				if(this.flag == true){
+					System.out.println("????");
+					continue;
+				}else{
+					this.flag = true;
+					break;
+				}
+			}
 			state.Send = pack.Pack_0x13_Data(DC, Key1);
 			try {
 				this.C_VSocket.getOutputStream().write(pack.Pack_0x13_Cont());
@@ -447,7 +472,15 @@ public class Client {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}		
+			}
+			while(true){
+				if(this.flag == false){
+					break;
+				}else{
+					System.out.println("????!!!!");
+					continue;
+				}
+			}
 		}
 			
 		public static byte[] readFixedLengthArray(BufferedInputStream serverSocketBis,int length)

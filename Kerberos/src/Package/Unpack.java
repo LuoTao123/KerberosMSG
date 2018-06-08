@@ -479,16 +479,16 @@ public class Unpack {
 		System.arraycopy(SignByte, jishu, OriginSignByte, 0, OriginSignByte.length);
 		int IDc = ByteArrayToInt2(IDcByte);
 		byte[] ChangedHMSGByte = null;
-		for(int i = 0;i<HMSGByte.length;i++){
+/*		for(int i = 0;i<HMSGByte.length;i++){
 			if(HMSGByte[i]!=0){
 				ChangedHMSGByte = new byte[20-i];
 				System.arraycopy(HMSGByte, i, ChangedHMSGByte, 0, ChangedHMSGByte.length);
 				break;
 			}
-		}
+		}*/
 		String str1 = null;
 		try {
-			str1 = new String(ChangedHMSGByte,"UTF-8");
+			str1 = new String(HMSGByte,"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
