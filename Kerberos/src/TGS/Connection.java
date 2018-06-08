@@ -28,7 +28,7 @@ public class Connection extends Thread{
 		try{
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes, 0, 2);
-			STATE state = new STATE();
+			STATETGS state = new STATETGS();
 			state.Unpack_Head(bytes, bufferedInputStream, client, ip);
 		}catch(IOException e){
 			System.out.println(e);

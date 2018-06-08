@@ -25,10 +25,11 @@ public class Connection extends Thread{
 	}
 	
 	public void run(){
+		System.out.println("????");
 		try{
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes, 0, 2);
-			STATE state = new STATE();
+			STATEIDPSW state = new STATEIDPSW();
 			state.Unpack_Head(bytes, bufferedInputStream, client, ip);
 		}catch(IOException e){
 			System.out.println(e);

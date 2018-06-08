@@ -27,8 +27,9 @@ public class Server extends Thread{
 	
 	public void run(){                                   
 		try{
-			
-			while(true){
+			int i=0;
+			while(i<20){
+				i++;
 				Socket client = serverSocket.accept(); 	
 				String ip = client.getInetAddress().getHostAddress();
 				@SuppressWarnings("unused")

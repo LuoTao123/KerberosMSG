@@ -1,7 +1,6 @@
 package ServerIDPSW;
 
 import Package.IPtoSocket;
-import Server.Connection;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -30,6 +29,7 @@ public class ServerIDPSW extends Thread{
 			while(true){
 				Socket client = serverSocket.accept(); 	
 				String ip = client.getInetAddress().getHostAddress();
+				System.out.println(">?>?");
 				@SuppressWarnings("unused")
 				Connection connect=new Connection(client,ip);
 			}		

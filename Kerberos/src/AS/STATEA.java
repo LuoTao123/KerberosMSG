@@ -32,7 +32,7 @@ import RSA.Hash;
 import Server.Server;
 import Server.SendThread;
 
-public class STATE extends Thread{
+public class STATEA extends Thread{
 	public static int IDas = 1000000000;
 	public static int IDtgs = 1000000001;
 	public static int IDv = 1000000002;
@@ -254,13 +254,15 @@ public class STATE extends Thread{
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
 				default : System.out.println("非法数据包");
 			}
+		}else if(NewByte[0]==(byte)0xff&&NewByte[1]==(byte)0xff){
+			zhuangtaiji00();
 		}else{
 			System.out.println(NewByte[0]);
 			System.out.println("该包非法！");
 			///////////////////////////////////////////////////////////////log
 		}
 	}
-	public void zhuangtaiji0(){
+	public void zhuangtaiji00(){
 		
 	}
 	
@@ -417,7 +419,7 @@ public class STATE extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+				if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 					byte[] msg = pack.Pack_0x08_Data(AC,KeycInts,Keytgs);
 					send(msg);
 				}
@@ -499,7 +501,7 @@ public class STATE extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+		if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 			byte[] msg = pack.Pack_0x09_Data(CT,KeyctgsInts);
 			send(msg);
 		}
@@ -576,7 +578,7 @@ public class STATE extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+				if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 					byte[] msg = pack.Pack_0x0a_Data(TC,KeyctgsInts,Keyv);
 					send(msg);
 				}
@@ -638,7 +640,7 @@ public class STATE extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+		if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 			byte[] msg = pack.Pack_0x0b_Data(CV,KeycvInts);
 			send(msg);
 		}
@@ -686,7 +688,7 @@ public class STATE extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+				if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 					byte[] msg = pack.Pack_0x0c_Data(VC,KeycvInts);
 					send(msg);
 				}

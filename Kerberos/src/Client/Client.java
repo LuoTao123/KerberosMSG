@@ -10,6 +10,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 import DES.Text;
 import Kerberos.TimeStamp;
@@ -35,10 +36,11 @@ public class Client {
 		//Socket变量
 		int port;
 		Socket NowSocket;
-		Socket clientASSocket,clientRegisterSocket,clientServerSocket,C_Ssocket;
+		Socket C_ASSocket,C_TGSSocket,C_VSocket,C_RegistSocket,C_Ssocket;
 		OutputStream outstream,outstream2,outstream3;
 		InputStream instream,instream2,instream3;
 		Listen listen;
+		public STATEC state;
 
 		public void setIDc(int idc) {
 			this.IDc = idc;
@@ -47,6 +49,7 @@ public class Client {
 		public int getIDc() {
 			return IDc;
 		}
+		
 		public void setPassword(String password) {
 			this.password = password;
 		}
@@ -150,31 +153,71 @@ public class Client {
 			this.Keycv = key;
 		}
 		
-		public Client() {
-			try{
-				serverSocket = new ServerSocket(50000);
-			}catch(IOException e){
-				System.out.println(e+"无法启动服务器");
+		Client(STATEC statec){
+			this.state = statec;
+			Socket ASsocket = null;
+			try {
+				ASsocket = new Socket("192.168.1.103",10000);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			Socket TGSsocket = null;
+			try {
+				TGSsocket = new Socket("192.168.1.103",20000);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Socket Vsocket = null;
+			try {
+				Vsocket = new Socket("192.168.1.103",30000);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Socket C_Msocket = null;
+			try {
+				C_Msocket = new Socket("192.168.1.103",40000);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			statec.C_RSocket = C_Msocket;
+			statec.C_ASsocket = ASsocket;
+			statec.C_TGSSocket = TGSsocket;
+			statec.C_VSocket = Vsocket;
+			C_ASSocket = ASsocket;
+			C_TGSSocket = TGSsocket;
+			C_VSocket = Vsocket;
+			C_RegistSocket = C_Msocket;
 		}
-		
 
 		@SuppressWarnings("resource")
 		public void login(String IDc,String Psw) throws IOException {
-			
-			Socket ASsocket = new Socket("192.168.1.103",10000);
-			Socket TGSsocket = new Socket("192.168.1.103",20000);
-			Socket Vsocket = new Socket("192.168.1.103",30000);
 			LocalIP LIP = new LocalIP();
 			String ip = LIP.getLocalHostLANAddress().getHostAddress().toString();
 			System.out.println(ip);
-			STATEC state = new STATEC();
-			
-			state.C_ASsocket = ASsocket;
-			state.C_TGSSocket = TGSsocket;
-			state.C_VSocket = Vsocket;
 			state.setIDC(Integer.valueOf(IDc));
+			this.IDc = Integer.valueOf(IDc);
 			int idc = Integer.valueOf(IDc);
+			Keys key  = new Keys();
+			Hash hash = new Hash();
+			BigInteger hash_Password = hash.getMD5(Psw);
+			String str=key.BigIntegerToString(hash_Password);
+			key.SaveKeyToFile("Keyc.txt", str);
 			setIDc(idc);
 			TimeStamp TS1 = new TimeStamp();
 			String TimeS = TS1.getTimeString();
@@ -182,18 +225,18 @@ public class Client {
 			System.out.println("开始向AS发送认证请求...\n");
 			//发送请求
 			Pack pack = new Pack();
-			ASsocket.getOutputStream().write(pack.Pack_0x07_Cont());
+			C_ASSocket.getOutputStream().write(pack.Pack_0x07_Cont());
 			
 			C_AS c_as = new C_AS();
 			c_as.setIDc(idc);
 			c_as.setIDtgs(IDtgs);
 			c_as.setTS(TimeS);
-			InputStream inputstream = ASsocket.getInputStream();
+			InputStream inputstream = C_ASSocket.getInputStream();
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes,0,2);
-			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-				ASsocket.getOutputStream().write(pack.Pack_0x07_Data(c_as));
+			if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
+				C_ASSocket.getOutputStream().write(pack.Pack_0x07_Data(c_as));
 			}
 			else {
 				System.out.println("客户端不处于就绪状态，不能进行认证");
@@ -202,27 +245,27 @@ public class Client {
 			//接收回复
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
-			state.Unpack_Head(bytes1, bufferedInputStream, ASsocket,ip);
+			state.Unpack_Head(bytes1, bufferedInputStream, C_ASSocket,ip);
 			//AS_C整个包
 			setKeyctgs(state.getKeyctgs());
 			setTS2(state.getTS2());
 			bufferedInputStream.close();
 			inputstream.close();
-			ASsocket.close();
+			C_ASSocket.close();
 			if(state.HasError) {
 				return;
 			}
 			///////////////////////////////////////////////////////
 			setTS3(state.getTS3());
-			InputStream inputstreamTGS = TGSsocket.getInputStream();
+			InputStream inputstreamTGS = C_TGSSocket.getInputStream();
 			BufferedInputStream bufferedInputStreamTGS = new BufferedInputStream(inputstreamTGS);
 			byte[] bytes2 = new byte[2];
 			bufferedInputStreamTGS.read(bytes2, 0, 2);
-			state.Unpack_Head(bytes2, bufferedInputStreamTGS, TGSsocket,  ip);
+			state.Unpack_Head(bytes2, bufferedInputStreamTGS, C_TGSSocket,  ip);
 			setTS4(state.getTS4());
 			bufferedInputStreamTGS.close();
 			inputstreamTGS.close();
-			TGSsocket.close();
+			C_TGSSocket.close();
 			if(state.HasError) {
 				return;
 			}
@@ -230,34 +273,30 @@ public class Client {
 			System.out.println("这里已经过了！");
 			setKeycv(state.getKeycv());
 			setTS5(state.getTS5());
-			InputStream inputstreamV = Vsocket.getInputStream();
+			InputStream inputstreamV = C_VSocket.getInputStream();
 			BufferedInputStream bufferedInputStreamV = new BufferedInputStream(inputstreamV);
 			byte[] bytes3 = new byte[2];
 			bufferedInputStreamV.read(bytes3, 0, 2);
-			state.Unpack_Head(bytes3, bufferedInputStreamV, Vsocket, ip);
+			state.Unpack_Head(bytes3, bufferedInputStreamV, C_VSocket, ip);
 			setTS6(state.getTS6());
-			bufferedInputStreamV.close();
-			inputstreamV.close();
-			//Vsocket.close();
+//			C_VSocket.close();
 			if(state.HasError) {
 				return;
 			}else{
 				System.out.println("Kerberos 认证完成，实现登录");
-				this.NowSocket = new Socket("192.168.1.103",30000);
-				System.out.println("New connection accepted "+
-					      NowSocket.getInetAddress()+":"+NowSocket.getPort());
-				this.IDc = Integer.valueOf(IDc);
+				//this.NowSocket = new Socket("192.168.1.103",30000);
+				//state.C_VSocket = NowSocket;
+				//System.out.println("New connection accepted "+
+					//      NowSocket.getInetAddress()+":"+NowSocket.getPort());
+				//this.IDc = Integer.valueOf(IDc);
 			}
 			///////////////////////////////////////////////////////////////
 		}
 			
 		public void Regist(String IDc,String Psw) throws IOException {
 			System.out.println("开始向注册服务器发送认证请求...\n");
-			Socket C_Rsocket = new Socket("192.168.1.103",40000);
 			Pack pack = new Pack();
-			C_Rsocket.getOutputStream().write(pack.Pack_0x00_Cont());
-			STATEC state = new STATEC();
-			state.C_RSocket = C_Rsocket;
+			C_RegistSocket.getOutputStream().write(pack.Pack_0x00_Cont());
 			int idc = Integer.valueOf(IDc);
 			Hash hash = new Hash();
 			BigInteger hash_Password = hash.getMD5(Psw);
@@ -272,12 +311,12 @@ public class Client {
 			DR.setIDc(idc);
 			DR.setRSA_HASH_PASSWORD(rsa_hash_psw);
 			//发送请求
-			InputStream inputstream =C_Rsocket.getInputStream();
+			InputStream inputstream =C_RegistSocket.getInputStream();
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes,0,2);
 			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-				C_Rsocket.getOutputStream().write(pack.Pack_0x00_Data(DR));
+				C_RegistSocket.getOutputStream().write(pack.Pack_0x00_Data(DR));
 			}
 			else {
 				System.out.println("客户端不处于就绪状态，不能进行注册");
@@ -286,10 +325,10 @@ public class Client {
 			//接收回复
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
-			state.Unpack_Head(bytes1, bufferedInputStream, C_Rsocket, InetAddress.getLocalHost().toString());
+			state.Unpack_Head(bytes1, bufferedInputStream, C_RegistSocket, InetAddress.getLocalHost().toString());
 			bufferedInputStream.close();
 			inputstream.close();
-			C_Rsocket.close();
+			C_RegistSocket.close();
 			if(state.HasError) {
 				System.out.println("账号已存在！");
 				return;
@@ -300,9 +339,6 @@ public class Client {
 		
 		public void Modify(String IDc,String Psw,String Npsw) throws IOException {
 			System.out.println("开始向注册服务器发送认证请求...\n");
-			Socket C_Msocket = new Socket("192.168.1.103",40000);
-			STATEC state = new STATEC();
-			state.C_RSocket = C_Msocket;
 			int idc = Integer.valueOf(IDc);
 			Hash hash = new Hash();
 			BigInteger hash_psw = hash.getMD5(Psw);
@@ -325,13 +361,13 @@ public class Client {
 			System.out.println(DM.getRSA_HASH_NPASSWORD().toString());
 			//发送请求
 			Pack pack = new Pack();
-			InputStream inputstream =C_Msocket.getInputStream();
-			C_Msocket.getOutputStream().write(pack.Pack_0x01_Cont());
+			InputStream inputstream =C_RegistSocket.getInputStream();
+			C_RegistSocket.getOutputStream().write(pack.Pack_0x01_Cont());
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes,0,2);
 			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-				C_Msocket.getOutputStream().write(pack.Pack_0x01_Data(DM));
+				C_RegistSocket.getOutputStream().write(pack.Pack_0x01_Data(DM));
 				System.out.println("发送数据啦");
 			}
 			else {
@@ -340,88 +376,46 @@ public class Client {
 			//接收请求
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
-			state.Unpack_Head(bytes1, bufferedInputStream, C_Msocket, InetAddress.getLocalHost().toString());
+			state.Unpack_Head(bytes1, bufferedInputStream, C_RegistSocket, InetAddress.getLocalHost().toString());
 			bufferedInputStream.close();
 			inputstream.close();
-			C_Msocket.close();
+			C_RegistSocket.close();
 			if(state.HasError) {
 				return;
 			}
 		}
 		
 		public void Offline() throws  IOException {
-			Socket OffSocket =this.NowSocket;
-			Data_Offline DO = new Data_Offline();
-			DO.setIDc(this.IDc);
-			//发送请求
 			Pack pack = new Pack();
-			InputStream inputstream =OffSocket.getInputStream();
-			OffSocket.getOutputStream().write(pack.Pack_0x16_Cont());
-			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
-			byte[] bytes = new byte[2];
-			bufferedInputStream.read(bytes,0,2);
-			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-				OffSocket.getOutputStream().write(pack.Pack_0x16_Data(DO));
+			Data_Offline DOf = new Data_Offline();
+			DOf.setIDc(IDc);
+			state.Send = pack.Pack_0x16_Data(DOf);
+			try {
+				this.C_VSocket.getOutputStream().write(pack.Pack_0x16_Cont());
+				System.out.println(pack.Pack_0x16_Cont()[0]+" "+pack.Pack_0x16_Cont()[1]);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			else {
-				System.out.println("客户端下线失败");
-				return;
-			}
-			bufferedInputStream.close();
-			inputstream.close();
-			OffSocket.close();
 		}
 		
 		public void Online() throws  IOException {
-			STATEC state = new STATEC();
-			Socket OnSocket = this.NowSocket;
-			System.out.println("New connection accepted "+
-				      NowSocket.getInetAddress()+":"+NowSocket.getPort());
-			System.out.println("New connection accepted "+
-				      OnSocket.getInetAddress()+":"+OnSocket.getPort());
-			//this.NowSocket = OnSocket;
-			Data_Online DO = new Data_Online();
-			DO.setIDc(this.IDc);
-			//发送请求
 			Pack pack = new Pack();
-			InputStream inputstream =OnSocket.getInputStream();
-			OnSocket.getOutputStream().write(pack.Pack_0x10_Cont());
-			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
-			byte[] bytes = new byte[2];
-			bufferedInputStream.read(bytes,0,2);
-			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-				OnSocket.getOutputStream().write(pack.Pack_0x10_Data(DO));
-			}
-			else {
-				System.out.println("客户端上线失败");
-				return;
-			}
-			//接收请求
-			byte[] bytes1 = new byte[2];
-			bufferedInputStream.read(bytes1, 0, 2);
-			state.Unpack_Head(bytes1, bufferedInputStream, OnSocket, InetAddress.getLocalHost().toString());
-			bufferedInputStream.close();
-			inputstream.close();
-			if(state.HasError) {
-				return;
-			}
-			else{
-				System.out.println("开始聊天");
-				System.out.println("New connection accepted "+
-					      NowSocket.getInetAddress()+":"+NowSocket.getPort());
-				this.NowSocket = new Socket("192.168.1.103",30000);
+			Data_Online DOn = new Data_Online();
+			DOn.setIDc(IDc);
+			state.Send = pack.Pack_0x10_Data(DOn);
+			try {
+				this.C_VSocket.getOutputStream().write(pack.Pack_0x10_Cont());
+				System.out.println(pack.Pack_0x10_Cont()[0]+" "+pack.Pack_0x10_Cont()[1]);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		
 		public void Chat(String Message) throws IOException {
-			STATEC state = new STATEC();
-			Socket ChatSocket = this.NowSocket;
-			System.out.println("New connection accepted "+
-				      NowSocket.getInetAddress()+":"+NowSocket.getPort());
-			System.out.println("New connection accepted "+
-				      ChatSocket.getInetAddress()+":"+ChatSocket.getPort());
-			int ID = this.IDc;
-			String idc = String.valueOf(ID);
+			Pack pack = new Pack();
+			String idc = String.valueOf(IDc);
 			//message签名
 			Text text = new Text();
 			byte[] msgByte = null;
@@ -441,33 +435,18 @@ public class Client {
 			EK_m.setH_MSG(hash_msg);
 			EK_m.setSIGN(rsa_msg);
 			Data_Chat DC = new Data_Chat();
+			DC.setIDc(IDc);
 			DC.setEK_message(EK_m);	
 			Keys key1 = new Keys();
 			int[] Key1 = key1.ReadKeysFromFile("Key1.txt");
 			//发送消息			
-			Pack pack = new Pack();
-			System.out.println("aaaaa");
-			/////////////////////////////////////
-			InputStream inputstream =ChatSocket.getInputStream();
-			ChatSocket.getOutputStream().write(pack.Pack_0x13_Cont());
-			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
-			byte[] bytes = new byte[2];
-			bufferedInputStream.read(bytes,0,2);
-			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-				System.out.println("aaaaa");
-				ChatSocket.getOutputStream().write(pack.Pack_0x13_Data(DC, Key1));
-			}
-			else {
-				System.out.println("客户端发送消息失败");
-			}
-			//接收消息
-			byte[] bytes1 = new byte[2];
-			bufferedInputStream.read(bytes1, 0, 2);
-			state.Unpack_Head(bytes1, bufferedInputStream, ChatSocket, InetAddress.getLocalHost().toString());
-			bufferedInputStream.close();
-			inputstream.close();
-			if(state.HasError) {
-				return;
+			state.Send = pack.Pack_0x13_Data(DC, Key1);
+			try {
+				this.C_VSocket.getOutputStream().write(pack.Pack_0x13_Cont());
+				System.out.println("发送头："+pack.Pack_0x13_Cont()[0]+" "+pack.Pack_0x13_Cont()[1]);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}		
 		}
 			

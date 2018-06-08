@@ -53,6 +53,7 @@ public class STATEC extends Thread{
 	public Socket C_TGSSocket;
 	public Socket C_VSocket;
 	public Socket C_RSocket;
+	public byte[] Send;
 	public  boolean HasError = false;
 	
  	public void setIDC(int idc) {
@@ -166,10 +167,12 @@ public class STATEC extends Thread{
 	}
 	
 	public void Unpack_Head(byte[] NewByte,BufferedInputStream bufferedInputStream,Socket socket,String ip) throws SocketTimeoutException, IOException{
+		System.out.println("Unpack内部"+NewByte[0]+" "+NewByte[1]+" ");
 		this.C_Ssocket = socket;
 		Unpack unpack = new Unpack();
 		if(NewByte[0]==(byte)0x00){
 			switch(NewByte[1]){
+//				case (byte)0x00:	zhuangtaiji00();break;
 				case (byte)0x02:	zhuangtaiji2();break;
 				case (byte)0x03:	zhuangtaiji3();break;
 				case (byte)0x04:	zhuangtaiji4();break;
@@ -195,11 +198,21 @@ public class STATEC extends Thread{
 			switch(NewByte[1]){
 				case (byte)0x10:	bytess = new byte[4];
 									bufferedInputStream.read(bytess, 0, 4);
+									System.out.print("接受内容：");
+									for(int i = 0;i<bytess.length;i++){
+										System.out.print(bytess[i]+" ");
+									}
+									System.out.println();
 									Online(unpack.Unpack_0x10(bytess),socket);
 									break;
 									//OnlineTransmit(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
 				case (byte)0x13:	bytess = new byte[334];
 									bufferedInputStream.read(bytess, 0, 334);
+									System.out.print("接受内容：");
+									for(int i = 0;i<bytess.length;i++){
+										System.out.print(bytess[i]+" ");
+									}
+									System.out.println();
 									Chat(unpack.Unpack_0x13(bytess),socket);
 									break;
 									//ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
@@ -242,10 +255,26 @@ public class STATEC extends Thread{
 
 				default : System.out.println("非法数据包");
 			}
+		}else if(NewByte[0]==(byte)0xff&&NewByte[1]==(byte)0xff){
+			zhuangtaiji00();
 		}else{
 			System.out.println(NewByte[0]);
 			System.out.println("该包非法！");
 			///////////////////////////////////////////////////////////////log
+		}
+	}
+	
+	public void zhuangtaiji00() {
+		System.out.print("发送内容：");
+		for(int i = 0;i<Send.length;i++){
+			System.out.print(Send[i]+" ");
+		}
+		System.out.println();
+		try {
+			this.C_Ssocket.getOutputStream().write(Send);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -342,7 +371,7 @@ public class STATEC extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+				if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 					byte[] msg = pack.Pack_0x08_Data(AC,KeycInts,Keytgs);
 					send(msg);
 				}
@@ -417,7 +446,7 @@ public class STATEC extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+		if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 			byte[] msg = pack.Pack_0x09_Data(CT,KeyctgsInts);
 			send(msg);
 		}
@@ -498,7 +527,7 @@ public class STATEC extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+				if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 					byte[] msg = pack.Pack_0x0a_Data(TC,KeyctgsInts,Keyv);
 					send(msg);
 				}
@@ -560,7 +589,7 @@ public class STATEC extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+		if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 			byte[] msg = pack.Pack_0x0b_Data(CV,KeycvInts);
 			send(msg);
 		}
@@ -608,7 +637,7 @@ public class STATEC extends Thread{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+				if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 					byte[] msg = pack.Pack_0x0c_Data(VC,KeycvInts);
 					send(msg);
 				}

@@ -80,10 +80,14 @@ public class Keys {
 	public int[] StringToInts(String str) {
 		int[] All64Key = new int[64];
 		for(int i=0;i<64;i++){
-			All64Key[i]=Integer.parseInt(str.substring(i,i+1));
-			if(All64Key[i]!=0&&All64Key[i]!=1){
-				System.out.println("输入的"+i+"位不为0或1，请重新输入");
-				System.exit(0);
+			if(i<str.length()){
+				All64Key[i]=Integer.parseInt(str.substring(i,i+1));
+				if(All64Key[i]!=0&&All64Key[i]!=1){
+					System.out.println("输入的"+i+"位不为0或1，请重新输入");
+					System.exit(0);
+				}
+			}else{
+				All64Key[i]=0;
 			}
 		}
 		return All64Key;

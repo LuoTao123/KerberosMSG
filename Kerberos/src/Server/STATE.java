@@ -50,6 +50,7 @@ public class STATE extends Thread{
 	public Socket C_TGSSocket;
 	public Socket C_VSocket;
 	public Socket C_RSocket;
+	public static byte[] Send;
 	public  boolean HasError = false;
 	
  	public void setIDC(int idc) {
@@ -166,10 +167,11 @@ public class STATE extends Thread{
 	
 	public void Unpack_Head(byte[] NewByte,BufferedInputStream bufferedInputStream,Socket socket,String ip) throws SocketTimeoutException, IOException{
 		this.C_Ssocket = socket;
+		System.out.println("内部接受"+NewByte[0]+" "+NewByte[1]+" ");
 		Unpack unpack = new Unpack();
 		if(NewByte[0]==(byte)0x00){
 			switch(NewByte[1]){
-				//case (byte)0x00:	zhuangtaiji0();break;	
+//				case (byte)0x00:	zhuangtaiji00();break;	
 				case (byte)0x02:	zhuangtaiji2();break;
 				case (byte)0x03:	zhuangtaiji3();break;
 				case (byte)0x04:	zhuangtaiji4();break;
@@ -203,11 +205,21 @@ public class STATE extends Thread{
 									break;
 				case (byte)0x10:	bytess = new byte[4];
 									bufferedInputStream.read(bytess, 0, 4);
+									System.out.print("接受内容：");
+									for(int i = 0;i<bytess.length;i++){
+										System.out.print(bytess[i]+" ");
+									}
+									System.out.println();
 									OnlineTransmit(unpack.Unpack_0x10(bytess),socket);
 									break;
 									//OnlineTransmit(unpack.Unpack_0x10(readFixedLengthArray(bufferedInputStream,4)),socket);break;
 				case (byte)0x13:	bytess = new byte[334];
 									bufferedInputStream.read(bytess, 0, 334);
+									System.out.print("接受内容：");
+									for(int i = 0;i<bytess.length;i++){
+										System.out.print(bytess[i]+" ");
+									}
+									System.out.println();
 									ChatTransmit(socket,bytess);
 									break;
 									//ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
@@ -254,14 +266,27 @@ public class STATE extends Thread{
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
 				default : System.out.println("非法数据包");
 			}
+		}else if(NewByte[0]==(byte)0xff&&NewByte[1]==(byte)0xff){
+			zhuangtaiji00();
 		}else{
 			System.out.println(NewByte[0]);
 			System.out.println("该包非法！");
 			///////////////////////////////////////////////////////////////log
 		}
 	}
-	public void zhuangtaiji0(){
-		
+	
+	public void zhuangtaiji00() {
+		System.out.print("发送内容：");
+		for(int i = 0;i<Send.length;i++){
+			System.out.print(Send[i]+" ");
+		}
+		System.out.println();
+		try {
+			this.C_Ssocket.getOutputStream().write(Send);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void Server_Regist(Data_Regist DR){
@@ -671,29 +696,20 @@ public class STATE extends Thread{
 				setTS6(TS3);
 				VC.setTS(TS3);
 				byte[] Headmsg = pack.Pack_0x0c_Cont();
-				BufferedInputStream bufferedInputStream = null;
-				try {
-					bufferedInputStream = new BufferedInputStream(C_Ssocket.getInputStream());
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				STATE.Send = pack.Pack_0x0c_Data(VC,KeycvInts);
 				send(Headmsg);
-				byte[] bytes = new byte[2];
+			}else {
+				byte[] msg = pack.Pack_0x0f_Cont();
+				send(msg);
+				//Socket关闭/////////////////////////////////修改2
 				try {
-					bufferedInputStream.read(bytes,0,2);
+					C_VSocket.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
-					byte[] msg = pack.Pack_0x0c_Data(VC,KeycvInts);
-					send(msg);
-				}
-			}else {
-				byte[] msg = pack.Pack_0x0f_Cont();
-				send(msg);
 			}
+		
 		System.out.println("V->C");
 	}
 	
@@ -770,15 +786,14 @@ public class STATE extends Thread{
 		Pack pack = new Pack();
 		try {
 			socket.getOutputStream().write(pack.Pack_0x11_Cont());
-			System.out.println("New connection accepted "+
-				      socket.getInetAddress()+":"+socket.getPort());
+			System.out.println(pack.Pack_0x11_Cont()[0]+" "+pack.Pack_0x11_Cont()[1]);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("上线包发送！！！");
 		//上线先给上线用户发最新的KeySession
-		Data_Update DU = new Data_Update();
+/*		Data_Update DU = new Data_Update();
 		DU.setKey(Server.Keysession);
 		Text text = new Text();
 		Keys kkey = new Keys();
@@ -792,22 +807,28 @@ public class STATE extends Thread{
 		}
 		int[] Keycc = kkey.StringToInts(kkey.BigIntegerToString(PSW));
 		@SuppressWarnings("unused")
-		SendThread ST1 = new SendThread(socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));
-		  System.out.println("New connection accepted "+
-			      socket.getInetAddress()+":"+socket.getPort());
+		SendThread ST1 = new SendThread(socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));*/
 		//再将上线用户加入到列表中去
 		Server.SocketList.addElement(IS);
 		IPtoSocket NewIS = null;
 		//开始给所有的用户通知上线
 		for(int i=0;i<Server.SocketList.size();i++){
 			NewIS = Server.SocketList.elementAt(i);
-			@SuppressWarnings("unused")
-			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x10_Cont(),pack.Pack_0x10_Data(DOn));
-			System.out.println("New connection accepted "+
-				      NewIS.socket.getInetAddress()+":"+NewIS.socket.getPort()+"aaa");
+			this.Send = pack.Pack_0x10_Data(DOn);
+//			@SuppressWarnings("unused")
+			try {
+				NewIS.socket.getOutputStream().write(pack.Pack_0x10_Cont());
+				System.out.println("发送头"+pack.Pack_0x10_Cont()[0]+" "+pack.Pack_0x10_Cont()[1]);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x10_Cont(),pack.Pack_0x10_Data(DOn));
 		}
 		System.out.println(DOn.getIDc()+"上线啦！");
 	}
+	
+
 	
 	public void zhuangtaiji11(){
 		System.out.println("上线成功！");
@@ -821,21 +842,25 @@ public class STATE extends Thread{
 		Pack pack = new Pack();
 		try {
 			socket.getOutputStream().write(pack.Pack_0x14_Cont());
-			System.out.println(pack.Pack_0x14_Cont());
-			System.out.println("asasasas");
+			System.out.println("发送头："+pack.Pack_0x14_Cont()[0]+" "+pack.Pack_0x14_Cont()[1]);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("aaaaaaaaa");
 		IPtoSocket NewIS = null;
+		this.Send = bytes;
 		for(int i=0;i<Server.SocketList.size();i++){
-			System.out.println(Server.SocketList.size());
 			NewIS = Server.SocketList.elementAt(i);
-			System.out.println("aaaaaaaaa");
-			@SuppressWarnings("unused")
-			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x13_Cont(),bytes);
+			try {
+				socket.getOutputStream().write(pack.Pack_0x13_Cont());
+				System.out.println(pack.Pack_0x13_Cont()[0]+" "+pack.Pack_0x13_Cont()[1]);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x13_Cont(),bytes);
 		}
+		System.out.println("aaaaa");
 		//EK_message EKm = DC.getEKMSG();
 		//System.out.println(DC.getIDc());
 		//System.out.println(EKm.getMSG().toString());
@@ -853,28 +878,28 @@ public class STATE extends Thread{
 	
 	//下线发
 	public void OfflineTransmit(Data_Offline DOf,Socket socket){
-		IPtoSocket IS = new IPtoSocket();
-		IS.IDc = DOf.getIDc();
-		IS.socket = socket;
-		Pack pack = new Pack();
-		try {
-			socket.getOutputStream().write(pack.Pack_0x17_Cont());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		IPtoSocket NewIS = null;
-		for(int i=0;i<Server.SocketList.size();i++){
-			NewIS = Server.SocketList.elementAt(i);
-			if(NewIS.IDc == IS.IDc){
-				Server.SocketList.remove(i);
-				continue;
+			IPtoSocket IS = new IPtoSocket();
+			IS.IDc = DOf.getIDc();
+			IS.socket = socket;
+			Pack pack = new Pack();
+			try {
+				socket.getOutputStream().write(pack.Pack_0x17_Cont());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			@SuppressWarnings("unused")
-			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
+			IPtoSocket NewIS = null;
+			for(int i=0;i<Server.SocketList.size();i++){
+				NewIS = Server.SocketList.elementAt(i);
+				if(NewIS.IDc == IS.IDc){
+					Server.SocketList.remove(i);
+					continue;
+				}
+				@SuppressWarnings("unused")
+				SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
+			}
+			System.out.println(DOf.getIDc()+"下线啦！");
 		}
-		System.out.println(DOf.getIDc()+"下线啦！");
-	}
 
 	public byte[] readFixedLengthArray(BufferedInputStream serverSocketBis,int length)
 	        throws SocketTimeoutException, IOException{  //读对应长度的byte数组

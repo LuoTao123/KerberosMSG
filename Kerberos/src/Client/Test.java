@@ -1,11 +1,11 @@
 package Client;
 	import java.io.IOException;
 	import java.util.Scanner;
-	
 	public class Test {
 		public static void main(String[] arg)  {
 			System.out.println("选择方法");
-			Client client = new Client();
+			STATEC statec = new STATEC();
+			Client client = new Client(statec);
 			int input;
 			@SuppressWarnings("resource")
 			Scanner in = new Scanner(System.in);
@@ -33,29 +33,42 @@ package Client;
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			}
+			}		
 			else if(input == 3) {
 				System.out.println("请输入账号和密码");
 				String ID = in.nextLine();
 				String password = in.nextLine();
+				client.setIDc(Integer.valueOf(ID));
 				try {
 					client.login(ID, password);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				Listen listen = new Listen(Integer.valueOf(ID),client.state.C_VSocket,client.state);
 				try {
 					client.Online();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				///////////////////////未收到回复直接进入循环
 //				@SuppressWarnings("unused")
 //				Listen listen = new Listen(ID,client.NowSocket);
-				System.out.println("请输入发送的信息");
-				String	Message = in.nextLine();
+				int i = 0;
+				while(i<20) {
+					i++;
+					System.out.println("请输入发送的信息");
+					String	Message = in.nextLine();
+					try {
+						client.Chat(Message);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				try {
-					client.Chat(Message);
+					client.Offline();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

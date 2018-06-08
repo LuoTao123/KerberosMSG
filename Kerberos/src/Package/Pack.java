@@ -9,8 +9,8 @@ import DES.Text;
 public class Pack {
 	public byte[] Server_Return(){
 		byte[] NewByte=new byte[2];
-		NewByte[0]=(byte)0x00;						//0为控制包
-		NewByte[1]=(byte)0x00;						//控制头(位)
+		NewByte[0]=(byte)0xff;						//0为控制包
+		NewByte[1]=(byte)0xff;						//控制头(位)
 		return NewByte;
 	}
 	
@@ -196,7 +196,7 @@ public class Pack {
 		String str1 = AC.getTicket().getKey().toString();
 		byte[] KeyctgsByte = null;
 		try {
-			KeyctgsByte = str.getBytes("UTF-8");
+			KeyctgsByte = str1.getBytes("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
