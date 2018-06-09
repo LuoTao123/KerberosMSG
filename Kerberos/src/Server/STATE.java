@@ -697,6 +697,19 @@ public class STATE extends Thread{
 		int IDv = ticketv.getID2();
 		Pack pack = new Pack();
 		TimeStamp TSp = new TimeStamp();
+		sql a = new sql();
+		try {
+			a.AddNewAuthenticator(auth);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			a.AddNewTicket(ticketv);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		if(IDv == this.IDv&&ticketv.getID1()==auth.getID()&&ticketv.getAD()==auth.getAD()
 			&&TSp.IsOverLifeTime(TSp.TimeStringToTimeStamp(ticketv.getTS()), ticketv.getLT(),TSp.TimeStringToTimeStamp(auth.getTS()))){
 				Keys kkey = new Keys();
