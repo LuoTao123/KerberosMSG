@@ -36,7 +36,7 @@ public class Client {
 		//Socket变量
 		int port;
 		Socket NowSocket;
-		Socket C_ASSocket,C_TGSSocket,C_VSocket,C_RegistSocket,C_Ssocket;
+		public Socket C_ASSocket,C_TGSSocket,C_VSocket,C_RegistSocket,C_Ssocket,ReC_Vsocket;
 		OutputStream outstream,outstream2,outstream3;
 		InputStream instream,instream2,instream3;
 		Listen listen;
@@ -195,10 +195,21 @@ public class Client {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			Socket ReC_Vsocket = null;
+			try {
+				ReC_Vsocket = new Socket("192.168.1.103",30001);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			statec.C_RSocket = C_Msocket;
 			statec.C_ASsocket = ASsocket;
 			statec.C_TGSSocket = TGSsocket;
 			statec.C_VSocket = Vsocket;
+			this.ReC_Vsocket = ReC_Vsocket;
 			C_ASSocket = ASsocket;
 			C_TGSSocket = TGSsocket;
 			C_VSocket = Vsocket;
@@ -458,7 +469,6 @@ public class Client {
 			//发送消息	
 			while(true){
 				if(this.flag == true){
-					System.out.println("????");
 					continue;
 				}else{
 					this.flag = true;
@@ -474,10 +484,10 @@ public class Client {
 				e.printStackTrace();
 			}
 			while(true){
+				System.out.println(this.flag);
 				if(this.flag == false){
 					break;
 				}else{
-					System.out.println("????!!!!");
 					continue;
 				}
 			}

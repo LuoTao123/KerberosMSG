@@ -11,11 +11,13 @@ import java.util.Vector;
 public class Server extends Thread{
 	public static BigInteger Keysession;
 	ServerSocket serverSocket;
+	ServerSocket serverSocketResponse;
 	public static Vector<IPtoSocket> SocketList = new Vector<IPtoSocket>();
-	
+	public static Vector<STATE> StateList = new Vector<STATE>();
 	public Server(){
 		try{
 			serverSocket = new ServerSocket(30000);
+			serverSocketResponse = new ServerSocket(30001);
 		}catch(IOException e){
 			System.out.println(e+"无法启动服务器");
 		}
@@ -30,10 +32,13 @@ public class Server extends Thread{
 			int i=0;
 			while(i<20){
 				i++;
-				Socket client = serverSocket.accept(); 	
+				Socket client = serverSocket.accept();
+				Socket clientResponse =serverSocketResponse.accept();
 				String ip = client.getInetAddress().getHostAddress();
 				@SuppressWarnings("unused")
-				Connection connect=new Connection(client,ip);
+				Connection connect = new Connection(client,ip,clientResponse);
+				@SuppressWarnings("unused")
+				ConnectionR connectResponse = new ConnectionR(clientResponse,ip,client);
 			}		
 		}
 		catch(IOException e){

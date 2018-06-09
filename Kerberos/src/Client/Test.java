@@ -47,6 +47,9 @@ package Client;
 					e.printStackTrace();
 				}
 				Listen listen = new Listen(Integer.valueOf(ID),client.state.C_VSocket,client.state);
+				STATEC stateR = new STATEC();
+				stateR.client = client;
+				Listen listenR = new Listen(Integer.valueOf(ID),client.ReC_Vsocket,stateR);
 				try {
 					client.Online();
 				} catch (IOException e) {

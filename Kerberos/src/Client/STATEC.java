@@ -216,6 +216,7 @@ public class STATEC extends Thread{
 									System.out.println();
 									Chat(unpack.Unpack_0x13(bytess),socket);
 									client.flag = false;
+									System.out.println(client.flag);
 									break;
 									//ChatTransmit(socket,readFixedLengthArray(bufferedInputStream,149));break;
 				case (byte)0x08:	bytess = new byte[102];

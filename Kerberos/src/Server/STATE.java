@@ -50,7 +50,8 @@ public class STATE extends Thread{
 	public Socket C_TGSSocket;
 	public Socket C_VSocket;
 	public Socket C_RSocket;
-	public static byte[] Send;
+	public Socket ResponseSocket;
+	public byte[] Send;
 	public  boolean HasError = false;
 	public boolean Online = true;
 	
@@ -194,6 +195,7 @@ public class STATE extends Thread{
 		}else if(NewByte[0]==(byte)0x01){
 			Pack pack = new Pack();
 			socket.getOutputStream().write(pack.Server_Return());
+			System.out.println("发送头"+pack.Server_Return()[0]+" "+pack.Server_Return()[1]);
 			byte[] bytess  = null;
 			switch(NewByte[1]){
 				case (byte)0x00:	bytess = new byte[314];
@@ -697,7 +699,7 @@ public class STATE extends Thread{
 				setTS6(TS3);
 				VC.setTS(TS3);
 				byte[] Headmsg = pack.Pack_0x0c_Cont();
-				STATE.Send = pack.Pack_0x0c_Data(VC,KeycvInts);
+				this.Send = pack.Pack_0x0c_Data(VC,KeycvInts);
 				send(Headmsg);
 			}else {
 				byte[] msg = pack.Pack_0x0f_Cont();
@@ -784,6 +786,7 @@ public class STATE extends Thread{
 		IPtoSocket IS = new IPtoSocket();
 		IS.IDc = DOn.getIDc();
 		IS.socket = socket;
+		IS.Responsesocket = this.ResponseSocket;
 		Pack pack = new Pack();
 		try {
 			socket.getOutputStream().write(pack.Pack_0x11_Cont());
@@ -815,10 +818,10 @@ public class STATE extends Thread{
 		//开始给所有的用户通知上线
 		for(int i=0;i<Server.SocketList.size();i++){
 			NewIS = Server.SocketList.elementAt(i);
-			this.Send = pack.Pack_0x10_Data(DOn);
+			Server.StateList.elementAt(i).Send = pack.Pack_0x10_Data(DOn);
 //			@SuppressWarnings("unused")
 			try {
-				NewIS.socket.getOutputStream().write(pack.Pack_0x10_Cont());
+				NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x10_Cont());
 				System.out.println("发送头"+pack.Pack_0x10_Cont()[0]+" "+pack.Pack_0x10_Cont()[1]);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -849,11 +852,11 @@ public class STATE extends Thread{
 			e.printStackTrace();
 		}
 		IPtoSocket NewIS = null;
-		this.Send = bytes;
 		for(int i=0;i<Server.SocketList.size();i++){
 			NewIS = Server.SocketList.elementAt(i);
+			Server.StateList.elementAt(i).Send = bytes;
 			try {
-				NewIS.socket.getOutputStream().write(pack.Pack_0x13_Cont());
+				NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x13_Cont());
 				System.out.println(pack.Pack_0x13_Cont()[0]+" "+pack.Pack_0x13_Cont()[1]);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -890,13 +893,25 @@ public class STATE extends Thread{
 				e.printStackTrace();
 			}
 			IPtoSocket NewIS = null;
+			STATE stateR = null;
 			for(int i=0;i<Server.SocketList.size();i++){
 				NewIS = Server.SocketList.elementAt(i);
+				stateR = Server.StateList.elementAt(i);
 				if(NewIS.IDc == IS.IDc){
 					System.out.println("?????");
-					Server.SocketList.remove(i);
+					Server.SocketList.remove(NewIS);
+					Server.StateList.remove(stateR);
+					stateR.Online = false;
 					continue;
 				}
+				try {
+					stateR.Send = pack.Pack_0x16_Data(DOf);
+					NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x16_Cont());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("发送头"+pack.Pack_0x16_Cont()[0]+" "+pack.Pack_0x16_Cont()[1]);
 //				@SuppressWarnings("unused")
 //				SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
 			}
