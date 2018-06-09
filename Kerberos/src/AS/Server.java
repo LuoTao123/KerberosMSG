@@ -1,6 +1,7 @@
 package AS;
 
 import Package.IPtoSocket;
+import Package.STATETOIP;
 
 import java.io.IOException;
 import java.math.BigInteger;

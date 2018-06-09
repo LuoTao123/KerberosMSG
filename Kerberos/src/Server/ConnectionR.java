@@ -1,5 +1,8 @@
 package Server;
 import java.net.*;
+
+import Package.STATETOIP;
+
 import java.io.*;
 //import java.util.*;
 
@@ -34,15 +37,21 @@ public class ConnectionR extends Thread{
 	
 	public void run(){                               
 		state = new STATE();
-		state.setIDC(1276338796);
 		try {
 			this.client.setSoTimeout(2000);
 		} catch (SocketException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		Server.StateList.addElement(state);
-		state.ResponseSocket = this.Responseclient;
+		STATETOIP stateip = new STATETOIP();
+		stateip.state = state;
+		stateip.ip = this.ip;
+		Server.StateToIp.addElement(stateip);
+		System.out.println("ConnectionR的线程"+this.toString());
+		System.out.println("相应状态机"+state.toString());
+		System.out.println("被动端口："+Responseclient.toString());
+		System.out.println("主动端口："+client.toString());
+		state.ResponseSocket = this.client;
 		bufferedInputStream = new BufferedInputStream(fromClient);
 		int i = 0;
 		while(true) {
@@ -67,6 +76,7 @@ public class ConnectionR extends Thread{
 			if(state.Online == false){
 				break;
 			}
-		}  
+		}
+		System.out.println(this.toString()+"已结束！");
 	}
 }

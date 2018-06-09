@@ -73,6 +73,8 @@ package Client;
 				}
 				try {
 					client.Offline();
+					listen.state.Online=false;
+					listenR.state.Online=false;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -23,6 +23,7 @@ import Package.Data_Regist;
 import Package.Data_Update;
 import Package.IPtoSocket;
 import Package.Pack;
+import Package.STATETOIP;
 import Package.TGS_C;
 import Package.Ticket;
 import Package.Unpack;
@@ -39,6 +40,7 @@ public class STATE extends Thread{
 	public static int IDis = 1000000003;
 	private int IDC;
 	private int ADC;
+	public String ip;
 	private String TS1,TS2,TS3,TS4,TS5,TS6;
 	private int lifetime;
 	private int[] Keyctgs;
@@ -168,6 +170,7 @@ public class STATE extends Thread{
 	}
 	
 	public void Unpack_Head(byte[] NewByte,BufferedInputStream bufferedInputStream,Socket socket,String ip) throws SocketTimeoutException, IOException{
+		this.ip = ip;
 		this.C_Ssocket = socket;
 		System.out.println("内部接受"+NewByte[0]+" "+NewByte[1]+" ");
 		Unpack unpack = new Unpack();
@@ -279,7 +282,17 @@ public class STATE extends Thread{
 	}
 	
 	public void zhuangtaiji00() {
-		System.out.print("发送内容：");
+		System.out.println("发送的状态机"+this.toString());
+/*		while(Send == null){
+			try {
+				this.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("空的，傻逼");
+		}*/
+		System.out.print("发送内容："+Send.toString());
 		for(int i = 0;i<Send.length;i++){
 			System.out.print(Send[i]+" ");
 		}
@@ -788,6 +801,7 @@ public class STATE extends Thread{
 		IS.IDc = DOn.getIDc();
 		IS.socket = socket;
 		IS.Responsesocket = this.ResponseSocket;
+		IS.ip = this.ip;
 		Pack pack = new Pack();
 		try {
 			socket.getOutputStream().write(pack.Pack_0x11_Cont());
@@ -819,18 +833,35 @@ public class STATE extends Thread{
 				Server.flag = true;
 				break;
 			}else{
+				System.out.println("我卡主啦，快来帮帮我！"+this.toString());
 				continue;
 			}
 		}
 		Server.SocketList.addElement(IS);
 		IPtoSocket NewIS = null;
+		STATETOIP stateip = null;
+/*		System.out.println("当前在线用户有：");
+		for(int i=0;i<Server.SocketList.size();i++){
+			System.out.println("Socket为："+Server.SocketList.elementAt(i).toString());
+			System.out.println("当前Socket为"+socket);
+			System.out.println("状态机为"+Server.StateList.elementAt(i).toString());
+			System.out.println("当前状态机为："+this.toString());
+			
+		}*/
 		//开始给所有的用户通知上线
 		for(int i=0;i<Server.SocketList.size();i++){
 			NewIS = Server.SocketList.elementAt(i);
-			Server.StateList.elementAt(i).Send = pack.Pack_0x10_Data(DOn);
-			System.out.println("账号"+Server.StateList.elementAt(i).getIDC());
+			for(int j=0;j<Server.StateToIp.size();j++){
+				stateip = Server.StateToIp.elementAt(j);
+				if(stateip.ip.equals(NewIS.ip)){
+					stateip.state.Send = pack.Pack_0x10_Data(DOn);
+					break;
+				}
+			}
+			System.out.println("发送的状态机"+stateip.state.toString());
 //			@SuppressWarnings("unused")
 			try {
+				System.out.println("主动端口将要写："+NewIS.Responsesocket.toString());
 				NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x10_Cont());
 				System.out.println("发送头"+pack.Pack_0x10_Cont()[0]+" "+pack.Pack_0x10_Cont()[1]);
 			} catch (IOException e) {
@@ -873,14 +904,22 @@ public class STATE extends Thread{
 				Server.flag = true;
 				break;
 			}else{
+				System.out.println("我卡主啦，快来帮帮我！"+this.toString());
 				continue;
 			}
 		}
 		IPtoSocket NewIS = null;
+		STATETOIP stateip = null;
 		for(int i=0;i<Server.SocketList.size();i++){
 			System.out.println(Server.SocketList.elementAt(i));
 			NewIS = Server.SocketList.elementAt(i);
-			Server.StateList.elementAt(i).Send = bytes;
+			for(int j=0;j<Server.StateToIp.size();j++){
+				stateip = Server.StateToIp.elementAt(j);
+				if(stateip.ip.equals(NewIS.ip)){
+					stateip.state.Send = bytes;
+					break;
+				}
+			}
 			try {
 				NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x13_Cont());
 				System.out.println(pack.Pack_0x13_Cont()[0]+" "+pack.Pack_0x13_Cont()[1]);
@@ -897,7 +936,6 @@ public class STATE extends Thread{
 			e.printStackTrace();
 		}
 		Server.flag = false;
-		System.out.println("aaaaa");
 		//EK_message EKm = DC.getEKMSG();
 		//System.out.println(DC.getIDc());
 		//System.out.println(EKm.getMSG().toString());
@@ -926,7 +964,7 @@ public class STATE extends Thread{
 				e.printStackTrace();
 			}
 			IPtoSocket NewIS = null;
-			STATE stateR = null;
+			STATETOIP stateip = null;
 			while(true){
 				if(Server.flag == false){
 					Server.flag = true;
@@ -937,25 +975,38 @@ public class STATE extends Thread{
 			}
 			for(int i=0;i<Server.SocketList.size();i++){
 				NewIS = Server.SocketList.elementAt(i);
-				stateR = Server.StateList.elementAt(i);
 				if(NewIS.IDc == IS.IDc){
-					System.out.println("?????");
+					for(int j=0;j<Server.StateToIp.size();j++){
+						stateip = Server.StateToIp.elementAt(j);
+						if(stateip.ip.equals(NewIS.ip)){
+							Server.StateToIp.remove(stateip);
+							break;
+						}
+					}
 					Server.SocketList.remove(NewIS);
-					Server.StateList.remove(stateR);
-					stateR.Online = false;
+					stateip.state.Online = false;
 					continue;
 				}
+			}
+			for(int i = 0;i<Server.SocketList.size();i++){
+				NewIS = Server.SocketList.elementAt(i);
+				for(int j=0;j<Server.StateToIp.size();j++){
+					stateip = Server.StateToIp.elementAt(j);
+					if(stateip.ip.equals(NewIS.ip)){
+						stateip.state.Send = pack.Pack_0x16_Data(DOf);
+						break;
+					}
+				}
 				try {
-					stateR.Send = pack.Pack_0x16_Data(DOf);
 					NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x16_Cont());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				System.out.println("发送头"+pack.Pack_0x16_Cont()[0]+" "+pack.Pack_0x16_Cont()[1]);
-//				@SuppressWarnings("unused")
-//				SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
 			}
+//			@SuppressWarnings("unused")
+//			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
 			System.out.println(DOf.getIDc()+"下线啦！");
 			this.Online = false;
 			try {

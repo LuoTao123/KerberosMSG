@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 
@@ -17,7 +18,7 @@ public class Listen extends Thread{
 	Socket socket;                                                
 	String name;  
 	int IDc;
-	STATEC state;
+	public STATEC state;
 	int count;
 	//*****************************线程构造函数******************************************
 	public Listen(int IDc,Socket socket,STATEC statec){
@@ -49,6 +50,12 @@ public class Listen extends Thread{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		try {
+			this.socket.setSoTimeout(2000);
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		bufferedInputStream = new BufferedInputStream(fromServer);
 		int i = 0;
 	    while(true){
@@ -62,11 +69,14 @@ public class Listen extends Thread{
 				if(state.HasError) {
 					return;
 				}		
+			}catch(IOException e){
+				//System.out.println("Socket两秒内未收到新数据！");
 			}
-			catch(IOException e){
-		    	System.out.println();
-		    }
-		}  
-	}
+			if(state.Online == false){
+				break;
+			}
+		}
+		System.out.println(this.toString()+"已结束！");
+	}  
 }
 	

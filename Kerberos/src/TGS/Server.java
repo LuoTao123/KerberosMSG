@@ -25,7 +25,6 @@ public class Server extends Thread{
 	
 	public void run(){                                   
 		try{
-			
 			while(true){
 				Socket client = serverSocket.accept(); 	
 				String ip = client.getInetAddress().getHostAddress();

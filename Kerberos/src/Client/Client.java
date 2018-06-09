@@ -264,6 +264,7 @@ public class Client {
 			inputstream.close();
 			C_ASSocket.close();
 			if(state.HasError) {
+				System.exit(1);
 				return;
 			}
 			///////////////////////////////////////////////////////
@@ -278,6 +279,7 @@ public class Client {
 			inputstreamTGS.close();
 			C_TGSSocket.close();
 			if(state.HasError) {
+				System.exit(1);
 				return;
 			}
 			///////////////////////////////////////////////
@@ -292,6 +294,7 @@ public class Client {
 			setTS6(state.getTS6());
 //			C_VSocket.close();
 			if(state.HasError) {
+				System.exit(1);
 				return;
 			}else{
 				System.out.println("Kerberos 认证完成，实现登录");
@@ -392,6 +395,7 @@ public class Client {
 			inputstream.close();
 			C_RegistSocket.close();
 			if(state.HasError) {
+				System.exit(1);
 				return;
 			}
 		}
@@ -469,7 +473,6 @@ public class Client {
 			//发送消息	
 			while(true){
 				if(this.flag == true){
-					System.out.println("????");
 					continue;
 				}else{
 					this.flag = true;
@@ -500,7 +503,6 @@ public class Client {
 				if(this.flag == false){
 					break;
 				}else{
-					System.out.println("!!!!");
 					continue;
 				}
 			}

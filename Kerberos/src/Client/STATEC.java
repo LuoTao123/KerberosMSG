@@ -56,6 +56,7 @@ public class STATEC extends Thread{
 	public byte[] Send;
 	public Client client;
 	public  boolean HasError = false;
+	public boolean Online = true;
 	
  	public void setIDC(int idc) {
 		this.IDC = idc;

@@ -42,6 +42,10 @@ public class Connection extends Thread{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		System.out.println("ConnectionR的线程"+this.toString());
+		System.out.println("相应状态机"+state.toString());
+		System.out.println("被动端口："+Responseclient.toString());
+		System.out.println("主动端口："+client.toString());
 		bufferedInputStream = new BufferedInputStream(fromClient);
 		int i = 0;
 		while(true) {
@@ -65,6 +69,7 @@ public class Connection extends Thread{
 				if(state.Online == false){
 					break;
 				}
-		}  
+		}
+		System.out.println(this.toString()+"已结束！");
 	}
 }

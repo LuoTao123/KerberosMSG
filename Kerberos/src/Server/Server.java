@@ -1,6 +1,7 @@
 package Server;
 
 import Package.IPtoSocket;
+import Package.STATETOIP;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -13,7 +14,7 @@ public class Server extends Thread{
 	ServerSocket serverSocket;
 	ServerSocket serverSocketResponse;
 	public static Vector<IPtoSocket> SocketList = new Vector<IPtoSocket>();
-	public static Vector<STATE> StateList = new Vector<STATE>();
+	public static Vector<STATETOIP> StateToIp = new Vector<STATETOIP>();
 	public static boolean flag = false;
 	public Server(){
 		try{
