@@ -326,7 +326,7 @@ public class Client {
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes,0,2);
-			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+			if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 				C_RegistSocket.getOutputStream().write(pack.Pack_0x00_Data(DR));
 			}
 			else {
@@ -377,7 +377,7 @@ public class Client {
 			BufferedInputStream bufferedInputStream = new BufferedInputStream(inputstream);
 			byte[] bytes = new byte[2];
 			bufferedInputStream.read(bytes,0,2);
-			if(bytes[0]==(byte)0x00&&bytes[1]==(byte)0x00){
+			if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 				C_RegistSocket.getOutputStream().write(pack.Pack_0x01_Data(DM));
 				System.out.println("发送数据啦");
 			}
@@ -469,6 +469,7 @@ public class Client {
 			//发送消息	
 			while(true){
 				if(this.flag == true){
+					System.out.println("????");
 					continue;
 				}else{
 					this.flag = true;
@@ -483,11 +484,23 @@ public class Client {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			TimeStamp TS1 = new TimeStamp();
+			String TimeS = TS1.getTimeString();
+			String TS2 = TS1.TimeStringToTimeStamp(TimeS);
+			int ts = Integer.valueOf(TS2);
 			while(true){
-				System.out.println(this.flag);
+				TimeStamp TS3 = new TimeStamp();
+				String TimeS2 = TS3.getTimeString();
+				String TS4 = TS3.TimeStringToTimeStamp(TimeS2);
+				int ts2 = Integer.valueOf(TS4);
+				if(ts2-ts == 1)
+				{
+					this.flag = false;
+				}
 				if(this.flag == false){
 					break;
 				}else{
+					System.out.println("!!!!");
 					continue;
 				}
 			}

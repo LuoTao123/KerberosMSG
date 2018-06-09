@@ -14,6 +14,7 @@ public class Server extends Thread{
 	ServerSocket serverSocketResponse;
 	public static Vector<IPtoSocket> SocketList = new Vector<IPtoSocket>();
 	public static Vector<STATE> StateList = new Vector<STATE>();
+	public static boolean flag = false;
 	public Server(){
 		try{
 			serverSocket = new ServerSocket(30000);

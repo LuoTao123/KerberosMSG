@@ -34,6 +34,7 @@ public class ConnectionR extends Thread{
 	
 	public void run(){                               
 		state = new STATE();
+		state.setIDC(1276338796);
 		try {
 			this.client.setSoTimeout(2000);
 		} catch (SocketException e1) {

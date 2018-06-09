@@ -521,7 +521,7 @@ public class STATETGS extends Thread{
 		setTS3(TS3);
 		Pack pack = new Pack();
 		int LT = CT.getTicket().getLT();
-		TimeStamp TSp = new TimeStamp();;
+		TimeStamp TSp = new TimeStamp();
 		if(IDv== this.IDv&&CT.getTicket().getID1()==CT.getAuthenticator().getID()
 				&&CT.getTicket().getAD()==CT.getAuthenticator().getAD()
 				&&CT.getTicket().getID2()==this.IDtgs

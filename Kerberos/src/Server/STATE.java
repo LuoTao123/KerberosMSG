@@ -783,6 +783,7 @@ public class STATE extends Thread{
 
 	//上线发
 	public void OnlineTransmit(Data_Online DOn,Socket socket){
+		
 		IPtoSocket IS = new IPtoSocket();
 		IS.IDc = DOn.getIDc();
 		IS.socket = socket;
@@ -790,7 +791,7 @@ public class STATE extends Thread{
 		Pack pack = new Pack();
 		try {
 			socket.getOutputStream().write(pack.Pack_0x11_Cont());
-			System.out.println(pack.Pack_0x11_Cont()[0]+" "+pack.Pack_0x11_Cont()[1]);
+			System.out.println("发送头"+pack.Pack_0x11_Cont()[0]+" "+pack.Pack_0x11_Cont()[1]);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -813,12 +814,21 @@ public class STATE extends Thread{
 		@SuppressWarnings("unused")
 		SendThread ST1 = new SendThread(socket,pack.Pack_0x19_Cont(),pack.Pack_0x19_Data(DU,Keycc));*/
 		//再将上线用户加入到列表中去
+		while(true){
+			if(Server.flag == false){
+				Server.flag = true;
+				break;
+			}else{
+				continue;
+			}
+		}
 		Server.SocketList.addElement(IS);
 		IPtoSocket NewIS = null;
 		//开始给所有的用户通知上线
 		for(int i=0;i<Server.SocketList.size();i++){
 			NewIS = Server.SocketList.elementAt(i);
 			Server.StateList.elementAt(i).Send = pack.Pack_0x10_Data(DOn);
+			System.out.println("账号"+Server.StateList.elementAt(i).getIDC());
 //			@SuppressWarnings("unused")
 			try {
 				NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x10_Cont());
@@ -829,6 +839,13 @@ public class STATE extends Thread{
 			}
 //			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x10_Cont(),pack.Pack_0x10_Data(DOn));
 		}
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Server.flag = false;
 		System.out.println(DOn.getIDc()+"上线啦！");
 	}
 	
@@ -851,8 +868,17 @@ public class STATE extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		while(true){
+			if(Server.flag == false){
+				Server.flag = true;
+				break;
+			}else{
+				continue;
+			}
+		}
 		IPtoSocket NewIS = null;
 		for(int i=0;i<Server.SocketList.size();i++){
+			System.out.println(Server.SocketList.elementAt(i));
 			NewIS = Server.SocketList.elementAt(i);
 			Server.StateList.elementAt(i).Send = bytes;
 			try {
@@ -864,6 +890,13 @@ public class STATE extends Thread{
 			}
 //			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x13_Cont(),bytes);
 		}
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Server.flag = false;
 		System.out.println("aaaaa");
 		//EK_message EKm = DC.getEKMSG();
 		//System.out.println(DC.getIDc());
@@ -894,6 +927,14 @@ public class STATE extends Thread{
 			}
 			IPtoSocket NewIS = null;
 			STATE stateR = null;
+			while(true){
+				if(Server.flag == false){
+					Server.flag = true;
+					break;
+				}else{
+					continue;
+				}
+			}
 			for(int i=0;i<Server.SocketList.size();i++){
 				NewIS = Server.SocketList.elementAt(i);
 				stateR = Server.StateList.elementAt(i);
@@ -917,6 +958,13 @@ public class STATE extends Thread{
 			}
 			System.out.println(DOf.getIDc()+"下线啦！");
 			this.Online = false;
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Server.flag = false;
 		}
 
 	public byte[] readFixedLengthArray(BufferedInputStream serverSocketBis,int length)
