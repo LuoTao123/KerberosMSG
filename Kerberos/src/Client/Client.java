@@ -4,6 +4,7 @@ import Package.*;
 import DES.*;
 import RSA.*;
 
+import java.awt.TextArea;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -32,6 +33,7 @@ public class Client {
 		Authenticator at,as;//需初始化
 		int[] Keyctgs,Keycv;
 		ServerSocket serverSocket;
+		clientChat c;
 		public boolean flag = false;
 		//Socket变量
 		int port;
@@ -157,7 +159,7 @@ public class Client {
 			this.state = statec;
 			Socket ASsocket = null;
 			try {
-				ASsocket = new Socket("192.168.1.103",10000);
+				ASsocket = new Socket("172.20.10.2",10000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -167,7 +169,7 @@ public class Client {
 			}
 			Socket TGSsocket = null;
 			try {
-				TGSsocket = new Socket("192.168.1.103",20000);
+				TGSsocket = new Socket("172.20.10.2",20000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -177,7 +179,7 @@ public class Client {
 			}
 			Socket Vsocket = null;
 			try {
-				Vsocket = new Socket("192.168.1.103",30000);
+				Vsocket = new Socket("172.20.10.2",30000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -187,7 +189,7 @@ public class Client {
 			}
 			Socket C_Msocket = null;
 			try {
-				C_Msocket = new Socket("192.168.1.103",40000);
+				C_Msocket = new Socket("172.20.10.2",40000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -197,7 +199,7 @@ public class Client {
 			}
 			Socket ReC_Vsocket = null;
 			try {
-				ReC_Vsocket = new Socket("192.168.1.103",30001);
+				ReC_Vsocket = new Socket("172.20.10.2",30001);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -217,7 +219,9 @@ public class Client {
 		}
 
 		@SuppressWarnings("resource")
-		public void login(String IDc,String Psw) throws IOException {
+		public void login(String IDc,String Psw,TextArea t) throws IOException {
+			LoginMessage uobj=new LoginMessage();
+			uobj.loginName=IDc;
 			LocalIP LIP = new LocalIP();
 			String ip = LIP.getLocalHostLANAddress().getHostAddress().toString();
 			System.out.println(ip);
@@ -233,7 +237,8 @@ public class Client {
 			TimeStamp TS1 = new TimeStamp();
 			String TimeS = TS1.getTimeString();
 			setTS1(TimeS);//////////TS1
-			System.out.println("开始向AS发送认证请求...\n");
+			System.out.println("开始向AS发送请求\n");
+			t.append("开始向AS发送请求\n");
 			//发送请求
 			Pack pack = new Pack();
 			C_ASSocket.getOutputStream().write(pack.Pack_0x07_Cont());
@@ -248,14 +253,18 @@ public class Client {
 			bufferedInputStream.read(bytes,0,2);
 			if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 				C_ASSocket.getOutputStream().write(pack.Pack_0x07_Data(c_as));
+				t.append("开始认证>>>>>>\n");
 			}
+			
 			else {
 				System.out.println("客户端不处于就绪状态，不能进行认证");
+				t.append("客户端不处于就绪状态，不能进行认证");
 				return;
 			}
 			//接收回复
 			byte[] bytes1 = new byte[2];
 			bufferedInputStream.read(bytes1, 0, 2);
+			t.append("收到AS的回复:\n");
 			state.Unpack_Head(bytes1, bufferedInputStream, C_ASSocket,ip);
 			//AS_C整个包
 			setKeyctgs(state.getKeyctgs());
@@ -264,27 +273,34 @@ public class Client {
 			inputstream.close();
 			C_ASSocket.close();
 			if(state.HasError) {
-				System.exit(1);
+				t.append("认证失败");
 				return;
-			}
+			}	
+			t.append("AS认证成功，传回了TGSticket");
+			
 			///////////////////////////////////////////////////////
+			t.append("开始向TGS发送请求\n");
 			setTS3(state.getTS3());
 			InputStream inputstreamTGS = C_TGSSocket.getInputStream();
 			BufferedInputStream bufferedInputStreamTGS = new BufferedInputStream(inputstreamTGS);
 			byte[] bytes2 = new byte[2];
 			bufferedInputStreamTGS.read(bytes2, 0, 2);
+			t.append("收到TGS回复：\n");
 			state.Unpack_Head(bytes2, bufferedInputStreamTGS, C_TGSSocket,  ip);
 			setTS4(state.getTS4());
 			bufferedInputStreamTGS.close();
 			inputstreamTGS.close();
 			C_TGSSocket.close();
 			if(state.HasError) {
-				System.exit(1);
+				t.append("TGS认证失败");
 				return;
 			}
+			t.append("TGS认证成功:\n");
 			///////////////////////////////////////////////
 			System.out.println("这里已经过了！");
 			setKeycv(state.getKeycv());
+			t.append("获得Vticket\n");
+			t.append("开始向V发送请求\n");
 			setTS5(state.getTS5());
 			InputStream inputstreamV = C_VSocket.getInputStream();
 			BufferedInputStream bufferedInputStreamV = new BufferedInputStream(inputstreamV);
@@ -294,10 +310,12 @@ public class Client {
 			setTS6(state.getTS6());
 //			C_VSocket.close();
 			if(state.HasError) {
-				System.exit(1);
 				return;
 			}else{
 				System.out.println("Kerberos 认证完成，实现登录");
+				t.append("Kerberos 认证完成，实现登录");
+
+				
 				//this.NowSocket = new Socket("192.168.1.103",30000);
 				//state.C_VSocket = NowSocket;
 				//System.out.println("New connection accepted "+

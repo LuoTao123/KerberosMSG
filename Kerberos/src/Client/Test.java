@@ -41,7 +41,7 @@ package Client;
 				String password = in.nextLine();
 				client.setIDc(Integer.valueOf(ID));
 				try {
-					client.login(ID, password);
+					client.login(ID, password, null);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

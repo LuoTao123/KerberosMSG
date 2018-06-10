@@ -1,5 +1,6 @@
 package AS;
 
+import java.awt.TextArea;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ import Server.Server;
 import Server.SendThread;
 
 public class STATEA extends Thread{
+	public TextArea textArea;
 	public static int IDas = 1000000000;
 	public static int IDtgs = 1000000001;
 	public static int IDv = 1000000002;
@@ -187,6 +189,7 @@ public class STATEA extends Thread{
 				case (byte)0x1a:	zhuangtaiji1a();break;
 				case (byte)0x1b:	zhuangtaiji1b();break;
 				default : System.out.println("非法数据包");
+							textArea.append("非法数据包");
 			}
 		}else if(NewByte[0]==(byte)0x01){
 			Pack pack = new Pack();
@@ -253,12 +256,14 @@ public class STATEA extends Thread{
 									break;
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
 				default : System.out.println("非法数据包");
+							textArea.append("非法数据包");
 			}
 		}else if(NewByte[0]==(byte)0xff&&NewByte[1]==(byte)0xff){
 			zhuangtaiji00();
 		}else{
 			System.out.println(NewByte[0]);
 			System.out.println("该包非法！");
+			textArea.append("该包非法！");
 			///////////////////////////////////////////////////////////////log
 		}
 	}
@@ -360,6 +365,9 @@ public class STATEA extends Thread{
 		setTS1(TS1);
 		BigInteger PSW = null;
 		Pack pack = new Pack();
+		textArea.append("客户端："+String.valueOf(CA.getIDc())+"\n");
+		textArea.append("请求访问"+String.valueOf(CA.getIDtgs())+"\n");
+		textArea.append("时间戳为"+CA.getTS()+"\n");
 		if(IDt == IDtgs) {
 			sql a=new sql();
 			try {
@@ -371,11 +379,13 @@ public class STATEA extends Thread{
 			if(PSW !=null) {
 				Keys kkey = new Keys();
 				int[] Keytgs = kkey.ReadKeysFromFile("Keytgs.txt");
+				textArea.append("读取Keytgs.txt的密码成功！"+"\n");
 				System.out.println(kkey.BigIntegerToString(PSW).length());
 				int[] KeycInts = kkey.StringToInts(kkey.BigIntegerToString(PSW));
 				DES des =new DES();
 				AS_C AC = new AS_C();
 				BigInteger Keyctgs = des.CreateDESKey();
+				textArea.append("创建 c,tgs DES会话密钥成功！"+"\n");
 				TimeStamp TS2 = new TimeStamp();
 				String TimeS = TS2.getTimeString();
 				setTS2(TimeS);
@@ -423,11 +433,16 @@ public class STATEA extends Thread{
 					byte[] msg = pack.Pack_0x08_Data(AC,KeycInts,Keytgs);
 					send(msg);
 				}
-				System.out.println("Here");
+				textArea.append("Ticket加密成功！\n");
+				textArea.append("该包加密成功！\n");
+				textArea.append("Ticket数据为：\n");
+				textArea.append("IDc："+String.valueOf(AC.getTicket().getID1())+"\n");
+				textArea.append("ADc:"+String.valueOf(AC.getTicket().getAD())+"\n");
+				textArea.append("TS:"+AC.getTicket().getTS()+"\n");
+				textArea.append("LifeTime:"+AC.getTicket().getLT()+"\n");
 				System.out.println(AC.getTicket().getID1());
 				System.out.println(AC.getTicket().getAD());
 				System.out.println(AC.getTicket().getTS());
-				System.out.println(AC.getTicket().getLT());
 			}else {
 				byte[] msg = pack.Pack_0x0d_Cont();
 				send(msg);
@@ -436,6 +451,7 @@ public class STATEA extends Thread{
 			byte[] msg = pack.Pack_0x0d_Cont();
 			send(msg);
 		}
+		
 		System.out.println("客户端"+CA.getIDc());
 		System.out.println("请求访问"+CA.getIDtgs());
 		System.out.println("时间戳为"+CA.getTS());

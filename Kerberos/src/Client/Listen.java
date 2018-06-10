@@ -1,5 +1,7 @@
 package Client;
 
+import java.awt.Color;
+import Server.*;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,10 +17,14 @@ public class Listen extends Thread{
 	InputStream fromServer;                     
 	OutputStream toServer;           
 	BufferedInputStream bufferedInputStream;
+	clientChat frame;
+	Server userlist;
+	Object obj;
 	Socket socket;                                                
 	String name;  
 	int IDc;
 	public STATEC state;
+	public STATE states;
 	int count;
 	//*****************************线程构造函数******************************************
 	public Listen(int IDc,Socket socket,STATEC statec){
@@ -78,5 +84,26 @@ public class Listen extends Thread{
 		}
 		System.out.println(this.toString()+"已结束！");
 	}  
+	//******************************以下实现各种方法*************************************
+			//获取面板消息
+			public void acceptMessage(){
+				
+			
+			}
+			
+			//******************************添加聊天内容*****************************************
+			public void addChatMessage(ChatMessage chat){
+				String msg = new String();
+					if(chat.chatUser.equals(name)){	
+						msg = chat.chattime+"我对"+chat.chatToUser+"说：  "+chat.chatMessage+"\n\n";
+					}
+					else if(chat.chatToUser.equals(name)){	
+						msg = chat.chattime+chat.chatUser+"对我说： "+chat.chatMessage+"\n\n";
+					}
+					else{
+						msg =chat.chattime+ chat.chatUser +"对"+chat.chatToUser+"说： "+chat.chatMessage+"\n\n";
+					}
+				frame.textMain.append(msg);
+			}
 }
 	

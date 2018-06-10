@@ -3,6 +3,7 @@ import java.net.*;
 
 import Package.STATETOIP;
 
+import java.awt.TextArea;
 import java.io.*;
 //import java.util.*;
 
@@ -13,13 +14,17 @@ public class ConnectionR extends Thread{
 	public STATE state;
 	BufferedInputStream bufferedInputStream;
 	InputStream fromClient;                     
-	OutputStream toClient;    
+	OutputStream toClient;
+	java.awt.List list;
+	TextArea textArea;
 	    
 	    //*******************************线程运行方法***************************************
-	public ConnectionR(Socket client,String ip,Socket ResponseSocket){
+	public ConnectionR(Socket client,String ip,Socket ResponseSocket,TextArea textArea,java.awt.List list){
 		this.ip = ip;
 		this.client = client;
+		this.list = list;
 		this.Responseclient = ResponseSocket;
+		this.textArea = textArea;
 		try {
 			toClient=this.client.getOutputStream();
 		} catch (IOException e) {
@@ -37,6 +42,7 @@ public class ConnectionR extends Thread{
 	
 	public void run(){                               
 		state = new STATE();
+		state.textArea = this.textArea;
 		try {
 			this.client.setSoTimeout(2000);
 		} catch (SocketException e1) {
@@ -53,9 +59,7 @@ public class ConnectionR extends Thread{
 		System.out.println("主动端口："+client.toString());
 		state.ResponseSocket = this.client;
 		bufferedInputStream = new BufferedInputStream(fromClient);
-		int i = 0;
 		while(true) {
-			i++;
 	    	//接收请求
 			byte[] bytes1 = new byte[2];
 			try{
@@ -67,6 +71,10 @@ public class ConnectionR extends Thread{
 				System.out.println("外部接受"+bytes1[0]+" "+bytes1[1]);
 				state.Unpack_Head(bytes1, bufferedInputStream, this.client, ip);
 //					}
+				list.removeAll();
+				for(int i=0;i<Server.SocketList.size();i++){
+					list.add(Integer.toString(Server.SocketList.elementAt(i).IDc));
+				}
 				if(state.HasError) {
 					return;
 				}

@@ -1,5 +1,6 @@
 package ServerIDPSW;
 
+import java.awt.TextArea;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ import Server.Server;
 import Server.SendThread;
 
 public class STATEIDPSW extends Thread{
+	public TextArea textArea;
 	public static int IDas = 1000000000;
 	public static int IDtgs = 1000000001;
 	public static int IDv = 1000000002;
@@ -187,6 +189,7 @@ public class STATEIDPSW extends Thread{
 				case (byte)0x1a:	zhuangtaiji1a();break;
 				case (byte)0x1b:	zhuangtaiji1b();break;
 				default : System.out.println("非法数据包");
+							textArea.append("非法数据包");
 			}
 		}else if(NewByte[0]==(byte)0x01){
 			Pack pack = new Pack();
@@ -253,12 +256,14 @@ public class STATEIDPSW extends Thread{
 									break;
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
 				default : System.out.println("非法数据包");
+				textArea.append("非法数据包");
 			}
 		}else if(NewByte[0]==(byte)0xff&&NewByte[1]==(byte)0xff){
 			zhuangtaiji00();
 		}else{
 			System.out.println(NewByte[0]);
 			System.out.println("该包非法！");
+			textArea.append("该包非法！");
 			///////////////////////////////////////////////////////////////log
 		}
 	}
@@ -287,6 +292,10 @@ public class STATEIDPSW extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		textArea.append("新人注册！\n");
+		textArea.append("账号："+String.valueOf(DR.getIDc())+"\n");
+		textArea.append("加密Hash密码"+DR.getRSA_HASH_PASSWORD().toString()+"\n");
+		textArea.append("原文Hash密码"+HASH_PASSWORD.toString()+"\n");
 /*		System.out.println(DR.getIDc());
 		System.out.println(DR.getRSA_HASH_PASSWORD().toString());
 		System.out.println(HASH_PASSWORD);*/
@@ -306,9 +315,7 @@ public class STATEIDPSW extends Thread{
 			BigInteger oldPSW = a.HasAIDc(IDc);
 			if(oldPSW!=null){
 				System.out.println(HASH_PASSWORD);
-				System.out.println("????????/");
 				if(oldPSW.equals(HASH_PASSWORD)){
-					System.out.println("????????");
 					a.UpdatePassword(IDc, HASH_NPASSWORD);
 					send(pack.Pack_0x04_Cont());
 				}else{
@@ -321,6 +328,12 @@ public class STATEIDPSW extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		textArea.append("老人修改密码！\n");
+		textArea.append("账号："+String.valueOf(DM.getIDc())+"\n");
+		textArea.append("加密Hash旧密码"+DM.getRSA_HASH_PASSWORD().toString()+"\n");
+		textArea.append("原文Hash旧密码"+HASH_PASSWORD.toString()+"\n");
+		textArea.append("加密Hash新密码"+DM.getRSA_HASH_NPASSWORD().toString()+"\n");
+		textArea.append("原文Hash新密码"+HASH_NPASSWORD.toString()+"\n");
 		System.out.println(DM.getIDc());
 		System.out.println(DM.getRSA_HASH_PASSWORD().toString());
 		System.out.println(DM.getRSA_HASH_NPASSWORD().toString());

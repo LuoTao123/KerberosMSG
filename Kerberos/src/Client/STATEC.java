@@ -1,4 +1,5 @@
 package Client;
+import java.awt.TextArea;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +36,7 @@ import RSA.Hash;
 import Server.Server;
 import Server.SendThread;
 
+
 public class STATEC extends Thread{
 	public static int IDas = 1000000000;
 	public static int IDtgs = 1000000001;
@@ -47,6 +49,7 @@ public class STATEC extends Thread{
 	private int[] Keyctgs;
 	private int[] Keycv;
 	private int[] Key1;
+	
 	private Ticket tickettgs,ticketv;
 	private Socket C_Ssocket;
 	public Socket C_ASsocket;
@@ -55,6 +58,7 @@ public class STATEC extends Thread{
 	public Socket C_RSocket;
 	public byte[] Send;
 	public Client client;
+	static TextArea textmain;
 	public  boolean HasError = false;
 	public boolean Online = true;
 	
@@ -765,6 +769,7 @@ public class STATEC extends Thread{
 			}
 		}
 		System.out.println(idc+"Ëµ£º"+mes);
+		textmain.append(idc+"Ëµ£º"+mes+"\n");
 		//////////////////////////////ÐÞ¸Ä
 		/////////////////////////////////////////////////////////////////////////////////////////
 	}

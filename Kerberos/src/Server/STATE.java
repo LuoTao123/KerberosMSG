@@ -1,5 +1,6 @@
 package Server;
 
+import java.awt.TextArea;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,7 @@ import Server.Server;
 import Server.SendThread;
 
 public class STATE extends Thread{
+	public TextArea textArea;
 	public static int IDas = 1000000000;
 	public static int IDtgs = 1000000001;
 	public static int IDv = 1000000002;
@@ -173,6 +175,7 @@ public class STATE extends Thread{
 		this.ip = ip;
 		this.C_Ssocket = socket;
 		System.out.println("内部接受"+NewByte[0]+" "+NewByte[1]+" ");
+		textArea.append("内部接受"+NewByte[0]+" "+NewByte[1]+"\n");
 		Unpack unpack = new Unpack();
 		if(NewByte[0]==(byte)0x00){
 			switch(NewByte[1]){
@@ -193,12 +196,13 @@ public class STATE extends Thread{
 				case (byte)0x18:	zhuangtaiji18();break;
 				case (byte)0x1a:	zhuangtaiji1a();break;
 				case (byte)0x1b:	zhuangtaiji1b();break;
-				default : System.out.println("非法数据包");
+				default : System.out.println("非法数据包");textArea.append("非法数据包\n");
 			}
 		}else if(NewByte[0]==(byte)0x01){
 			Pack pack = new Pack();
 			socket.getOutputStream().write(pack.Server_Return());
 			System.out.println("发送头"+pack.Server_Return()[0]+" "+pack.Server_Return()[1]);
+			textArea.append("发送头"+pack.Server_Return()[0]+" "+pack.Server_Return()[1]+"\n");
 			byte[] bytess  = null;
 			switch(NewByte[1]){
 				case (byte)0x00:	bytess = new byte[314];
@@ -270,19 +274,21 @@ public class STATE extends Thread{
 									zhuangtaiji19(unpack.Unpack_0x19(bytess,key1.ReadKeysFromFile("Keyc.txt")));
 									break;
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
-				default : System.out.println("非法数据包");
+				default : System.out.println("非法数据包");textArea.append("非法数据包\n");
 			}
 		}else if(NewByte[0]==(byte)0xff&&NewByte[1]==(byte)0xff){
 			zhuangtaiji00();
 		}else{
 			System.out.println(NewByte[0]);
 			System.out.println("该包非法！");
+			textArea.append("该包非法！\n");
 			///////////////////////////////////////////////////////////////log
 		}
 	}
 	
 	public void zhuangtaiji00() {
 		System.out.println("发送的状态机"+this.toString());
+		textArea.append("发送的状态机"+this.toString()+"\n");
 /*		while(Send == null){
 			try {
 				this.sleep(20);
@@ -699,6 +705,15 @@ public class STATE extends Thread{
 		TimeStamp TSp = new TimeStamp();
 		sql a = new sql();
 		try {
+			if(a.SelectAuthenticator(CV.getTicket().getID1())!=null){
+				a.DeleteAuthenticator(CV.getTicket().getID1());
+				a.DeleteTicket(CV.getTicket().getID1());
+			}
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		try {
 			a.AddNewAuthenticator(auth);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -710,12 +725,27 @@ public class STATE extends Thread{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		textArea.append(String.valueOf(CV.getTicket().getID1())+"申请验证:\n");
+		textArea.append("读取文件，获取钥匙进行Ticket解密\n");
+		textArea.append("从ticket获取Keyc,v,对Authenticator进行解密！");
+		textArea.append("ticketv内容:\n");
+		textArea.append("账号："+String.valueOf(CV.getTicket().getID1())+"\n");
+		textArea.append("AD："+String.valueOf(CV.getTicket().getAD())+"\n");
+		textArea.append("申请服务器ID："+String.valueOf(CV.getTicket().getID2())+"\n");
+		textArea.append("TS4："+String.valueOf(CV.getTicket().getTS())+"\n");
+		textArea.append("LT："+String.valueOf(CV.getTicket().getLT())+"\n");
+		textArea.append("Authenticator内容:\n");
+		textArea.append("账号："+String.valueOf(CV.getAuth().getID())+"\n");
+		textArea.append("AD："+String.valueOf(CV.getAuth().getAD())+"\n");
+		textArea.append("TS5："+String.valueOf(CV.getAuth().getTS())+"\n");
 		if(IDv == this.IDv&&ticketv.getID1()==auth.getID()&&ticketv.getAD()==auth.getAD()
 			&&TSp.IsOverLifeTime(TSp.TimeStringToTimeStamp(ticketv.getTS()), ticketv.getLT(),TSp.TimeStringToTimeStamp(auth.getTS()))){
 				Keys kkey = new Keys();
 				BigInteger Keycv = ticketv.getKey();
 				//10转2
 				int[] KeycvInts = kkey.StringToInts(kkey.BigIntegerToString(Keycv));
+				textArea.append("获取Ticket中的钥匙\n");
+				textArea.append("对TS进行DES加密！\n");
 				V_C VC = new V_C();
 				String TS5 = auth.getTS();
 				String TS2 = TSp.TimeStringToTimeStamp(TS5);
@@ -738,7 +768,7 @@ public class STATE extends Thread{
 					e.printStackTrace();
 				}
 			}
-		
+		textArea.append("包发送"+"\n");
 		System.out.println("V->C");
 	}
 	
@@ -819,11 +849,13 @@ public class STATE extends Thread{
 		try {
 			socket.getOutputStream().write(pack.Pack_0x11_Cont());
 			System.out.println("发送头"+pack.Pack_0x11_Cont()[0]+" "+pack.Pack_0x11_Cont()[1]);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("上线包发送！！！");
+		textArea.append("上线包发送成功！！！开始转发\n");
 		//上线先给上线用户发最新的KeySession
 /*		Data_Update DU = new Data_Update();
 		DU.setKey(Server.Keysession);
@@ -871,9 +903,11 @@ public class STATE extends Thread{
 					break;
 				}
 			}
+			textArea.append("发送的状态机"+stateip.state.toString()+"\n");
 			System.out.println("发送的状态机"+stateip.state.toString());
 //			@SuppressWarnings("unused")
 			try {
+				textArea.append("主动端口将要写："+NewIS.Responsesocket.toString()+"\n");
 				System.out.println("主动端口将要写："+NewIS.Responsesocket.toString());
 				NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x10_Cont());
 				System.out.println("发送头"+pack.Pack_0x10_Cont()[0]+" "+pack.Pack_0x10_Cont()[1]);
@@ -890,6 +924,7 @@ public class STATE extends Thread{
 			e.printStackTrace();
 		}
 		Server.flag = false;
+		textArea.append(DOn.getIDc()+"上线啦！"+"\n");
 		System.out.println(DOn.getIDc()+"上线啦！");
 	}
 	
@@ -905,6 +940,7 @@ public class STATE extends Thread{
 	
 	public void ChatTransmit(Socket socket,byte[] bytes){
 		Pack pack = new Pack();
+		textArea.append("接收到新的聊天包！开始进行转发\n");
 		try {
 			socket.getOutputStream().write(pack.Pack_0x14_Cont());
 			System.out.println("发送头："+pack.Pack_0x14_Cont()[0]+" "+pack.Pack_0x14_Cont()[1]);
@@ -933,6 +969,7 @@ public class STATE extends Thread{
 					break;
 				}
 			}
+			textArea.append("开始转发给\n"+NewIS.IDc);
 			try {
 				NewIS.Responsesocket.getOutputStream().write(pack.Pack_0x13_Cont());
 				System.out.println(pack.Pack_0x13_Cont()[0]+" "+pack.Pack_0x13_Cont()[1]);
@@ -1001,6 +1038,7 @@ public class STATE extends Thread{
 					continue;
 				}
 			}
+			textArea.append("开始转发下线包！\n");
 			for(int i = 0;i<Server.SocketList.size();i++){
 				NewIS = Server.SocketList.elementAt(i);
 				for(int j=0;j<Server.StateToIp.size();j++){
@@ -1020,6 +1058,7 @@ public class STATE extends Thread{
 			}
 //			@SuppressWarnings("unused")
 //			SendThread ST = new SendThread(NewIS.socket,pack.Pack_0x16_Cont(),pack.Pack_0x16_Data(DOf));
+			textArea.append(DOf.getIDc()+"下线啦！\n");
 			System.out.println(DOf.getIDc()+"下线啦！");
 			this.Online = false;
 			try {

@@ -1,5 +1,6 @@
 package TGS;
 
+import java.awt.TextArea;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ import Server.Server;
 import Server.SendThread;
 
 public class STATETGS extends Thread{
+	public TextArea textArea;
 	public static int IDas = 1000000000;
 	public static int IDtgs = 1000000001;
 	public static int IDv = 1000000002;
@@ -187,6 +189,7 @@ public class STATETGS extends Thread{
 				case (byte)0x1a:	zhuangtaiji1a();break;
 				case (byte)0x1b:	zhuangtaiji1b();break;
 				default : System.out.println("非法数据包");
+							textArea.append("非法数据包\n");
 			}
 		}else if(NewByte[0]==(byte)0x01){
 			Pack pack = new Pack();
@@ -253,12 +256,14 @@ public class STATETGS extends Thread{
 									break;
 									//zhuangtaiji19(unpack.Unpack_0x19(readFixedLengthArray(bufferedInputStream,9)));break;
 				default : System.out.println("非法数据包");
+				textArea.append("非法数据包\n");
 			}
 		}else if(NewByte[0]==(byte)0xff&&NewByte[1]==(byte)0xff){
 			zhuangtaiji00();
 		}else{
 			System.out.println(NewByte[0]);
 			System.out.println("该包非法！");
+			textArea.append("该包非法！\n");
 			///////////////////////////////////////////////////////////////log
 		}
 	}
@@ -522,6 +527,19 @@ public class STATETGS extends Thread{
 		Pack pack = new Pack();
 		int LT = CT.getTicket().getLT();
 		TimeStamp TSp = new TimeStamp();
+		textArea.append(String.valueOf(CT.getTicket().getID1())+"申请验证\n");
+		textArea.append("读取文件，获取钥匙进行Ticket解密\n");
+		textArea.append("从ticket获取Keyc,tgs,对Authenticator进行解密！");
+		textArea.append("tickettgs内容:\n");
+		textArea.append("账号:"+String.valueOf(CT.getTicket().getID1())+"\n");
+		textArea.append("AD:"+String.valueOf(CT.getTicket().getAD())+"\n");
+		textArea.append("申请服务器ID:"+String.valueOf(CT.getTicket().getID2())+"\n");
+		textArea.append("LT:"+String.valueOf(CT.getTicket().getLT())+"\n");
+		textArea.append("TS4:"+String.valueOf(CT.getTicket().getTS())+"\n");
+		textArea.append("Authenticator内容：\n");
+		textArea.append("账号:"+String.valueOf(auth.getID()+"\n"));
+		textArea.append("AD::"+String.valueOf(auth.getAD()+"\n"));
+		textArea.append("TS5:"+String.valueOf(auth.getTS()+"\n"));
 		if(IDv== this.IDv&&CT.getTicket().getID1()==CT.getAuthenticator().getID()
 				&&CT.getTicket().getAD()==CT.getAuthenticator().getAD()
 				&&CT.getTicket().getID2()==this.IDtgs
@@ -530,6 +548,7 @@ public class STATETGS extends Thread{
 				BigInteger Keyctgs = ticket.getKey();
 				//Kv
 				int[] Keyv = kkey.ReadKeysFromFile("Keyv.txt");
+				textArea.append("读取Keyv密码\n");
 				//Kctgs
 				int[] KeyctgsInts = kkey.StringToInts(kkey.BigIntegerToString(Keyctgs));
 				//Kcv
@@ -537,6 +556,7 @@ public class STATETGS extends Thread{
 				//AS_C AC = new AS_C();
 				TGS_C TC = new TGS_C();
 				BigInteger Keycv = des.CreateDESKey();
+				textArea.append("创建c,v 的DES密码\n");
 				TimeStamp TS1 = new TimeStamp();
 				String TimeS = TS1.getTimeString();
 				setTS4(TimeS);
@@ -549,13 +569,13 @@ public class STATETGS extends Thread{
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
+				textArea.append("创建ticketv\n");
 				ticketv.setID1(IDc);
 				ticketv.setAD(ADc);
 				ticketv.setID2(this.IDv);
 				ticketv.setKey(Keycv);
 				ticketv.setTS(TimeS);
 				ticketv.setLT(lifetime);
-				
 				//保存ticketv
 				setTicketv(ticketv);
 				TC.setID(IDv);
@@ -581,6 +601,8 @@ public class STATETGS extends Thread{
 				if(bytes[0]==(byte)0xff&&bytes[1]==(byte)0xff){
 					byte[] msg = pack.Pack_0x0a_Data(TC,KeyctgsInts,Keyv);
 					send(msg);
+					textArea.append("ticket加密");
+					textArea.append("该包进行加密");
 				}
 		}else {
 			byte[] msg = pack.Pack_0x0e_Cont();

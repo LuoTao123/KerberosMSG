@@ -9,7 +9,7 @@ public class Test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		sql a = new sql();
-		try {
+/*		try {
 			Ticket ticket = a.SelectTicket(1276338796);
 			System.out.println(ticket.getID1());
 			System.out.println(ticket.getAD());
@@ -28,8 +28,8 @@ public class Test {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-/*		try {
+		}*/
+		try {
 			a.DeleteAuthenticator(1276338796);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -40,7 +40,7 @@ public class Test {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		
 	}
 	
