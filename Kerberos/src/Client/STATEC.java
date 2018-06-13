@@ -737,6 +737,9 @@ public class STATEC extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		TimeStamp TSS = new TimeStamp();
+		textmain.append(TSS.getTimeString()+"\n");
+		textmain.append(IS.IDc+"上线\n");
 		System.out.println(IS.IDc+"上线");
 	}
 	
@@ -769,6 +772,8 @@ public class STATEC extends Thread{
 			}
 		}
 		System.out.println(idc+"说："+mes);
+		TimeStamp TSS = new TimeStamp();
+		textmain.append(TSS.getTimeString()+"\n");
 		textmain.append(idc+"说："+mes+"\n");
 		//////////////////////////////修改
 		/////////////////////////////////////////////////////////////////////////////////////////
@@ -794,6 +799,9 @@ public class STATEC extends Thread{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		TimeStamp TSS = new TimeStamp();
+		textmain.append(TSS.getTimeString()+"\n");
+		textmain.append(IS.IDc+"下线\n");
 		System.out.println(IS.IDc+"下线");
 	}
 

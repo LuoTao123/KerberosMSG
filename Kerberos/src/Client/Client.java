@@ -159,7 +159,7 @@ public class Client {
 			this.state = statec;
 			Socket ASsocket = null;
 			try {
-				ASsocket = new Socket("172.20.10.2",10000);
+				ASsocket = new Socket("192.168.1.103",10000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -169,7 +169,7 @@ public class Client {
 			}
 			Socket TGSsocket = null;
 			try {
-				TGSsocket = new Socket("172.20.10.2",20000);
+				TGSsocket = new Socket("192.168.1.103",20000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -179,7 +179,7 @@ public class Client {
 			}
 			Socket Vsocket = null;
 			try {
-				Vsocket = new Socket("172.20.10.2",30000);
+				Vsocket = new Socket("192.168.1.103",30000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -189,7 +189,7 @@ public class Client {
 			}
 			Socket C_Msocket = null;
 			try {
-				C_Msocket = new Socket("172.20.10.2",40000);
+				C_Msocket = new Socket("192.168.1.103",40000);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -199,7 +199,7 @@ public class Client {
 			}
 			Socket ReC_Vsocket = null;
 			try {
-				ReC_Vsocket = new Socket("172.20.10.2",30001);
+				ReC_Vsocket = new Socket("192.168.1.103",30001);
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
